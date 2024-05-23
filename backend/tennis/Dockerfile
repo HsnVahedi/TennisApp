@@ -10,12 +10,12 @@ RUN apt-get update --yes --quiet && apt-get install --yes --quiet --no-install-r
     libwebp-dev \
  && rm -rf /var/lib/apt/lists/*
 
-COPY requirements.txt /
-RUN pip install -r /requirements.txt
-
 # Copy the pip-install script and make it executable
 COPY pip-install.sh /usr/local/bin/pip-install
 RUN chmod +x /usr/local/bin/pip-install
+
+COPY requirements.txt /
+RUN pip install -r /requirements.txt
 
 COPY . .
 
