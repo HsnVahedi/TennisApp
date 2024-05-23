@@ -16,6 +16,7 @@ services:
       - DATABASE_PORT=5432
     volumes:
       - ../:/app
+    command: /bin/sh -c "cd tennis && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
   db:
     image: postgres:alpine3.19
     environment:
