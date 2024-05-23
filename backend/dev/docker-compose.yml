@@ -1,0 +1,30 @@
+services:
+  backend:
+    build:
+      context: ../tennis
+      dockerfile: Dockerfile
+      target: dev
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      - DATABASE_HOST=db
+      - DATABASE_USER=db_user
+      - DATABASE_PASSWORD=db_password
+      - DATABASE_NAME=tennis
+      - DATABASE_PORT=5432
+    volumes:
+      - ../:/app
+  db:
+    image: postgres:alpine3.19
+    environment:
+      POSTGRES_DB: tennis
+      POSTGRES_USER: db_user
+      POSTGRES_PASSWORD: db_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - tennis_ai_postgres_dev:/var/lib/postgresql/data
+volumes:
+  tennis_ai_postgres_dev:
