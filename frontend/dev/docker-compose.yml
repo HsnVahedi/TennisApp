@@ -1,9 +1,19 @@
 services:
-  backend:
+  frontend:
     build:
-      context: ../tennis
+      context: ../art-of-tennis
       dockerfile: Dockerfile
       target: dev
+    ports:
+      - "3000:3000"
+    environment:
+      - BACKEND_HOST=backend
+      - BACKEND_PORT=8000
+  backend:
+    build:
+      context: ../../backend/tennis
+      dockerfile: Dockerfile
+      target: prod
     ports:
       - "8000:8000"
     depends_on:
@@ -14,9 +24,7 @@ services:
       - DATABASE_PASSWORD=db_password
       - DATABASE_NAME=tennis
       - DATABASE_PORT=5432
-    volumes:
-      - ../:/app
-    command: /bin/sh -c "cd tennis && python manage.py migrate && tail -f /dev/null"
+    command: /bin/sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
   db:
     image: postgres:alpine3.19
     environment:
@@ -26,6 +34,6 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - art_of_tennis_postgres:/var/lib/postgresql/data
+      - art_of_tennis_postgres_front:/var/lib/postgresql/data
 volumes:
-  art_of_tennis_postgres:
+  art_of_tennis_postgres_front:

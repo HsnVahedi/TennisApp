@@ -1,0 +1,14 @@
+{
+    "name": "Art of Tennis Frontend Development",
+    "dockerComposeFile": "../dev/docker-compose.yml",
+    "service": "frontend",
+    "workspaceFolder": "/app",
+    "forwardPorts": [3000, 8000],
+    "build": {
+        "dockerCompose": {
+            "runServices": ["frontend", "backend", "db"]
+        }
+    },
+    "overrideCommand": false,
+    "postCreateCommand": "echo 'Container ready!'"
+}
