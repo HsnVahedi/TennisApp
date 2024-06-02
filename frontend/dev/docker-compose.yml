@@ -9,6 +9,8 @@ services:
     environment:
       - BACKEND_HOST=backend
       - BACKEND_PORT=8000
+    volumes:
+      - ../:/app
   backend:
     build:
       context: ../../backend/tennis

@@ -97,7 +97,9 @@ export default async function Home() {
 
 
 const getData = async () => {
-  const res = await fetch("http://backend:8000/data");
+  const res = await fetch(
+    `http://${process.env.BACKEND_HOST}:${process.env.BACKEND_PORT}/data`
+  );
   const data = await res.json();
   return data.data
 } 
