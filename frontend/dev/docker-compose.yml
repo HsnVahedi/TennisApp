@@ -26,6 +26,8 @@ services:
       - DATABASE_PASSWORD=db_password
       - DATABASE_NAME=tennis
       - DATABASE_PORT=5432
+      - FRONTEND_HOST=frontend
+      - FRONTEND_PORT=3000
     command: /bin/sh -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
   db:
     image: postgres:alpine3.19

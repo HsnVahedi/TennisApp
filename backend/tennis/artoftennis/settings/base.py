@@ -46,9 +46,11 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     'rest_framework',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -183,3 +185,17 @@ WAGTAILADMIN_BASE_URL = "http://example.com"
 # if untrusted users are allowed to upload files -
 # see https://docs.wagtail.org/en/stable/advanced_topics/deploying.html#user-uploaded-files
 WAGTAILDOCS_EXTENSIONS = ['csv', 'docx', 'key', 'odt', 'pdf', 'pptx', 'rtf', 'txt', 'xlsx', 'zip']
+
+
+##########################
+########## CORS ##########
+##########################
+CORS_ALLOWED_ORIGINS = [
+    f"http://{os.getenv("FRONTEND_HOST")}:{os.getenv("FRONTEND_PORT")}",
+    "https://your-production-frontend.com",
+]
+
+CORS_ALLOW_CREDENTIALS = True
+##########################
+########## CORS ##########
+##########################
