@@ -191,7 +191,7 @@ WAGTAILDOCS_EXTENSIONS = ['csv', 'docx', 'key', 'odt', 'pdf', 'pptx', 'rtf', 'tx
 ########## CORS ##########
 ##########################
 CORS_ALLOWED_ORIGINS = [
-    f"http://{os.getenv("FRONTEND_HOST")}:{os.getenv("FRONTEND_PORT")}",
+    f"http://{os.getenv('FRONTEND_HOST')}:{os.getenv('FRONTEND_PORT')}",
     "https://your-production-frontend.com",
 ]
 

@@ -101,5 +101,8 @@ const getData = async () => {
     `http://${process.env.BACKEND_HOST}:${process.env.BACKEND_PORT}/data`
   );
   const data = await res.json();
+  console.log('##################')
+  console.log(data.data)
+  console.log('##################')
   return data.data
 } 
