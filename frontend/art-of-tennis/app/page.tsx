@@ -1,12 +1,13 @@
 import Image from "next/image";
 import styles from "./page.module.css";
 
-export default function Home() {
+export default async function Home() {
+  const data = await getData();
   return (
     <main className={styles.main}>
       <div className={styles.description}>
         <p>
-          Get started by editing&nbsp;
+          {`data: ${data}`} Get started by editing&nbsp;
           <code className={styles.code}>app/page.tsx</code>
         </p>
         <div>
@@ -93,3 +94,10 @@ export default function Home() {
     </main>
   );
 }
+
+
+const getData = async () => {
+  const res = await fetch("http://backend:8000/data");
+  const data = await res.json();
+  return data.data
+} 
