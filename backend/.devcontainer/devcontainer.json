@@ -10,5 +10,5 @@
         }
     },
     "overrideCommand": false,
-    "postCreateCommand": "sudo chown -R django:django /app && sudo find /app -type d -exec chmod 755 {} \\; && sudo find /app -type f -exec chmod 644 {} \\;"
+    "postCreateCommand": "echo 'Container ready!'"
 }
