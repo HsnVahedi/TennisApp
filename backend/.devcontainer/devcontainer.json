@@ -10,5 +10,5 @@
         }
     },
     "overrideCommand": false,
-    "postCreateCommand": "echo 'Container ready!'"
+    "postCreateCommand": "sudo chown -R vscode:vscode /app && sudo find /app -type d -exec chmod 755 {} \\; && sudo find /app -type f -exec chmod 644 {} \\;"
 }

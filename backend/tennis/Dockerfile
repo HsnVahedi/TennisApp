@@ -8,11 +8,17 @@ RUN apt-get update --yes --quiet && apt-get install --yes --quiet --no-install-r
     libjpeg62-turbo-dev \
     zlib1g-dev \
     libwebp-dev \
+    sudo \
  && rm -rf /var/lib/apt/lists/*
 
 # Copy the pip-install script and make it executable
 COPY pip-install.sh /usr/local/bin/pip-install
 RUN chmod +x /usr/local/bin/pip-install
+
+# Create a non-root user
+RUN useradd -ms /bin/bash vscode
+RUN echo 'vscode ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+USER vscode
 
 COPY requirements.txt /
 RUN pip install -r /requirements.txt
@@ -20,10 +26,12 @@ RUN pip install -r /requirements.txt
 COPY . .
 
 FROM base as dev
-# Install git
-RUN apt-get update
-RUN apt-get install -y git
+# # Install git
+# RUN apt-get update
+# RUN apt-get install -y git
+USER vscode
 CMD ["tail", "-f", "/dev/null"]
 
 FROM base as prod
+USER vscode
 CMD ["tail", "-f", "/dev/null"]
