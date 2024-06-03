@@ -11,14 +11,14 @@ RUN apt-get update --yes --quiet && apt-get install --yes --quiet --no-install-r
     sudo \
  && rm -rf /var/lib/apt/lists/*
 
+# Create a non-root user
+RUN useradd -ms /bin/bash django
+RUN echo 'django ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+USER django
+
 # Copy the pip-install script and make it executable
 COPY pip-install.sh /usr/local/bin/pip-install
-RUN chmod +x /usr/local/bin/pip-install
-
-# Create a non-root user
-RUN useradd -ms /bin/bash vscode
-RUN echo 'vscode ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
-USER vscode
+RUN sudo chmod +x /usr/local/bin/pip-install
 
 COPY requirements.txt /
 RUN pip install -r /requirements.txt
@@ -26,12 +26,9 @@ RUN pip install -r /requirements.txt
 COPY . .
 
 FROM base as dev
-# # Install git
-# RUN apt-get update
-# RUN apt-get install -y git
-USER vscode
+USER django
 CMD ["tail", "-f", "/dev/null"]
 
 FROM base as prod
-USER vscode
+USER django
 CMD ["tail", "-f", "/dev/null"]
