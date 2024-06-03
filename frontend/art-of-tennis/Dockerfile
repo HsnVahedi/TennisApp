@@ -8,11 +8,14 @@ RUN npm install
 COPY . .
 EXPOSE 3000
 
+# Ensure we use a non-root user
+USER node
+
 FROM base as dev
 ENV NODE_ENV=development
-# Update apk and install git
-RUN apk update && \
-    apk add --no-cache git
+# # Update apk and install git
+# RUN apk update && \
+#     apk add --no-cache git
 # Do nothing, just wait for frontend developers to run `npm run dev`
 CMD ["tail", "-f", "/dev/null"]
 # CMD npm run dev

@@ -4,6 +4,7 @@
     "service": "frontend",
     "workspaceFolder": "/app",
     "forwardPorts": [3000, 8000],
+    "runArgs": ["--user", "node"],
     "build": {
         "dockerCompose": {
             "runServices": ["frontend", "backend", "db"]
