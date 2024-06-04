@@ -9,5 +9,6 @@
             "runServices": ["frontend", "backend", "db"]
         }
     },
-    "overrideCommand": false
+    "overrideCommand": false,
+    "postCreateCommand": "echo 'Container ready!'"
 }
