@@ -15,11 +15,11 @@ USER django
 WORKDIR /app/tennis
 EXPOSE 8000
 # Copy the pip-install script and make it executable
-COPY --chown=node:node pip-install.sh /usr/local/bin/pip-install
+COPY --chown=django:django pip-install.sh /usr/local/bin/pip-install
 RUN sudo chmod +x /usr/local/bin/pip-install
-COPY --chown=node:node requirements.txt /
+COPY --chown=django:django requirements.txt /
 RUN pip install -r /requirements.txt
-COPY --chown=node:node . .
+COPY --chown=django:django . .
 
 FROM base as dev
 USER django
