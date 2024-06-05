@@ -8,14 +8,16 @@ from wagtail.documents import urls as wagtaildocs_urls
 
 from search import views as search_views
 
-from .views import DataAPIView
+from .views import DataAPIView, ProtectedDataAPIView
 
 urlpatterns = [
     path("django-admin/", admin.site.urls),
     path("admin/", include(wagtailadmin_urls)),
     path("documents/", include(wagtaildocs_urls)),
     path("search/", search_views.search, name="search"),
+    path('o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
     path('data/', DataAPIView.as_view(), name='data_api'),
+    path('protected-data/', ProtectedDataAPIView.as_view(), name='protected_data_api'),
 ]
 
 
