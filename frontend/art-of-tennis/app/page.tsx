@@ -1,5 +1,6 @@
 import Image from "next/image";
 import styles from "./page.module.css";
+import { getBackendUrl } from "@/app/lib/backend";
 
 export default async function Home() {
   const data = await getData();
@@ -97,9 +98,8 @@ export default async function Home() {
 
 
 const getData = async () => {
-  const res = await fetch(
-    `http://${process.env.BACKEND_HOST}:${process.env.BACKEND_PORT}/data`
-  );
+  const backendUrl = getBackendUrl();
+  const res = await fetch(`${backendUrl}/data`);
   const data = await res.json();
   return data.data
 } 

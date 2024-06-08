@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+</head>
+<body>
+    <h2>Login!!!!!</h2>
+    <a href="{% url 'social:begin' 'github' %}?next={% url 'after_social_login' %}?frontendPage={{ frontendPage }}">Login with GitHub</a>
+    <br>
+    <br>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Login</button>
+    </form>
+</body>
+</html>
