@@ -45,7 +45,10 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    'social_django',
+    'oauth2_provider',
     'rest_framework',
+    'rest_framework.authtoken',
     'corsheaders',
 ]
 
@@ -76,6 +79,8 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                'social_django.context_processors.backends',
+                'social_django.context_processors.login_redirect',
             ],
         },
     },
@@ -198,4 +203,51 @@ CORS_ALLOWED_ORIGINS = [
 CORS_ALLOW_CREDENTIALS = True
 ##########################
 ########## CORS ##########
+##########################
+
+
+##########################
+##### REST_FRAMEWORK #####
+##########################
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ),
+    # 'DEFAULT_PERMISSION_CLASSES': (
+    #     'rest_framework.permissions.IsAuthenticated',
+    # ),
+}
+##########################
+##### REST_FRAMEWORK #####
+##########################
+
+
+##########################
+#### OAUTH2_PROVIDER #####
+##########################
+OAUTH2_PROVIDER = {
+    "PKCE_REQUIRED": False,
+    'SCOPES': {
+        'read': 'Read access to your data',
+        'write': 'Write access to your data',
+    }
+}
+##########################
+#### OAUTH2_PROVIDER #####
+##########################
+
+
+##########################
+##### SOCIAL_AUTH ########
+##########################
+AUTHENTICATION_BACKENDS = (
+    'social_core.backends.github.GithubOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
+)
+SOCIAL_AUTH_GITHUB_KEY = os.getenv('GITHUB_OAUTH_CLIENT_ID')
+SOCIAL_AUTH_GITHUB_SECRET = os.getenv('GITHUB_OAUTH_CLIENT_SECRET')
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/accounts/login/'
+##########################
+##### SOCIAL_AUTH ########
 ##########################
