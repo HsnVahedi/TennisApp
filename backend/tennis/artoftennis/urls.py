@@ -9,8 +9,11 @@ from wagtail.documents import urls as wagtaildocs_urls
 from search import views as search_views
 
 from .views import DataAPIView, ProtectedDataAPIView, UserInfo, LoginView, after_social_login
+from home.views import MyNewActionView
+
 
 urlpatterns = [
+    path('admin/pages/<int:page_id>/my_new_action/', MyNewActionView.as_view(), name='my_new_action'),
     path("django-admin/", admin.site.urls),
     path("admin/", include(wagtailadmin_urls)),
     path("documents/", include(wagtaildocs_urls)),

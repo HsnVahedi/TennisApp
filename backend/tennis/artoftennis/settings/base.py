@@ -25,6 +25,8 @@ BASE_DIR = os.path.dirname(PROJECT_DIR)
 
 INSTALLED_APPS = [
     "home",
+    "ml",
+    "videos",
     "search",
     "wagtail.contrib.forms",
     "wagtail.contrib.redirects",
@@ -50,6 +52,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'corsheaders',
+    'wagtailmedia',
 ]
 
 MIDDLEWARE = [
@@ -250,4 +253,72 @@ SOCIAL_AUTH_GITHUB_SECRET = os.getenv('GITHUB_OAUTH_CLIENT_SECRET')
 SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/accounts/login/'
 ##########################
 ##### SOCIAL_AUTH ########
+##########################
+
+
+##########################
+######## Azure ML ########
+##########################
+RESOURCE_GROUP = os.getenv('RESOURCE_GROUP')
+WORKSPACE_NAME = os.getenv('WORKSPACE_NAME')
+SUBSCRIPTION_ID = os.getenv('SUBSCRIPTION_ID')
+TENANT_ID = os.getenv('TENANT_ID')
+CLIENT_ID = os.getenv('CLIENT_ID')
+CLIENT_SECRET = os.getenv('CLIENT_SECRET')
+##########################
+######## Azure ML ########
+##########################
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+##########################
+##### Wagtail Media ######
+##########################
+
+# WAGTAILMEDIA = {
+#     "MEDIA_MODEL": "wagtailmedia.Media",
+#     "AUDIO_EXTENSIONS": [
+#         "aac",
+#         "aiff",
+#         "flac",
+#         "m4a",
+#         "m4b",
+#         "mp3",
+#         "ogg",
+#         "wav",
+#     ],
+#     "VIDEO_EXTENSIONS": [
+#         "avi",
+#         "h264",
+#         "m4v",
+#         "mkv",
+#         "mov",
+#         "mp4",
+#         "mpeg",
+#         "mpg",
+#         "ogv",
+#         "webm",
+#     ],
+# }
+
+##########################
+##### Wagtail Media ######
+##########################
+
+
+##########################
+######### Celery #########
+##########################
+
+CELERY_BROKER_URL = 'redis://redis:6379/0'
+CELERY_RESULT_BACKEND = 'redis://redis:6379/0'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'UTC'
+
+
+##########################
+######### Celery #########
 ##########################
