@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     "home",
     "ml",
     "videos",
+    "images",
     "search",
     "wagtail.contrib.forms",
     "wagtail.contrib.redirects",

@@ -28,3 +28,6 @@ def invoke(input_path: str, endpoint_name: str, deployment_name: str) -> str:
     print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
     print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
     return job_id
+
+
+

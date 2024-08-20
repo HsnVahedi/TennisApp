@@ -46,7 +46,7 @@ services:
     ports:
       - "6379:6379"
     volumes:
-      - art_of_redis_data:/data
+      - art_of_tennis_redis_data:/data
   db:
     image: postgres:alpine3.19
     environment:
@@ -59,4 +59,4 @@ services:
       - art_of_tennis_postgres:/var/lib/postgresql/data 
 volumes:
   art_of_tennis_postgres:
-  art_of_redis_data:
+  art_of_tennis_redis_data:

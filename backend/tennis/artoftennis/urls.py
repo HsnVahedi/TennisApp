@@ -9,11 +9,12 @@ from wagtail.documents import urls as wagtaildocs_urls
 from search import views as search_views
 
 from .views import DataAPIView, ProtectedDataAPIView, UserInfo, LoginView, after_social_login
-from home.views import MyNewActionView
+from home.views import ExportTrimView, TrimVideoView
 
 
 urlpatterns = [
-    path('admin/pages/<int:page_id>/my_new_action/', MyNewActionView.as_view(), name='my_new_action'),
+    path('admin/pages/<int:page_id>/extract_trim/', ExportTrimView.as_view(), name='trim_export'),
+    path('admin/pages/<int:page_id>/trim_video/', TrimVideoView.as_view(), name='trim_video'),
     path("django-admin/", admin.site.urls),
     path("admin/", include(wagtailadmin_urls)),
     path("documents/", include(wagtaildocs_urls)),
