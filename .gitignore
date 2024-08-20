@@ -1,3 +1,10 @@
 docker-compose.override.yml
 **/node_modules/
+**/.env.local
 __pycache__/
+backend/tennis/media
+backend/tennis/random
+backend/tennis/video.mp4
+backend-tmp
+*.mp4
+**/sample-input

@@ -1,5 +1,5 @@
 services:
-  backend:
+  backend: 
     build:
       context: ../tennis
       dockerfile: Dockerfile
@@ -14,12 +14,39 @@ services:
       - DATABASE_PASSWORD=db_password
       - DATABASE_NAME=tennis
       - DATABASE_PORT=5432
-      - GITHUB_OAUTH_CLIENT_ID=Ov23li1tNNP8ZZ3WuN5s
-      - GITHUB_OAUTH_CLIENT_SECRET=88ba68738ec23a1ba465d147976f9d7ab63950b9
       - PYTHONUNBUFFERED=1
+      - IS_PROD=False 
+    env_file:
+      - .env.local
     volumes:
       - ../:/app
-    command: /bin/sh -c "python manage.py migrate && tail -f /dev/null"
+  celery:
+    build:
+      context: ../tennis
+      dockerfile: Dockerfile
+      target: dev
+    command: /home/django/.local/bin/celery -A artoftennis worker -l info
+    volumes:
+      - ../:/app
+    depends_on:
+      - backend
+      - redis
+    environment:
+      - DATABASE_HOST=db
+      - DATABASE_USER=db_user
+      - DATABASE_PASSWORD=db_password
+      - DATABASE_NAME=tennis
+      - DATABASE_PORT=5432
+      - PYTHONUNBUFFERED=1
+      - IS_PROD=False 
+    env_file:
+      - .env.local
+  redis:
+    image: "redis:alpine"
+    ports:
+      - "6379:6379"
+    volumes:
+      - art_of_tennis_redis_data:/data
   db:
     image: postgres:alpine3.19
     environment:
@@ -29,6 +56,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - art_of_tennis_postgres:/var/lib/postgresql/data
+      - art_of_tennis_postgres:/var/lib/postgresql/data 
 volumes:
   art_of_tennis_postgres:
+  art_of_tennis_redis_data:
