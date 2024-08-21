@@ -7,30 +7,53 @@ on:
 
 jobs:
   get-acr-name:
-    uses: ./tf-gha-install-terraform.yml@main  # Correctly reference the local reusable workflow
-    with:
-      TFAction: "output"
-      dply_environment: ${{ needs.set-env-branch.outputs.config-file }}
-      location: ${{ needs.get-config.outputs.location }}
-      namespace: ${{ needs.get-config.outputs.namespace }}
-      postfix: ${{ needs.get-config.outputs.postfix }}
-      environment: ${{ needs.get-config.outputs.environment }}
-      terraform_version: ${{ needs.get-config.outputs.terraform_version }}
-      terraform_workingdir: ${{ needs.get-config.outputs.terraform_workingdir }}
-      terraform_st_location: ${{ needs.get-config.outputs.terraform_st_location }}
-      terraform_st_storage_account: ${{ needs.get-config.outputs.terraform_st_storage_account }}
-      terraform_st_resource_group: ${{ needs.get-config.outputs.terraform_st_resource_group }}
-      terraform_st_container_name: ${{ needs.get-config.outputs.terraform_st_container_name }}
-      terraform_st_key: ${{ needs.get-config.outputs.terraform_st_key }}
-      terraform_plan_location: ${{ needs.get-config.outputs.location }}
-      terraform_plan_vnet: "TBD" # TBD
+    runs-on: ubuntu-latest
 
-    outputs:
-      acr_name: ${{ steps.call-terraform.outputs.acr_name }}  # This will pass the ACR name output to the next job
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Azure CLI
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v2
+
+      - name: Terraform Init
+        working-directory: infrastructure
+        run: |
+          terraform -chdir=${{ inputs.terraform_workingdir }} init \
+            -backend-config="storage_account_name=${{ secrets.TF_STORAGE_ACCOUNT }}" \
+            -backend-config="container_name=${{ secrets.TF_CONTAINER_NAME }}" \
+            -backend-config="key=${{ secrets.TF_STATE_KEY }}" \
+            -backend-config="resource_group_name=${{ secrets.TF_RESOURCE_GROUP }}"
+        env:
+          ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+
+      - name: Terraform Output
+        working-directory: infrastructure
+        run: terraform output -json > output.json
+        env:
+          ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+
+      - name: Extract ACR Name
+        working-directory: infrastructure
+        run: |
+          ACR_NAME=$(jq -r .name.value output.json)
+          echo "ACR_NAME=${ACR_NAME}" >> $GITHUB_ENV
 
   build-and-push:
     runs-on: ubuntu-latest
     needs: get-acr-name
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -42,12 +65,12 @@ jobs:
 
       - name: Log in to Azure Container Registry
         run: |
-          az acr login --name ${{ needs.get-acr-name.outputs.acr_name }}
+          az acr login --name ${{ env.ACR_NAME }}
 
       - name: Build and push Docker images
         run: |
           BRANCH_NAME=$(echo $GITHUB_REF_NAME | sed 's/\//-/g')
           for service in service1 service2 service3; do
-            docker build -t ${{ needs.get-acr-name.outputs.acr_name }}.azurecr.io/$service:${BRANCH_NAME} -f $service/Dockerfile .
-            docker push ${{ needs.get-acr-name.outputs.acr_name }}.azurecr.io/$service:${BRANCH_NAME}
+            docker build -t ${{ env.ACR_NAME }}.azurecr.io/$service:${BRANCH_NAME} -f $service/Dockerfile .
+            docker push ${{ env.ACR_NAME }}.azurecr.io/$service:${BRANCH_NAME}
           done
