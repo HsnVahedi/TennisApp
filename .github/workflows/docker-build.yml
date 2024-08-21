@@ -17,8 +17,7 @@ jobs:
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-        env: 
-          AZURE_CREDENTIALS: ${{ secrets.azure_creds }}
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
 
@@ -29,6 +28,11 @@ jobs:
                           -backend-config='container_name=${{ secrets.TF_CONTAINER_NAME }}' \
                           -backend-config='key=${{ secrets.TF_STATE_KEY }}' \
                           -backend-config='resource_group_name=${{ secrets.TF_RESOURCE_GROUP }}'
+        env:
+          ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
 
       - name: Get ACR name from Terraform output
         id: get-acr-name
