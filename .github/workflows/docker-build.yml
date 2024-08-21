@@ -43,7 +43,7 @@ jobs:
           ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
 
       - name: Debug: Display Output File Content
-        run: cat output.json  # This will display the contents of output.json for debugging
+        run: cat output.json
 
       - name: Extract ACR Name
         run: |
