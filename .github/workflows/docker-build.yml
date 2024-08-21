@@ -15,7 +15,7 @@ jobs:
 
       - name: Call Terraform Workflow to Get ACR Name
         id: call-terraform
-        uses: ./.github/workflows/tf-gha-install-terraform.yml@main  # Correctly reference the reusable workflow
+        uses: ArtOfTennis/ArtOfTennis/.github/workflows/tf-gha-install-terraform.yml@main  # Reference the reusable workflow by repository and path
         with:
           TFAction: "output"
           dply_environment: ${{ needs.set-env-branch.outputs.config-file }}
