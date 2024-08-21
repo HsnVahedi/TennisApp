@@ -7,7 +7,7 @@ on:
 
 jobs:
   get-acr-name:
-    uses: ./github/workflows/tf-gha-install-terraform.yml@main  # Add the branch name for versioning
+    uses: ./github/workflows/tf-gha-install-terraform.yml@main  # Correctly reference the local reusable workflow
     with:
       TFAction: "output"
       dply_environment: ${{ needs.set-env-branch.outputs.config-file }}
