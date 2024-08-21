@@ -8,8 +8,6 @@ on:
 jobs:
   get-acr-name:
     runs-on: ubuntu-latest
-    needs: [set-env-branch, get-config]
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -33,12 +31,6 @@ jobs:
           terraform_st_key: ${{ needs.get-config.outputs.terraform_st_key }}
           terraform_plan_location: ${{ needs.get-config.outputs.location }}
           terraform_plan_vnet: "TBD" # TBD
-        secrets:
-          azure_creds: ${{ secrets.AZURE_CREDENTIALS }}
-          clientId: ${{ secrets.ARM_CLIENT_ID }}
-          clientSecret: ${{ secrets.ARM_CLIENT_SECRET }}
-          subscriptionId: ${{ secrets.ARM_SUBSCRIPTION_ID }}
-          tenantId: ${{ secrets.ARM_TENANT_ID }}
 
       - name: Set ACR Name
         run: echo "ACR_NAME=$(echo ${{ steps.call-terraform.outputs.acr_name }})" >> $GITHUB_ENV
@@ -46,7 +38,6 @@ jobs:
   build-and-push:
     runs-on: ubuntu-latest
     needs: get-acr-name
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
