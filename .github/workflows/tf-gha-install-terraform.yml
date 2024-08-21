@@ -185,11 +185,20 @@ jobs:
         ARM_CLIENT_SECRET: ${{ secrets.clientSecret }}
         ARM_SUBSCRIPTION_ID: ${{ secrets.subscriptionId }}
         ARM_TENANT_ID: ${{ secrets.tenantId }}     
+
     - name: Terraform Output
       if: ${{ inputs.TFAction == 'output'}}
-      run: terraform -chdir=${{ inputs.terraform_workingdir }} output -json
+      run: terraform -chdir=${{ inputs.terraform_workingdir }} output -json > output.json
       env:
         ARM_CLIENT_ID: ${{ secrets.clientId }}
         ARM_CLIENT_SECRET: ${{ secrets.clientSecret }}
         ARM_SUBSCRIPTION_ID: ${{ secrets.subscriptionId }}
         ARM_TENANT_ID: ${{ secrets.tenantId }}
+      continue-on-error: false
+
+    - name: Extract ACR Name
+      if: ${{ inputs.TFAction == 'output'}}
+      run: |
+        ACR_NAME=$(jq -r .name.value output.json)
+        echo "acr_name=${ACR_NAME}" >> $GITHUB_OUTPUT
+
