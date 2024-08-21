@@ -12,15 +12,6 @@ module "resource_group" {
   tags = local.tags
 }
 
-module "acr" {
-  source      = "./modules/acr"
-  acr_name    = var.acr_name
-  location    = var.location
-  resource_group_name = module.resource_group.name
-  acr_sku     = var.acr_sku
-  tags        = local.tags
-}
-
 
 module "container_registry" {
   source = "./modules/container-registry"
