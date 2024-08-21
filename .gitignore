@@ -8,3 +8,4 @@ backend/tennis/video.mp4
 backend-tmp
 *.mp4
 **/sample-input
+**/.terraform
