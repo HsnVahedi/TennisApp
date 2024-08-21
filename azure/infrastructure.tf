@@ -37,14 +37,17 @@ resource "azurerm_storage_blob" "terraform" {
   type                   = "Block"
 }
 
+
+
 terraform {
   backend "azurerm" {
-    resource_group_name  = azurerm_resource_group.main.name
-    storage_account_name = azurerm_storage_account.main.name
-    container_name       = azurerm_storage_container.main.name
+    resource_group_name  = "art-of-tennis-rg"  # Hard-coded value
+    storage_account_name = "artoftenisstorage"  # Hard-coded value
+    container_name       = "tfstate"  # Hard-coded value
     key                  = "terraform.tfstate"
   }
 }
+
 
 
 resource "azurerm_container_apps_environment" "main" {
