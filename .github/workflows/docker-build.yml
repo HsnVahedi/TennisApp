@@ -7,7 +7,7 @@ on:
 
 jobs:
   get-acr-name:
-    uses: ArtOfTennis/.github/workflows/tf-gha-install-terraform.yml@main  # Call the reusable workflow directly
+    uses: ./github/workflows/tf-gha-install-terraform.yml  # Correctly reference the local reusable workflow
     with:
       TFAction: "output"
       dply_environment: ${{ needs.set-env-branch.outputs.config-file }}
