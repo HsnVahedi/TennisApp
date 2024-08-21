@@ -18,7 +18,7 @@ resource "azurerm_container_registry" "main" {
 
 resource "azurerm_storage_account" "main" {
   name                     = "artoftenisstorage"
-  resource_group_name      = azurerm_resource_group.main.name
+  resource_group_name      = "artoftennis-webapp-tf-rg"
   location                 = azurerm_resource_group.main.location
   account_tier             = "Standard"
   account_replication_type = "LRS"
