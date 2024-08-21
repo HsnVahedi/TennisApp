@@ -41,7 +41,7 @@ resource "azurerm_storage_blob" "terraform" {
 
 terraform {
   backend "azurerm" {
-    resource_group_name  = "art-of-tennis-web-rg"  # Hard-coded value
+    resource_group_name  = "artoftennis-webapp-tf-rg"  # Hard-coded value
     storage_account_name = "artoftenisstorage"  # Hard-coded value
     container_name       = "tfstate"  # Hard-coded value
     key                  = "terraform.tfstate"
