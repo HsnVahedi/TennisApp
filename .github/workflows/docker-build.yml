@@ -5,33 +5,7 @@ on:
     branches:
       - master
 
-env:
-  config_env: "none"
-
 jobs:
-  set-env-branch:
-    runs-on: ubuntu-latest
-    outputs:
-      config-file: ${{ steps.set-output-defaults.outputs.config-file }}
-    steps:
-      - id: set-prod-branch
-        name: Set Prod Branch
-        if: ${{ github.ref == 'refs/heads/main' }}
-        run: echo "config_env=config-infra-prod.yml" >> $GITHUB_ENV
-      - id: set-dev-branch
-        name: Set Dev Branch
-        if: ${{ github.ref != 'refs/heads/main' }}
-        run: echo "config_env=config-infra-dev.yml" >> $GITHUB_ENV
-      - id: set-output-defaults
-        name: Set Output Defaults
-        run: echo "config-file=$config_env" >> $GITHUB_OUTPUT
-
-  get-config:
-    needs: set-env-branch
-    uses: Azure/mlops-templates/.github/workflows/read-yaml.yml@main
-    with:
-      file_name: ${{ needs.set-env-branch.outputs.config-file }}
-
   get-acr-name:
     needs: get-config
     runs-on: ubuntu-latest
@@ -67,6 +41,9 @@ jobs:
           ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
           ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
           ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+
+      - name: Debug: Display Output File Content
+        run: cat output.json  # This will display the contents of output.json for debugging
 
       - name: Extract ACR Name
         run: |
