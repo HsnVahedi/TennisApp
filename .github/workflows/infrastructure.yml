@@ -23,15 +23,19 @@ jobs:
 
     - name: Terraform Init
       run: terraform init
+      working-directory: azure
 
     - name: Terraform Plan
       run: terraform plan
+      working-directory: azure
 
     - name: Terraform Apply
       run: terraform apply -auto-approve
+      working-directory: azure
 
     - name: Output ACR Information
       run: |
         echo "ACR Login Server: $(terraform output -raw acr_login_server)"
         echo "ACR Admin Username: $(terraform output -raw acr_admin_username)"
         echo "ACR Admin Password: $(terraform output -raw acr_admin_password)"
+      working-directory: azure
