@@ -55,9 +55,15 @@ resource "azurerm_container_app" "backend" {
   template {
     container {
       name   = "backend"
-      image  = "${module.container_registry.name}.azurecr.io/backend:${var.branch_name}"
+      image  = "${module.container_registry.name}.azurecr.io/backend-${var.branch_name}"
       cpu    = 0.25
       memory = "0.5Gi"
+
+      registry {
+        server   = "${module.container_registry.name}.azurecr.io"
+        username = module.container_registry.admin_username
+        password = module.container_registry.admin_password
+      }
     }
   }
 }
