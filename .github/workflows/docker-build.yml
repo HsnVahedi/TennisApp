@@ -32,10 +32,11 @@ jobs:
     with:
       file_name: ${{ needs.set-env-branch.outputs.config-file}}
   build-and-push:
+    needs: get-config
     runs-on: ubuntu-latest
     env:
       # ACR_NAME: ${{ secrets.ACR_NAME }}
-      ACR_NAME: ${{ needs.get-config.outputs.location }}
+      ACR_NAME: ${{ needs.get-config.outputs.acr_name }}
       AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
 
     steps:
