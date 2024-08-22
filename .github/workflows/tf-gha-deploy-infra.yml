@@ -23,19 +23,24 @@ jobs:
         name: set-output-defaults
         run: |
           echo "config-file=$config_env" >> $GITHUB_OUTPUT;
+
   set-branch-name:
     runs-on: ubuntu-latest
     outputs:
-      config-file: ${{ steps.set-output-defaults.outputs.config-file }}
+      branch-name: ${{ steps.extract_branch.outputs.BRANCH_NAME }}
     steps:
       - name: Extract branch name
         id: extract_branch
-        run: echo "BRANCH_NAME=${GITHUB_HEAD_REF##*/}" >> $GITHUB_ENV
+        run: |
+          echo "BRANCH_NAME=${GITHUB_REF##*/}" >> $GITHUB_ENV
+          echo "BRANCH_NAME=${GITHUB_REF##*/}" >> $GITHUB_OUTPUT
+
   get-config:
     needs: set-env-branch
     uses: Azure/mlops-templates/.github/workflows/read-yaml.yml@main
     with:
       file_name: ${{ needs.set-env-branch.outputs.config-file}}
+
   test-terraform-state-deployment:
     needs: [get-config, set-env-branch, set-branch-name]
     uses: ./.github/workflows/tf-gha-install-terraform.yml
@@ -54,13 +59,14 @@ jobs:
       terraform_st_container_name: ${{ needs.get-config.outputs.terraform_st_container_name }}
       terraform_st_key: ${{ needs.get-config.outputs.terraform_st_key }}
       terraform_plan_location: ${{ needs.get-config.outputs.location }}
-      branch_name: ${{ needs.set-branch-name.outputs.BRANCH_NAME }}
+      branch_name: ${{ needs.set-branch-name.outputs.branch-name }}
     secrets:
       azure_creds: ${{ secrets.AZURE_CREDENTIALS }}
       clientId: ${{ secrets.ARM_CLIENT_ID }}
       clientSecret: ${{ secrets.ARM_CLIENT_SECRET }}
       subscriptionId: ${{ secrets.ARM_SUBSCRIPTION_ID }}
       tenantId: ${{ secrets.ARM_TENANT_ID }}
+
   deploy-azure-resources:
     runs-on: ubuntu-latest
     steps:
