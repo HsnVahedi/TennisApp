@@ -69,7 +69,6 @@ resource "azurerm_container_app" "backend" {
   registry {
     server   = "${module.container_registry.name}.azurecr.io"
     username = module.container_registry.admin_username
-    # password_secret_name = module.container_registry.admin_password
     password_secret_name = "container-registry-password" 
   }
 }
