@@ -27,6 +27,96 @@ module "container_registry" {
 }
 
 
+# Backend Service
+module "backend_app" {
+  source  = "Azure/container-apps/azurerm"
+  version = "1.0.0"
+
+  name                = "backend${local.safe_prefix}${local.safe_postfix}${var.env}"
+  resource_group_name = module.resource_group.name
+  location            = var.location
+  environment_name    = "${var.prefix}-env-${var.environment}"
+  container_registry = {
+    server   = module.container_registry.login_server
+    username = module.container_registry.admin_username
+    password = module.container_registry.admin_password
+  }
+
+  containers = [
+    {
+      name  = "backend"
+      image = "${module.container_registry.login_server}/backend:${var.environment}"
+      cpu   = 0.5
+      memory = "1.0Gi"
+      ports = [{
+        port     = 8000
+        protocol = "TCP"
+      }]
+    }
+  ]
+
+  tags = local.tags
+}
+
+# Frontend Service
+module "frontend_app" {
+  source  = "Azure/container-apps/azurerm"
+  version = "1.0.0"
+
+  name                = "frontend${local.safe_prefix}${local.safe_postfix}${var.env}"
+  resource_group_name = module.resource_group.name
+  location            = var.location
+  environment_name    = "${var.prefix}-env-${var.environment}"
+  container_registry = {
+    server   = module.container_registry.login_server
+    username = module.container_registry.admin_username
+    password = module.container_registry.admin_password
+  }
+
+  containers = [
+    {
+      name  = "frontend"
+      image = "${module.container_registry.login_server}/frontend:${var.environment}"
+      cpu   = 0.5
+      memory = "1.0Gi"
+      ports = [{
+        port     = 3000
+        protocol = "TCP"
+      }]
+    }
+  ]
+
+  tags = local.tags
+}
+
+# Celery Service
+module "celery_app" {
+  source  = "Azure/container-apps/azurerm"
+  version = "1.0.0"
+
+  name                = "celery${local.safe_prefix}${local.safe_postfix}${var.env}"
+  resource_group_name = module.resource_group.name
+  location            = var.location
+  environment_name    = "${var.prefix}-env-${var.environment}"
+  container_registry = {
+    server   = module.container_registry.login_server
+    username = module.container_registry.admin_username
+    password = module.container_registry.admin_password
+  }
+
+  containers = [
+    {
+      name  = "celery"
+      image = "${module.container_registry.login_server}/celery:${var.environment}"
+      cpu   = 0.5
+      memory = "1.0Gi"
+    }
+  ]
+
+  tags = local.tags
+}
+
+
 # # Azure Machine Learning workspace
 
 # module "aml_workspace" {
