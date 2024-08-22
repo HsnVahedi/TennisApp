@@ -79,6 +79,7 @@ resource "azurerm_postgresql_database" "db" {
   collation           = "English_United States.1252"
 }
 
+
 resource "azurerm_container_app" "backend" {
   name                         = "backend-${local.safe_prefix}${local.safe_postfix}${var.environment}"
   container_app_environment_id = azurerm_container_app_environment.aca-environment.id
