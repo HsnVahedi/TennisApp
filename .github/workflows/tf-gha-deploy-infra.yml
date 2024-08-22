@@ -49,7 +49,6 @@ jobs:
       terraform_st_container_name: ${{ needs.get-config.outputs.terraform_st_container_name }}
       terraform_st_key: ${{ needs.get-config.outputs.terraform_st_key }}
       terraform_plan_location: ${{ needs.get-config.outputs.location }}
-      terraform_plan_vnet: "TBD" # TBD
       branch_name: ${{ needs.extract_branch.outputs.BRANCH_NAME }}
     secrets:
       azure_creds: ${{ secrets.AZURE_CREDENTIALS }}

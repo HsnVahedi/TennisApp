@@ -59,10 +59,6 @@ on:
         type: string
         description: 'location of Terraform plan'
         required: true
-      terraform_plan_vnet:
-        type: string
-        description: 'vnet of Terraform plan'
-        required: true
       branch_name:
         type: string
         description: 'branch name'
@@ -166,7 +162,7 @@ jobs:
         ARM_SUBSCRIPTION_ID: ${{ secrets.subscriptionId }}
         ARM_TENANT_ID: ${{ secrets.tenantId }}     
     - name: Terraform Plan
-      run: terraform -chdir=${{ inputs.terraform_workingdir }} plan -out=plan.tfplan -input=false -var "location=${{ inputs.terraform_plan_location }}" -var "prefix=${{ inputs.namespace }}" -var "postfix=${{ inputs.postfix }}" -var "environment=${{ inputs.environment }}" 
+      run: terraform -chdir=${{ inputs.terraform_workingdir }} plan -out=plan.tfplan -input=false -var "location=${{ inputs.terraform_plan_location }}" -var "branch_name=${{ inputs.branch_name }}" -var "prefix=${{ inputs.namespace }}" -var "postfix=${{ inputs.postfix }}" -var "environment=${{ inputs.environment }}" 
         -var "client_secret=${{ env.ARM_CLIENT_SECRET }}"
       env:
         ARM_CLIENT_ID: ${{ secrets.clientId }}
@@ -189,20 +185,3 @@ jobs:
         ARM_CLIENT_SECRET: ${{ secrets.clientSecret }}
         ARM_SUBSCRIPTION_ID: ${{ secrets.subscriptionId }}
         ARM_TENANT_ID: ${{ secrets.tenantId }}     
-
-    - name: Terraform Output
-      if: ${{ inputs.TFAction == 'output'}}
-      run: terraform -chdir=${{ inputs.terraform_workingdir }} output -json > output.json
-      env:
-        ARM_CLIENT_ID: ${{ secrets.clientId }}
-        ARM_CLIENT_SECRET: ${{ secrets.clientSecret }}
-        ARM_SUBSCRIPTION_ID: ${{ secrets.subscriptionId }}
-        ARM_TENANT_ID: ${{ secrets.tenantId }}
-      continue-on-error: false
-
-    - name: Extract ACR Name
-      if: ${{ inputs.TFAction == 'output'}}
-      run: |
-        ACR_NAME=$(jq -r .name.value output.json)
-        echo "acr_name=${ACR_NAME}" >> $GITHUB_OUTPUT
-
