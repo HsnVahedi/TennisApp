@@ -23,6 +23,12 @@ variable "branch_name" {
   description = "Git branch name"
 }
 
+variable "db_admin_username" {
+  description = "The administrator login name for the PostgreSQL server."
+  type        = string
+  default     = "artoftennis"
+}
+
 # variable "enable_aml_computecluster" {
 #   description = "Variable to enable or disable AML compute cluster"
 # }

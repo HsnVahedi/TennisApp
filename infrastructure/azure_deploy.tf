@@ -80,16 +80,12 @@ resource "random_password" "db_admin_password" {
   special = true
 }
 
-resource "random_id" "db_admin_username" {
-  byte_length = 8
-}
-
 resource "azurerm_postgresql_server" "db" {
   name                = "psql-server-${local.safe_prefix}${local.safe_postfix}${var.environment}"
   location            = module.resource_group.location
   resource_group_name = module.resource_group.name
 
-  administrator_login          = random_id.db_admin_username.hex
+  administrator_login          = var.db_admin_username
   administrator_login_password = random_password.db_admin_password.result
 
   version                      = "11"
