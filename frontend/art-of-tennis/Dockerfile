@@ -26,6 +26,9 @@ ENV NODE_ENV=development
 CMD ["tail", "-f", "/dev/null"]
 
 
-
-
-
+FROM base as prod 
+USER node
+# WORKDIR /app/art-of-tennis
+ENV NODE_ENV=development
+# Do nothing, just wait for frontend developers to run `npm run dev`
+CMD ["tail", "-f", "/dev/null"]
