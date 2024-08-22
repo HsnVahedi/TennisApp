@@ -39,6 +39,31 @@ resource "azurerm_log_analytics_workspace" "backend-log-analytics" {
 }
 
 
+resource "azurerm_container_app_environment" "aca-environment" {
+  name                       = "aca-environment-${local.safe_prefix}${local.safe_postfix}${var.environment}"
+  location                   = module.resource_group.location
+  resource_group_name        = module.resource_group.name
+  log_analytics_workspace_id = azurerm_log_analytics_workspace.backend-log-analytics.id
+}
+
+resource "azurerm_container_app" "backend" {
+  name                         = "backend-${local.safe_prefix}${local.safe_postfix}${var.environment}"
+  container_app_environment_id = azurerm_container_app_environment.aca-environment.id
+  resource_group_name          = module.resource_group.name
+  revision_mode                = "Single"
+
+  template {
+    container {
+      name   = "backend"
+      image  = "${module.container_registry.name}.azurecr.io/backend:${var.branch_name}"
+      cpu    = 0.25
+      memory = "0.5Gi"
+    }
+  }
+}
+
+
+
 # # Azure Machine Learning workspace
 
 # module "aml_workspace" {

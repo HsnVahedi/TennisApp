@@ -23,6 +23,9 @@ jobs:
         name: set-output-defaults
         run: |
           echo "config-file=$config_env" >> $GITHUB_OUTPUT;
+      - name: Extract branch name
+        id: extract_branch
+        run: echo "BRANCH_NAME=${GITHUB_HEAD_REF##*/}" >> $GITHUB_ENV
   get-config:
     needs: set-env-branch
     uses: Azure/mlops-templates/.github/workflows/read-yaml.yml@main
@@ -47,6 +50,7 @@ jobs:
       terraform_st_key: ${{ needs.get-config.outputs.terraform_st_key }}
       terraform_plan_location: ${{ needs.get-config.outputs.location }}
       terraform_plan_vnet: "TBD" # TBD
+      branch_name: ${{ needs.extract_branch.outputs.BRANCH_NAME }}
     secrets:
       azure_creds: ${{ secrets.AZURE_CREDENTIALS }}
       clientId: ${{ secrets.ARM_CLIENT_ID }}
