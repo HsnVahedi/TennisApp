@@ -63,6 +63,10 @@ on:
         type: string
         description: 'vnet of Terraform plan'
         required: true
+      branch_name:
+        type: string
+        description: 'branch name'
+        required: true
     secrets:
       azure_creds:
         required: true
