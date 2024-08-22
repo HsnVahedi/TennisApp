@@ -100,9 +100,11 @@ resource "azurerm_postgresql_server" "db" {
   auto_grow_enabled            = true
 
   public_network_access_enabled = false
+  ssl_enforcement_enabled       = true  # Add this line
 
   tags = local.tags
 }
+
 
 resource "azurerm_postgresql_database" "db" {
   name                = "backend_db"
