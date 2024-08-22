@@ -46,9 +46,11 @@ resource "azurerm_container_app_environment" "aca-environment" {
   resource_group_name        = module.resource_group.name
   log_analytics_workspace_id = azurerm_log_analytics_workspace.backend-log-analytics.id
 
-  vnet_id                    = azurerm_virtual_network.vnet.id
-  subnet_id                  = azurerm_subnet.subnet.id
+  virtual_network {
+    subnet_id = azurerm_subnet.subnet.id
+  }
 }
+
 
 
 resource "random_password" "db_admin_password" {
