@@ -6,11 +6,11 @@ variables:
   # Global
   ap_vm_image: ubuntu-20.04
 
-  namespace: aot7 #Note: A namespace with many characters will cause storage account creation to fail due to storage account names having a limit of 24 characters.
+  namespace: aot8 #Note: A namespace with many characters will cause storage account creation to fail due to storage account names having a limit of 24 characters.
   postfix: 0002
   location: eastus
   environment: dev
-  acr_name: craot70002dev
+  acr_name: craot80002dev
 
 
 
