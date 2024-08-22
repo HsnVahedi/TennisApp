@@ -96,41 +96,16 @@ resource "azurerm_container_app" "backend" {
       image  = "${module.container_registry.name}.azurecr.io/backend-${var.branch_name}"
       cpu    = 0.25
       memory = "0.5Gi"
-    }
 
-    env {
-      name  = "DATABASE_HOST"
-      value = azurerm_postgresql_server.db.fqdn
-    }
-
-    env {
-      name  = "DATABASE_USER"
-      value = var.db_admin_username
-    }
-
-    env {
-      name  = "DATABASE_PASSWORD"
-      value = random_password.db_admin_password.result
-    }
-
-    env {
-      name  = "DATABASE_NAME"
-      value = azurerm_postgresql_database.db.name
-    }
-
-    env {
-      name  = "DATABASE_PORT"
-      value = "5432"
-    }
-
-    env {
-      name  = "PYTHONUNBUFFERED"
-      value = "1"
-    }
-
-    env {
-      name  = "IS_PROD"
-      value = "True"
+      environment_vars = {
+        DATABASE_HOST     = azurerm_postgresql_server.db.fqdn
+        DATABASE_USER     = var.db_admin_username
+        DATABASE_PASSWORD = random_password.db_admin_password.result
+        DATABASE_NAME     = azurerm_postgresql_database.db.name
+        DATABASE_PORT     = "5432"
+        PYTHONUNBUFFERED  = "1"
+        IS_PROD           = "True"
+      }
     }
   }
 
@@ -147,6 +122,7 @@ resource "azurerm_container_app" "backend" {
 
   tags = local.tags
 }
+
 
 
 
