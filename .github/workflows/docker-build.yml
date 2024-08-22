@@ -37,6 +37,7 @@ jobs:
         run: |
           az acr build --registry ${{ env.ACR_NAME }} --image frontend:${{ env.BRANCH_NAME }} ./frontend
 
+
       - name: Build and push celery image
         run: |
           az acr build --registry ${{ env.ACR_NAME }} --image celery:${{ env.BRANCH_NAME }} ./celery
