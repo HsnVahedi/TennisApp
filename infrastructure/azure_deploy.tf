@@ -3,6 +3,7 @@ locals {
   safe_postfix = replace(var.postfix, "-", "")
 }
 
+
 module "resource_group" {
   source = "./modules/resource-group"
 
@@ -73,6 +74,43 @@ resource "azurerm_container_app" "backend" {
   }
 }
 
+
+resource "random_password" "db_admin_password" {
+  length  = 16
+  special = true
+}
+
+resource "random_id" "db_admin_username" {
+  byte_length = 8
+}
+
+resource "azurerm_postgresql_server" "db" {
+  name                = "psql-server-${local.safe_prefix}${local.safe_postfix}${var.environment}"
+  location            = module.resource_group.location
+  resource_group_name = module.resource_group.name
+
+  administrator_login          = random_id.db_admin_username.hex
+  administrator_login_password = random_password.db_admin_password.result
+
+  version                      = "13"
+  sku_name                     = "GP_Gen5_2"
+  storage_mb                   = 5120
+  backup_retention_days        = 7
+  geo_redundant_backup_enabled = false
+  auto_grow_enabled            = true
+
+  public_network_access_enabled = false
+
+  tags = local.tags
+}
+
+resource "azurerm_postgresql_database" "db" {
+  name                = "backend_db"
+  resource_group_name = module.resource_group.name
+  server_name         = azurerm_postgresql_server.db.name
+  charset             = "UTF8"
+  collation           = "English_United States.1252"
+}
 
 
 

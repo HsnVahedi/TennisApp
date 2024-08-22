@@ -31,31 +31,6 @@ jobs:
         id: extract_branch
         run: echo "BRANCH_NAME=${GITHUB_HEAD_REF##*/}" >> $GITHUB_ENV
 
-      # - name: Build and push backend image
-      #   run: |
-      #     az acr build --registry ${{ env.ACR_NAME }} \
-      #     --image backend-${{ env.BRANCH_NAME }} \
-      #     --file backend/tennis/Dockerfile \
-      #     --target prod backend/tennis/
-
-      # - name: Build and push frontend image
-      #   run: |
-      #     az acr build --registry ${{ env.ACR_NAME }} --image frontend-${{ env.BRANCH_NAME }} frontend/art-of-tennis/
-
-      # - name: Build and push frontend prod image
-      #   run: |
-      #     az acr build --registry ${{ env.ACR_NAME }} \
-      #     --image frontend-${{ env.BRANCH_NAME }} \
-      #     --file frontend/art-of-tennis/Dockerfile \
-      #     --target prod frontend/art-of-tennis/
-
-      # - name: Build and push celery prod image
-      #   run: |
-      #     az acr build --registry ${{ env.ACR_NAME }} \
-      #     --image celery-${{ env.BRANCH_NAME }} \
-      #     --file backend/tennis/Dockerfile \
-      #     --target prod backend/tennis/
-
       - name: Build and push backend image
         run: |
           az acr build --registry ${{ env.ACR_NAME }} \
