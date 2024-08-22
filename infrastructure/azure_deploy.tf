@@ -132,21 +132,22 @@ resource "azurerm_container_app" "backend" {
         value = "True"
       }
     }
+  }
 
-    secret {
-      name  = "container-registry-password"
-      value = module.container_registry.admin_password
-    }
+  secret {
+    name  = "container-registry-password"
+    value = module.container_registry.admin_password
+  }
 
-    registry {
-      server   = "${module.container_registry.name}.azurecr.io"
-      username = module.container_registry.admin_username
-      password_secret_name = "container-registry-password"
-    }
+  registry {
+    server   = "${module.container_registry.name}.azurecr.io"
+    username = module.container_registry.admin_username
+    password_secret_name = "container-registry-password"
   }
 
   tags = local.tags
 }
+
 
 
 
