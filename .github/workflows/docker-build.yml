@@ -31,12 +31,12 @@ jobs:
 
       - name: Build and push backend image
         run: |
-          az acr build --registry ${{ env.ACR_NAME }} --image backend:${{ env.BRANCH_NAME }} ./backend
+          az acr build --registry ${{ env.ACR_NAME }} --image backend:${{ env.BRANCH_NAME }} backend/tennis/Dockerfile
 
       - name: Build and push frontend image
         run: |
-          az acr build --registry ${{ env.ACR_NAME }} --image frontend:${{ env.BRANCH_NAME }} ./frontend
+          az acr build --registry ${{ env.ACR_NAME }} --image frontend:${{ env.BRANCH_NAME }} frontend/art-of-tennis/Dockerfile
 
       - name: Build and push celery image
         run: |
-          az acr build --registry ${{ env.ACR_NAME }} --image celery:${{ env.BRANCH_NAME }} ./celery
+          az acr build --registry ${{ env.ACR_NAME }} --image celery:${{ env.BRANCH_NAME }} backend/tennis/Dockerfile
