@@ -92,7 +92,7 @@ resource "azurerm_postgresql_server" "db" {
   administrator_login          = random_id.db_admin_username.hex
   administrator_login_password = random_password.db_admin_password.result
 
-  version                      = "13"
+  version                      = "11"
   sku_name                     = "GP_Gen5_2"
   storage_mb                   = 5120
   backup_retention_days        = 7
