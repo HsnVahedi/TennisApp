@@ -45,6 +45,9 @@ resource "azurerm_container_app_environment" "aca-environment" {
   location                   = module.resource_group.location
   resource_group_name        = module.resource_group.name
   log_analytics_workspace_id = azurerm_log_analytics_workspace.backend-log-analytics.id
+
+  vnet_id                    = azurerm_virtual_network.vnet.id
+  subnet_id                  = azurerm_subnet.subnet.id
 }
 
 
@@ -99,7 +102,7 @@ resource "azurerm_container_app" "backend" {
 
       env {
         name  = "DATABASE_HOST"
-        value = azurerm_postgresql_server.db.fqdn
+        value = "${azurerm_postgresql_server.db.name}.privatelink.postgres.database.azure.com"
       }
 
       env {
@@ -147,6 +150,59 @@ resource "azurerm_container_app" "backend" {
 
   tags = local.tags
 }
+
+
+resource "azurerm_virtual_network" "vnet" {
+  name                = "vnet-${local.safe_prefix}${local.safe_postfix}${var.environment}"
+  location            = module.resource_group.location
+  resource_group_name = module.resource_group.name
+  address_space       = ["10.0.0.0/16"]
+}
+
+resource "azurerm_subnet" "subnet" {
+  name                 = "subnet-${local.safe_prefix}${local.safe_postfix}${var.environment}"
+  resource_group_name  = module.resource_group.name
+  virtual_network_name = azurerm_virtual_network.vnet.name
+  address_prefixes     = ["10.0.1.0/24"]
+}
+
+
+
+resource "azurerm_private_endpoint" "postgresql_private_endpoint" {
+  name                = "postgresql-pe-${local.safe_prefix}${local.safe_postfix}${var.environment}"
+  location            = module.resource_group.location
+  resource_group_name = module.resource_group.name
+  subnet_id           = azurerm_subnet.subnet.id
+
+  private_service_connection {
+    name                           = "postgresql-sc-${local.safe_prefix}${local.safe_postfix}${var.environment}"
+    is_manual_connection           = false
+    private_connection_resource_id = azurerm_postgresql_server.db.id
+    subresource_names              = ["postgresql"]
+  }
+}
+
+resource "azurerm_private_dns_zone" "postgresql_private_dns_zone" {
+  name                = "privatelink.postgres.database.azure.com"
+  resource_group_name = module.resource_group.name
+}
+
+resource "azurerm_private_dns_zone_virtual_network_link" "postgresql_dns_zone_vnet_link" {
+  name                  = "postgresql-dns-zone-vnet-link-${local.safe_prefix}${local.safe_postfix}${var.environment}"
+  resource_group_name   = module.resource_group.name
+  private_dns_zone_name = azurerm_private_dns_zone.postgresql_private_dns_zone.name
+  virtual_network_id    = azurerm_virtual_network.vnet.id
+}
+
+resource "azurerm_private_dns_a_record" "postgresql_private_dns" {
+  name                = azurerm_postgresql_server.db.name
+  zone_name           = azurerm_private_dns_zone.postgresql_private_dns_zone.name
+  resource_group_name = module.resource_group.name
+  ttl                 = 300
+  records             = [azurerm_private_endpoint.postgresql_private_endpoint.private_dns_configs[0].ip_addresses[0]]
+}
+
+
 
 
 
