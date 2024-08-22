@@ -12,7 +12,7 @@ jobs:
       # ACR_NAME: ${{ secrets.ACR_NAME }}
       # TODO: read ACR_NAME from config-infra or from
       # the output of the terraform apply
-      ACR_NAME: craot00002dev 
+      ACR_NAME: craot10002dev 
       AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
 
     steps:
