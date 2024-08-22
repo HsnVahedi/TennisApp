@@ -104,7 +104,7 @@ resource "azurerm_container_app" "backend" {
 
       env {
         name  = "DATABASE_USER"
-        value = var.db_admin_username
+        value = "${var.db_admin_username}@${azurerm_postgresql_server.db.name}"
       }
 
       env {
@@ -147,6 +147,7 @@ resource "azurerm_container_app" "backend" {
 
   tags = local.tags
 }
+
 
 
 
