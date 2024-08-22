@@ -18,6 +18,11 @@ variable "postfix" {
   description = "Postfix for module names"
 }
 
+variable "branch_name" {
+  type        = string
+  description = "Git branch name"
+}
+
 # variable "enable_aml_computecluster" {
 #   description = "Variable to enable or disable AML compute cluster"
 # }
