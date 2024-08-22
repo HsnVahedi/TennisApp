@@ -10,7 +10,7 @@ variables:
   postfix: 0002
   location: eastus
   environment: dev
-  acr_name: craot10002dev
+  acr_name: craot20002dev
 
 
 
