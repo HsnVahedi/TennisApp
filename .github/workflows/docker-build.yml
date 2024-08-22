@@ -6,37 +6,13 @@ on:
       - dev
 
 jobs:
-  set-env-branch:
-    runs-on: ubuntu-latest
-    outputs:
-      config-file: ${{ steps.set-output-defaults.outputs.config-file }}
-    steps:
-      - id: set-prod-branch
-        name: set-prod-branch
-        if: ${{ github.ref == 'refs/heads/main'}}
-        run: echo "config_env=config-infra-prod.yml" >> $GITHUB_ENV;
-      - id: set-dev-branch
-        name: setdevbranch
-        if: ${{ github.ref != 'refs/heads/main'}}
-        run: echo "config_env=config-infra-dev.yml" >> $GITHUB_ENV;
-      - id: set-output-defaults
-        name: set-output-defaults
-        run: |
-          echo "config-file=$config_env" >> $GITHUB_OUTPUT;
-      - name: Extract branch name
-        id: extract_branch
-        run: echo "BRANCH_NAME=${GITHUB_HEAD_REF##*/}" >> $GITHUB_ENV
-  get-config:
-    needs: set-env-branch
-    uses: Azure/mlops-templates/.github/workflows/read-yaml.yml@main
-    with:
-      file_name: ${{ needs.set-env-branch.outputs.config-file}}
   build-and-push:
-    needs: get-config
     runs-on: ubuntu-latest
     env:
       # ACR_NAME: ${{ secrets.ACR_NAME }}
-      ACR_NAME: ${{ needs.get-config.outputs.acr_name }}
+      # TODO: read ACR_NAME from config-infra or from
+      # the output of the terraform apply
+      ACR_NAME: craot00002dev 
       AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
 
     steps:
