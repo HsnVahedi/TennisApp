@@ -183,11 +183,11 @@ resource "azurerm_private_dns_zone_virtual_network_link" "postgresql_dns_zone_vn
   virtual_network_id    = azurerm_virtual_network.vnet.id
 }
 
-# Adjust the IP address handling or remove for now:
-resource "azurerm_private_dns_a_record" "postgresql_private_dns" {
-  name                = azurerm_postgresql_server.db.name
-  zone_name           = azurerm_private_dns_zone.postgresql_private_dns_zone.name
-  resource_group_name = module.resource_group.name
-  ttl                 = 300
-  records             = ["<MANUAL_IP>"]  # Replace with actual IP or manage manually
-}
+# # Adjust the IP address handling or remove for now:
+# resource "azurerm_private_dns_a_record" "postgresql_private_dns" {
+#   name                = azurerm_postgresql_server.db.name
+#   zone_name           = azurerm_private_dns_zone.postgresql_private_dns_zone.name
+#   resource_group_name = module.resource_group.name
+#   ttl                 = 300
+#   records             = ["<MANUAL_IP>"]  # Replace with actual IP or manage manually
+# }
