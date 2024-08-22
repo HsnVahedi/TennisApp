@@ -6,70 +6,37 @@ on:
       - master
 
 jobs:
-  get-acr-name:
-    needs: get-config
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Set up Azure CLI
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-      - name: Set up Terraform
-        uses: hashicorp/setup-terraform@v2
-
-      - name: Terraform Init
-        run: |
-          terraform -chdir=${{ needs.get-config.outputs.terraform_workingdir }} init \
-            -backend-config="storage_account_name=${{ needs.get-config.outputs.terraform_st_storage_account }}" \
-            -backend-config="container_name=${{ needs.get-config.outputs.terraform_st_container_name }}" \
-            -backend-config="key=${{ needs.get-config.outputs.terraform_st_key }}" \
-            -backend-config="resource_group_name=${{ needs.get-config.outputs.terraform_st_resource_group }}"
-        env:
-          ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
-          ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
-          ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
-          ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
-
-      - name: Terraform Output
-        run: terraform -chdir=${{ needs.get-config.outputs.terraform_workingdir }} output -json > output.json
-        env:
-          ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
-          ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
-          ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
-          ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
-
-      - name: Display Output File Content
-        run: cat output.json
-
-      - name: Extract ACR Name
-        run: |
-          ACR_NAME=$(jq -r .name.value output.json)
-          echo "ACR_NAME=${ACR_NAME}" >> $GITHUB_ENV
-
   build-and-push:
-    needs: get-acr-name
     runs-on: ubuntu-latest
+
+    env:
+      ACR_NAME: ${{ secrets.ACR_NAME }}
+      AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up Azure CLI
+      - name: Log in to Azure
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Log in to Azure Container Registry
-        run: |
-          az acr login --name ${{ env.ACR_NAME }}
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
 
-      - name: Build and Push Docker Images
+      - name: Extract branch name
+        id: extract_branch
+        run: echo "BRANCH_NAME=${GITHUB_HEAD_REF##*/}" >> $GITHUB_ENV
+
+      - name: Build and push backend image
         run: |
-          BRANCH_NAME=$(echo $GITHUB_REF_NAME | sed 's/\//-/g')
-          for service in service1 service2 service3; do
-            docker build -t ${{ env.ACR_NAME }}.azurecr.io/$service:${BRANCH_NAME} -f $service/Dockerfile .
-            docker push ${{ env.ACR_NAME }}.azurecr.io/$service:${BRANCH_NAME}
-          done
+          az acr build --registry ${{ env.ACR_NAME }} --image backend:${{ env.BRANCH_NAME }} ./backend
+
+      - name: Build and push frontend image
+        run: |
+          az acr build --registry ${{ env.ACR_NAME }} --image frontend:${{ env.BRANCH_NAME }} ./frontend
+
+      - name: Build and push celery image
+        run: |
+          az acr build --registry ${{ env.ACR_NAME }} --image celery:${{ env.BRANCH_NAME }} ./celery
