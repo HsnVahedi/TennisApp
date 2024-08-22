@@ -15,7 +15,6 @@ jobs:
       ACR_NAME: craot40002dev 
       AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
 
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
