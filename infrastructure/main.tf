@@ -4,7 +4,7 @@ terraform {
   backend "azurerm" {} 
   required_providers {
     azurerm = {
-      version  = ">= 3.0"
+      version = ">= 3.0, < 4.0"
     }
   }
 }
