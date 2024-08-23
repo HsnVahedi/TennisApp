@@ -281,53 +281,54 @@ resource "azurerm_container_app_environment" "aca-environment" {
   resource_group_name        = module.resource_group.name
 }
 
-resource "azurerm_container_app" "backend" {
-  name                         = "backend-${local.safe_prefix}${local.safe_postfix}${var.environment}"
-  container_app_environment_id = azurerm_container_app_environment.aca-environment.id
-  resource_group_name          = module.resource_group.name
-  revision_mode                = "Single"
+# resource "azurerm_container_app" "backend" {
+#   name                         = "backend-${local.safe_prefix}${local.safe_postfix}${var.environment}"
+#   container_app_environment_id = azurerm_container_app_environment.aca-environment.id
+#   resource_group_name          = module.resource_group.name
+#   revision_mode                = "Single"
 
-  template {
-    container {
-      name   = "backend"
-      image  = "${module.container_registry.name}.azurecr.io/backend-${var.branch_name}@${var.image_digest}"
-      cpu    = 0.25
-      memory = "0.5Gi"
+#   template {
+#     container {
+#       name   = "backend"
+#       image  = "${module.container_registry.name}.azurecr.io/backend-${var.branch_name}@${var.image_digest}"
+#       cpu    = 0.25
+#       memory = "0.5Gi"
 
-      env {
-        name  = "DB_USER"
-        value = azurerm_user_assigned_identity.pgadmin.name
-      }
+#       env {
+#         name  = "DB_USER"
+#         value = azurerm_user_assigned_identity.pgadmin.name
+#       }
 
-      env {
-        name  = "DB_FQDN"
-        value = azurerm_postgresql_flexible_server.db.fqdn
-      }
+#       env {
+#         name  = "DB_FQDN"
+#         value = azurerm_postgresql_flexible_server.db.fqdn
+#       }
 
-      env {
-        name  = "DB_NAME"
-        value = "backend_db"
-      }
+#       env {
+#         name  = "DB_NAME"
+#         value = "backend_db"
+#       }
 
-      env {
-        name  = "AZURE_CLIENT_ID"
-        value = azurerm_user_assigned_identity.pgadmin.client_id
-      }
-    }
-  }
+#       env {
+#         name  = "AZURE_CLIENT_ID"
+#         value = azurerm_user_assigned_identity.pgadmin.client_id
+#       }
+#     }
+#   }
 
-  identity {
-    type         = "UserAssigned"
-    identity_ids = [azurerm_user_assigned_identity.pgadmin.id]
-  }
+#   identity {
+#     type         = "UserAssigned"
+#     identity_ids = [azurerm_user_assigned_identity.pgadmin.id]
+#   }
 
-  tags = local.tags
-}
-
-# resource "azurerm_postgresql_flexible_server_firewall_rule" "allow_azure_ips" {
-#   name             = "allow_azure_ips"
-#   server_id        = azurerm_postgresql_flexible_server.db.id
-#   start_ip_address = "0.0.0.0"
-#   end_ip_address   = "0.0.0.0"
+#   tags = local.tags
 # }
+
+
+
+
+
+
+
+
 
