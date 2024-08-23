@@ -80,7 +80,6 @@
 
 
 
-
 name: tf-gha-deploy-infra.yml
 
 on:
@@ -130,11 +129,12 @@ jobs:
       latest_digest: ${{ steps.get_digest.outputs.latest_digest }}
     env:
       ACR_NAME: craot80002dev
-      ARM_CLIENT_ID: ${{ secrets.clientId }}
-      ARM_CLIENT_SECRET: ${{ secrets.clientSecret }}
-      ARM_SUBSCRIPTION_ID: ${{ secrets.subscriptionId }}
-      ARM_TENANT_ID: ${{ secrets.tenantId }}
     steps:
+      - name: Log in to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
       - name: Get the latest image digest
         id: get_digest
         run: |
