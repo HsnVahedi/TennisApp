@@ -144,7 +144,7 @@ jobs:
 
   deploy-azure-resources:
     # runs-on: ubuntu-latest
-    needs: [get-config, get-latest-image-digest]
+    needs: [get-config, get-latest-image-digest, set-branch-name]
     uses: ./.github/workflows/tf-gha-install-terraform.yml
     with:
       TFAction: "apply"
