@@ -56,7 +56,6 @@ resource "azurerm_postgresql_flexible_server_database" "db" {
   name       = "backend_db"
   server_id  = azurerm_postgresql_flexible_server.db.id
   charset    = "UTF8"
-  collation  = "en_US.UTF-8"
 }
 
 resource "azurerm_postgresql_flexible_server_firewall_rule" "allow_azure_ips" {
@@ -71,7 +70,6 @@ resource "azurerm_container_app_environment" "aca-environment" {
   location                   = module.resource_group.location
   resource_group_name        = module.resource_group.name
 }
-
 
 
 
