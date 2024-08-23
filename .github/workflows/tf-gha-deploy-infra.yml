@@ -128,6 +128,8 @@ jobs:
     needs: set-branch-name
     outputs:
       latest_digest: ${{ steps.get_digest.outputs.latest_digest }}
+    env:
+      ACR_NAME: craot80002dev
     steps:
       - name: Get the latest image digest
         id: get_digest
