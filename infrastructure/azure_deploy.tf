@@ -195,7 +195,7 @@ resource "azurerm_role_assignment" "acr_push" {
 
 
 resource "azurerm_subnet" "db" {
-  name                 = "db-subnet"
+  name                 = "subnet-db-${local.safe_prefix}${local.safe_postfix}${var.environment}"
   resource_group_name  = module.resource_group.name
   virtual_network_name = azurerm_virtual_network.vitual_network.name
   address_prefixes     = ["10.0.1.0/24"]
@@ -216,15 +216,20 @@ resource "azurerm_private_dns_zone" "db" {
 
 
 resource "azurerm_private_dns_zone_virtual_network_link" "vnet_link" {
-  name                  = "dns-vnet-link"
+  name                  = "vnet-link-${local.safe_prefix}${local.safe_postfix}${var.environment}"
   private_dns_zone_name = azurerm_private_dns_zone.db.name
   resource_group_name   = module.resource_group.name
   virtual_network_id    = azurerm_virtual_network.vitual_network.id
 }
 
 
+data "azurerm_client_config" "current" {
+}
+
+
 resource "azurerm_postgresql_flexible_server" "db" {
   name                = "psql-flexible-server-${local.safe_prefix}${local.safe_postfix}${var.environment}"
+  auto_grow_enabled   = true
   location            = module.resource_group.location
   resource_group_name = module.resource_group.name
   delegated_subnet_id = azurerm_subnet.db.id
@@ -252,7 +257,7 @@ resource "azurerm_postgresql_flexible_server" "db" {
 
 
 resource "azurerm_postgresql_flexible_server_database" "db" {
-  name       = "backend_db"
+  name       = "psql-flexible-database-${local.safe_prefix}${local.safe_postfix}${var.environment}"
   server_id  = azurerm_postgresql_flexible_server.db.id
   charset    = "UTF8"
   collation  = "en_US.utf8"
@@ -322,10 +327,10 @@ resource "azurerm_container_app" "backend" {
   tags = local.tags
 }
 
-resource "azurerm_postgresql_flexible_server_firewall_rule" "allow_azure_ips" {
-  name             = "allow_azure_ips"
-  server_id        = azurerm_postgresql_flexible_server.db.id
-  start_ip_address = "0.0.0.0"
-  end_ip_address   = "0.0.0.0"
-}
+# resource "azurerm_postgresql_flexible_server_firewall_rule" "allow_azure_ips" {
+#   name             = "allow_azure_ips"
+#   server_id        = azurerm_postgresql_flexible_server.db.id
+#   start_ip_address = "0.0.0.0"
+#   end_ip_address   = "0.0.0.0"
+# }
 
