@@ -66,16 +66,17 @@ resource "azurerm_postgresql_database" "db" {
 # }
 
 
-
 resource "azurerm_container_app_environment" "aca-environment" {
   name                       = "aca-environment-${local.safe_prefix}${local.safe_postfix}${var.environment}"
   location                   = module.resource_group.location
   resource_group_name        = module.resource_group.name
 
-  vnet_configuration {
+  app_network {
     subnet_id = azurerm_subnet.subnet.id
   }
 }
+
+
 
 resource "azurerm_container_app" "backend" {
   name                         = "backend-${local.safe_prefix}${local.safe_postfix}${var.environment}"
