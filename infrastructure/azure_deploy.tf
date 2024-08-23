@@ -180,11 +180,11 @@ resource "azurerm_postgresql_flexible_server" "db" {
   location            = module.resource_group.location
   resource_group_name = module.resource_group.name
 
-  administrator_login          = var.db_admin_username
-  administrator_password       = random_password.db_admin_password.result
+  administrator_login    = var.db_admin_username
+  administrator_password = random_password.db_admin_password.result
 
   version  = "12"
-  sku_name = "Standard_D2s_v3"
+  sku_name = "GeneralPurpose_Standard_D2s_v3"
 
   storage_mb                   = 32768  # Equivalent to 32 GB
   backup_retention_days        = 7
@@ -197,11 +197,10 @@ resource "azurerm_postgresql_flexible_server" "db" {
 }
 
 resource "azurerm_postgresql_flexible_server_database" "db" {
-  name                = "backend_db"
-  resource_group_name = module.resource_group.name
-  server_name         = azurerm_postgresql_flexible_server.db.name
-  charset             = "UTF8"
-  collation           = "English_United States.1252"
+  name      = "backend_db"
+  server_id = azurerm_postgresql_flexible_server.db.id
+  charset   = "UTF8"
+  collation = "English_United States.1252"
 }
 
 resource "azurerm_container_app_environment" "aca-environment" {
@@ -275,9 +274,8 @@ resource "azurerm_container_app" "backend" {
 }
 
 resource "azurerm_postgresql_flexible_server_firewall_rule" "allow_azure_ips" {
-  name                = "allow_azure_ips"
-  resource_group_name = module.resource_group.name
-  server_name         = azurerm_postgresql_flexible_server.db.name
+  name      = "allow_azure_ips"
+  server_id = azurerm_postgresql_flexible_server.db.id
   start_ip_address    = "0.0.0.0"
   end_ip_address      = "0.0.0.0"
 }
