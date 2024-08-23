@@ -1,3 +1,4 @@
+
 locals {
   safe_prefix  = replace(var.prefix, "-", "")
   safe_postfix = replace(var.postfix, "-", "")
@@ -22,6 +23,11 @@ module "container_registry" {
   postfix  = var.postfix
   env      = var.environment
   tags     = local.tags
+}
+
+resource "random_password" "db_admin_password" {
+  length  = 16
+  special = true
 }
 
 resource "azurerm_postgresql_server" "db" {
