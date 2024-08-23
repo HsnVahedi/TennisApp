@@ -1,3 +1,4 @@
+
 locals {
   safe_prefix  = replace(var.prefix, "-", "")
   safe_postfix = replace(var.postfix, "-", "")
@@ -38,9 +39,9 @@ resource "azurerm_postgresql_flexible_server" "db" {
   administrator_password = random_password.db_admin_password.result
 
   version = "12"
-  sku_name = "Standard_D2s_v3"
+  sku_name = "GP_Standard_D2s_v3"
 
-  storage_mb = 5120
+  storage_mb = 32768
 
   backup_retention_days        = 7
   geo_redundant_backup_enabled = false
@@ -53,11 +54,10 @@ resource "azurerm_postgresql_flexible_server" "db" {
 }
 
 resource "azurerm_postgresql_flexible_server_database" "db" {
-  name                = "backend_db"
-  resource_group_name = module.resource_group.name
-  server_name         = azurerm_postgresql_flexible_server.db.name
-  charset             = "UTF8"
-  collation           = "English_United States.1252"
+  name       = "backend_db"
+  server_id  = azurerm_postgresql_flexible_server.db.id
+  charset    = "UTF8"
+  collation  = "English_United States.1252"
 }
 
 resource "azurerm_postgresql_flexible_server_firewall_rule" "allow_azure_ips" {
