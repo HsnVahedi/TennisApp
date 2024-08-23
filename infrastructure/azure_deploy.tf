@@ -184,7 +184,7 @@ resource "azurerm_postgresql_flexible_server" "db" {
   administrator_password = random_password.db_admin_password.result
 
   version  = "12"
-  sku_name = "GeneralPurpose_Standard_D2s_v3"
+  sku_name = "GP_Standard_D2s_v3"  # Corrected SKU name
 
   storage_mb                   = 32768  # Equivalent to 32 GB
   backup_retention_days        = 7
@@ -195,6 +195,7 @@ resource "azurerm_postgresql_flexible_server" "db" {
 
   tags = local.tags
 }
+
 
 resource "azurerm_postgresql_flexible_server_database" "db" {
   name      = "backend_db"
