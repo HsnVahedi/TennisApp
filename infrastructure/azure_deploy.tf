@@ -24,24 +24,24 @@ module "container_registry" {
   tags     = local.tags
 }
 
-
 resource "random_password" "db_admin_password" {
   length  = 16
   special = true
 }
-
 
 resource "azurerm_postgresql_flexible_server" "db" {
   name                = "psql-server-${local.safe_prefix}${local.safe_postfix}${var.environment}"
   location            = module.resource_group.location
   resource_group_name = module.resource_group.name
 
-  administrator_login          = var.db_admin_username
-  administrator_password       = random_password.db_admin_password.result
+  administrator_login    = var.db_admin_username
+  administrator_password = random_password.db_admin_password.result
 
-  version                      = "12"
-  sku_name                     = "Standard_D2s_v3"
-  storage_mb                   = 5120
+  version = "12"
+  sku_name = "Standard_D2s_v3"
+
+  storage_mb = 5120
+
   backup_retention_days        = 7
   geo_redundant_backup_enabled = false
 
@@ -49,18 +49,10 @@ resource "azurerm_postgresql_flexible_server" "db" {
     mode = "ZoneRedundant"
   }
 
-  storage {
-    auto_grow_enabled = true
-  }
-
-  network {
-    public_network_access_enabled = true
-  }
-
   tags = local.tags
 }
 
-resource "azurerm_postgresql_flexible_database" "db" {
+resource "azurerm_postgresql_flexible_server_database" "db" {
   name                = "backend_db"
   resource_group_name = module.resource_group.name
   server_name         = azurerm_postgresql_flexible_server.db.name
@@ -70,18 +62,17 @@ resource "azurerm_postgresql_flexible_database" "db" {
 
 resource "azurerm_postgresql_flexible_server_firewall_rule" "allow_azure_ips" {
   name                = "allow_azure_ips"
-  resource_group_name = module.resource_group.name
-  server_name         = azurerm_postgresql_flexible_server.db.name
+  server_id           = azurerm_postgresql_flexible_server.db.id
   start_ip_address    = "0.0.0.0"
   end_ip_address      = "0.0.0.0"
 }
-
 
 resource "azurerm_container_app_environment" "aca-environment" {
   name                       = "aca-environment-${local.safe_prefix}${local.safe_postfix}${var.environment}"
   location                   = module.resource_group.location
   resource_group_name        = module.resource_group.name
 }
+
 
 
 # resource "azurerm_container_app" "backend" {
