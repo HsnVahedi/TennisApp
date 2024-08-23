@@ -72,7 +72,7 @@ resource "azurerm_container_app_environment" "aca-environment" {
   location                   = module.resource_group.location
   resource_group_name        = module.resource_group.name
 
-  vnet_integration {
+  vnet_configuration {
     subnet_id = azurerm_subnet.subnet.id
   }
 }
@@ -141,6 +141,32 @@ resource "azurerm_container_app" "backend" {
   tags = local.tags
 }
 
+resource "azurerm_virtual_network" "vnet" {
+  name                = "vnet-${local.safe_prefix}${local.safe_postfix}${var.environment}"
+  location            = var.location
+  resource_group_name = module.resource_group.name
+  address_space       = ["10.0.0.0/16"]
+}
+
+resource "azurerm_subnet" "subnet" {
+  name                 = "subnet-${local.safe_prefix}${local.safe_postfix}${var.environment}"
+  resource_group_name  = module.resource_group.name
+  virtual_network_name = azurerm_virtual_network.vnet.name
+  address_prefixes     = ["10.0.1.0/24"]
+}
+
+resource "azurerm_private_endpoint" "postgresql_endpoint" {
+  name                = "postgresql-endpoint-${local.safe_prefix}${local.safe_postfix}${var.environment}"
+  location            = module.resource_group.location
+  resource_group_name = module.resource_group.name
+  subnet_id           = azurerm_subnet.subnet.id
+  private_service_connection {
+    name                           = "postgresql-connection"
+    private_connection_resource_id = azurerm_postgresql_server.db.id
+    subresource_names              = ["postgresqlServer"]
+    is_manual_connection           = false
+  }
+}
 
 
 # resource "azurerm_container_app" "backend" {
@@ -210,36 +236,36 @@ resource "azurerm_container_app" "backend" {
 
 
 
-resource "azurerm_private_endpoint" "postgresql_endpoint" {
-  name                = "postgresql-endpoint-${local.safe_prefix}${local.safe_postfix}${var.environment}"
-  location            = module.resource_group.location
-  resource_group_name = module.resource_group.name
-  subnet_id           = azurerm_subnet.subnet.id
-  private_service_connection {
-    name                           = "postgresql-connection"
-    private_connection_resource_id = azurerm_postgresql_server.db.id
-    subresource_names              = ["postgresqlServer"]
-    is_manual_connection           = false
-  }
-}
+# resource "azurerm_private_endpoint" "postgresql_endpoint" {
+#   name                = "postgresql-endpoint-${local.safe_prefix}${local.safe_postfix}${var.environment}"
+#   location            = module.resource_group.location
+#   resource_group_name = module.resource_group.name
+#   subnet_id           = azurerm_subnet.subnet.id
+#   private_service_connection {
+#     name                           = "postgresql-connection"
+#     private_connection_resource_id = azurerm_postgresql_server.db.id
+#     subresource_names              = ["postgresqlServer"]
+#     is_manual_connection           = false
+#   }
+# }
 
 
 
 
-resource "azurerm_virtual_network" "vnet" {
-  name                = "vnet-${local.safe_prefix}${local.safe_postfix}${var.environment}"
-  location            = var.location
-  resource_group_name = module.resource_group.name
-  address_space       = ["10.0.0.0/16"]
-}
+# resource "azurerm_virtual_network" "vnet" {
+#   name                = "vnet-${local.safe_prefix}${local.safe_postfix}${var.environment}"
+#   location            = var.location
+#   resource_group_name = module.resource_group.name
+#   address_space       = ["10.0.0.0/16"]
+# }
 
 
-resource "azurerm_subnet" "subnet" {
-  name                 = "subnet-${local.safe_prefix}${local.safe_postfix}${var.environment}"
-  resource_group_name  = module.resource_group.name
-  virtual_network_name = azurerm_virtual_network.vnet.name
-  address_prefixes     = ["10.0.1.0/24"]
-}
+# resource "azurerm_subnet" "subnet" {
+#   name                 = "subnet-${local.safe_prefix}${local.safe_postfix}${var.environment}"
+#   resource_group_name  = module.resource_group.name
+#   virtual_network_name = azurerm_virtual_network.vnet.name
+#   address_prefixes     = ["10.0.1.0/24"]
+# }
 
 
 
