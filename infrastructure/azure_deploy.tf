@@ -44,7 +44,8 @@ resource "azurerm_postgresql_server" "db" {
   geo_redundant_backup_enabled = false
   auto_grow_enabled            = true
 
-  public_network_access_enabled = false  # Disable public access
+  # public_network_access_enabled = false  # Disable public access
+  public_network_access_enabled = true  # Disable public access
   ssl_enforcement_enabled       = true
 
   tags = local.tags
