@@ -51,7 +51,7 @@ jobs:
     outputs:
       latest_digest: ${{ steps.get_digest.outputs.latest_digest }}
     env:
-      ACR_NAME: craot80002dev
+      ACR_NAME: craot90002dev
     steps:
       - name: Log in to Azure
         uses: azure/login@v1
