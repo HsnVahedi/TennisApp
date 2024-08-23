@@ -144,7 +144,6 @@
 
 
 
-
 locals {
   safe_prefix  = replace(var.prefix, "-", "")
   safe_postfix = replace(var.postfix, "-", "")
@@ -187,29 +186,17 @@ resource "azurerm_postgresql_flexible_server" "db" {
   version  = "12"
   sku_name = "Standard_D2s_v3"
 
-  storage {
-    storage_size_gb = 32
-    iops            = 600
-  }
-
-  backup {
-    backup_retention_days = 7
-    geo_redundant_backup  = false
-  }
+  storage_mb                   = 32768  # Equivalent to 32 GB
+  backup_retention_days        = 7
 
   high_availability {
     mode = "ZoneRedundant"
   }
 
-  network {
-    public_network_access_enabled = true  # Enable public access
-    delegated_subnet_id = azurerm_subnet.example.id
-  }
-
   tags = local.tags
 }
 
-resource "azurerm_postgresql_flexible_database" "db" {
+resource "azurerm_postgresql_flexible_server_database" "db" {
   name                = "backend_db"
   resource_group_name = module.resource_group.name
   server_name         = azurerm_postgresql_flexible_server.db.name
@@ -253,7 +240,7 @@ resource "azurerm_container_app" "backend" {
 
       env {
         name  = "DATABASE_NAME"
-        value = azurerm_postgresql_flexible_database.db.name
+        value = azurerm_postgresql_flexible_server_database.db.name
       }
 
       env {
@@ -279,31 +266,18 @@ resource "azurerm_container_app" "backend" {
   }
 
   registry {
-    server   = "${module.container_registry.name}.azurecr.io"
-    username = module.container_registry.admin_username
+    server            = "${module.container_registry.name}.azurecr.io"
+    username          = module.container_registry.admin_username
     password_secret_name = "container-registry-password"
   }
 
   tags = local.tags
 }
 
-resource "azurerm_postgresql_flexible_firewall_rule" "allow_azure_ips" {
+resource "azurerm_postgresql_flexible_server_firewall_rule" "allow_azure_ips" {
   name                = "allow_azure_ips"
   resource_group_name = module.resource_group.name
   server_name         = azurerm_postgresql_flexible_server.db.name
   start_ip_address    = "0.0.0.0"
   end_ip_address      = "0.0.0.0"
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
