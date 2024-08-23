@@ -77,6 +77,10 @@
 
 
 
+
+
+
+
 name: tf-gha-deploy-infra.yml
 
 on:
@@ -135,6 +139,12 @@ jobs:
   deploy-azure-resources:
     runs-on: ubuntu-latest
     needs: [get-config, get-latest-image-digest]
+    secrets:
+      azure_creds: ${{ secrets.AZURE_CREDENTIALS }}
+      clientId: ${{ secrets.ARM_CLIENT_ID }}
+      clientSecret: ${{ secrets.ARM_CLIENT_SECRET }}
+      subscriptionId: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+      tenantId: ${{ secrets.ARM_TENANT_ID }}
     steps:
       - name: Run Terraform Apply
         uses: ./.github/workflows/tf-gha-install-terraform.yml
@@ -155,9 +165,3 @@ jobs:
           terraform_plan_location: ${{ needs.get-config.outputs.location }}
           branch_name: ${{ needs.set-branch-name.outputs.branch-name }}
           image_digest: ${{ needs.get-latest-image-digest.outputs.latest_digest }}
-        secrets:
-          azure_creds: ${{ secrets.AZURE_CREDENTIALS }}
-          clientId: ${{ secrets.ARM_CLIENT_ID }}
-          clientSecret: ${{ secrets.ARM_CLIENT_SECRET }}
-          subscriptionId: ${{ secrets.ARM_SUBSCRIPTION_ID }}
-          tenantId: ${{ secrets.ARM_TENANT_ID }}
