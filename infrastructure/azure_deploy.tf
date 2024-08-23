@@ -47,6 +47,7 @@ resource "azurerm_postgresql_flexible_server" "db" {
 
   high_availability {
     mode = "ZoneRedundant"
+    # No manual zone configuration here
   }
 
   tags = local.tags
@@ -70,8 +71,6 @@ resource "azurerm_container_app_environment" "aca-environment" {
   location                   = module.resource_group.location
   resource_group_name        = module.resource_group.name
 }
-
-
 
 resource "azurerm_container_app" "backend" {
   name                         = "backend-${local.safe_prefix}${local.safe_postfix}${var.environment}"
@@ -136,7 +135,3 @@ resource "azurerm_container_app" "backend" {
 
   tags = local.tags
 }
-
-
-
-
