@@ -199,12 +199,14 @@ resource "azurerm_private_dns_zone" "db" {
   resource_group_name = module.resource_group.name
 }
 
+
 resource "azurerm_private_dns_zone_virtual_network_link" "vnet_link" {
   name                  = "dns-vnet-link"
   private_dns_zone_name = azurerm_private_dns_zone.db.name
   resource_group_name   = module.resource_group.name
-  virtual_network_id    = azurerm_subnet.db.id
+  virtual_network_id    = azurerm_virtual_network.vitual_network.id
 }
+
 
 resource "azurerm_postgresql_flexible_server" "db" {
   name                = "psql-flexible-server-${local.safe_prefix}${local.safe_postfix}${var.environment}"
@@ -216,6 +218,8 @@ resource "azurerm_postgresql_flexible_server" "db" {
   storage_mb          = 32768
   backup_retention_days  = 7
   version             = "12"
+
+  public_network_access_enabled = false  # Disable public network access
 
   authentication {
     password_auth_enabled         = false
@@ -230,6 +234,7 @@ resource "azurerm_postgresql_flexible_server" "db" {
     ]
   }
 }
+
 
 resource "azurerm_postgresql_flexible_server_database" "db" {
   name       = "backend_db"
