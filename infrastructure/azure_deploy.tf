@@ -223,9 +223,6 @@ resource "azurerm_private_dns_zone_virtual_network_link" "vnet_link" {
 }
 
 
-data "azurerm_client_config" "current" {
-}
-
 
 resource "azurerm_postgresql_flexible_server" "db" {
   name                = "psql-flexible-server-${local.safe_prefix}${local.safe_postfix}${var.environment}"
