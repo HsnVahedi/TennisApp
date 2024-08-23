@@ -130,6 +130,10 @@ jobs:
       latest_digest: ${{ steps.get_digest.outputs.latest_digest }}
     env:
       ACR_NAME: craot80002dev
+      ARM_CLIENT_ID: ${{ secrets.clientId }}
+      ARM_CLIENT_SECRET: ${{ secrets.clientSecret }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.subscriptionId }}
+      ARM_TENANT_ID: ${{ secrets.tenantId }}
     steps:
       - name: Get the latest image digest
         id: get_digest
