@@ -153,7 +153,6 @@ locals {
 
 module "resource_group" {
   source = "./modules/resource-group"
-
   location = var.location
   prefix   = var.prefix
   postfix  = var.postfix
@@ -163,7 +162,6 @@ module "resource_group" {
 
 module "container_registry" {
   source = "./modules/container-registry"
-
   rg_name  = module.resource_group.name
   location = module.resource_group.location
   prefix   = var.prefix
@@ -175,8 +173,9 @@ module "container_registry" {
 resource "azurerm_subnet" "db" {
   name                 = "db-subnet"
   resource_group_name  = module.resource_group.name
-  virtual_network_name = "subnet-db-${local.safe_prefix}${local.safe_postfix}${var.environment}"
+  virtual_network_name = "vnet-${local.safe_prefix}${local.safe_postfix}${var.environment}"
   address_prefixes     = ["10.0.1.0/24"]
+  service_endpoints    = ["Microsoft.Storage"]
   delegation {
     name = "postgresqlDelegation"
     service_delegation {
@@ -195,13 +194,7 @@ resource "azurerm_private_dns_zone_virtual_network_link" "vnet_link" {
   name                  = "dns-vnet-link"
   private_dns_zone_name = azurerm_private_dns_zone.db.name
   resource_group_name   = module.resource_group.name
-  # virtual_network_id    = var.vnet_id
-  virtual_network_id    = azurerm_subnet.db.id 
-}
-
-resource "random_password" "db_admin_password" {
-  length  = 16
-  special = true
+  virtual_network_id    = azurerm_subnet.db.id
 }
 
 resource "azurerm_postgresql_flexible_server" "db" {
@@ -210,26 +203,30 @@ resource "azurerm_postgresql_flexible_server" "db" {
   resource_group_name = module.resource_group.name
   delegated_subnet_id = azurerm_subnet.db.id
   private_dns_zone_id = azurerm_private_dns_zone.db.id
-
-  administrator_login    = var.db_admin_username
-  administrator_password = random_password.db_admin_password.result
-  version                = "12"
-  sku_name               = "GP_Standard_D2s_v3"
-  storage_mb             = 32768
+  sku_name            = "GP_Standard_D2s_v3"
+  storage_mb          = 32768
   backup_retention_days  = 7
+  version             = "12"
 
   authentication {
     password_auth_enabled         = false
     active_directory_auth_enabled = true
     tenant_id                     = data.azurerm_client_config.current.tenant_id
   }
+
+  lifecycle {
+    ignore_changes = [
+      zone,
+      high_availability[0].standby_availability_zone
+    ]
+  }
 }
 
 resource "azurerm_postgresql_flexible_server_database" "db" {
-  name      = "backend_db"
-  server_id = azurerm_postgresql_flexible_server.db.id
-  charset   = "UTF8"
-  collation = "en_US.UTF-8"  # Corrected collation
+  name       = "backend_db"
+  server_id  = azurerm_postgresql_flexible_server.db.id
+  charset    = "UTF8"
+  collation  = "en_US.utf8"
 }
 
 resource "azurerm_user_assigned_identity" "pgadmin" {
@@ -243,6 +240,8 @@ resource "azurerm_postgresql_flexible_server_active_directory_administrator" "ad
   resource_group_name = module.resource_group.name
   tenant_id           = data.azurerm_client_config.current.tenant_id
   object_id           = azurerm_user_assigned_identity.pgadmin.principal_id
+  principal_name      = azurerm_user_assigned_identity.pgadmin.name
+  principal_type      = "ServicePrincipal"
 }
 
 resource "azurerm_container_app_environment" "aca-environment" {
@@ -266,7 +265,7 @@ resource "azurerm_container_app" "backend" {
 
       env {
         name  = "DB_USER"
-        value = azurerm_user_assigned_identity.pgadmin.identity_name
+        value = azurerm_user_assigned_identity.pgadmin.name
       }
 
       env {
@@ -295,8 +294,9 @@ resource "azurerm_container_app" "backend" {
 }
 
 resource "azurerm_postgresql_flexible_server_firewall_rule" "allow_azure_ips" {
-  name      = "allow_azure_ips"
-  server_id = azurerm_postgresql_flexible_server.db.id
-  start_ip_address    = "0.0.0.0"
-  end_ip_address      = "0.0.0.0"
+  name             = "allow_azure_ips"
+  server_id        = azurerm_postgresql_flexible_server.db.id
+  start_ip_address = "0.0.0.0"
+  end_ip_address   = "0.0.0.0"
 }
+
