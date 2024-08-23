@@ -74,7 +74,7 @@ resource "azurerm_container_app" "backend" {
   template {
     container {
       name   = "backend"
-      image  = "${module.container_registry.name}.azurecr.io/backend-${var.branch_name}"
+      image  = "${module.container_registry.name}.azurecr.io/backend-${var.branch_name}:latest"
       cpu    = 0.25
       memory = "0.5Gi"
 
