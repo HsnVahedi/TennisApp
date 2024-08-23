@@ -29,6 +29,12 @@ variable "db_admin_username" {
   default     = "artoftennis"
 }
 
+variable "image_digest" {
+  description = "The digest of the Docker image to be used in the container app."
+  type        = string
+}
+
+
 # variable "enable_aml_computecluster" {
 #   description = "Variable to enable or disable AML compute cluster"
 # }
