@@ -175,7 +175,7 @@ module "container_registry" {
 resource "azurerm_subnet" "db" {
   name                 = "db-subnet"
   resource_group_name  = module.resource_group.name
-  virtual_network_name = var.vnet_name
+  virtual_network_name = "subnet-db-${local.safe_prefix}${local.safe_postfix}${var.environment}"
   address_prefixes     = ["10.0.1.0/24"]
   delegation {
     name = "postgresqlDelegation"
@@ -195,7 +195,8 @@ resource "azurerm_private_dns_zone_virtual_network_link" "vnet_link" {
   name                  = "dns-vnet-link"
   private_dns_zone_name = azurerm_private_dns_zone.db.name
   resource_group_name   = module.resource_group.name
-  virtual_network_id    = var.vnet_id
+  # virtual_network_id    = var.vnet_id
+  virtual_network_id    = azurerm_subnet.db.virtual_network_id 
 }
 
 resource "random_password" "db_admin_password" {
