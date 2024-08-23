@@ -186,6 +186,12 @@ resource "azurerm_role_assignment" "acr_pull" {
   principal_id         = azurerm_user_assigned_identity.pgadmin.principal_id
 }
 
+resource "azurerm_role_assignment" "acr_push" {
+  # scope                = azurerm_container_registry.container_registry.id
+  scope                = module.container_registry.id
+  role_definition_name = "AcrPush"
+  principal_id         = azurerm_user_assigned_identity.pgadmin.principal_id
+}
 
 
 resource "azurerm_subnet" "db" {
