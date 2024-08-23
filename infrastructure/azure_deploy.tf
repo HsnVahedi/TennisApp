@@ -103,9 +103,9 @@ resource "azurerm_container_app" "backend" {
 
       env {
         name  = "DATABASE_NAME"
-        value = azurerm_postgresql_flexible_database.db.name
+        value = azurerm_postgresql_flexible_server_database.db.name
       }
- 
+
       env {
         name  = "DATABASE_PORT"
         value = "5432"
@@ -136,9 +136,6 @@ resource "azurerm_container_app" "backend" {
 
   tags = local.tags
 }
-
-
-
 
 
 
