@@ -145,29 +145,27 @@ jobs:
   deploy-azure-resources:
     runs-on: ubuntu-latest
     needs: [get-config, get-latest-image-digest]
-    steps:
-      - name: Run Terraform Apply
-        uses: ./.github/workflows/tf-gha-install-terraform.yml
-        with:
-          TFAction: "apply"
-          dply_environment: ${{ needs.get-config.outputs.config-file }}
-          location: ${{ needs.get-config.outputs.location }}
-          namespace: ${{ needs.get-config.outputs.namespace }}
-          postfix: ${{ needs.get-config.outputs.postfix }}
-          environment: ${{ needs.get-config.outputs.environment }}
-          terraform_version: ${{ needs.get-config.outputs.terraform_version }}
-          terraform_workingdir: ${{ needs.get-config.outputs.terraform_workingdir }}
-          terraform_st_location: ${{ needs.get-config.outputs.terraform_st_location }}
-          terraform_st_storage_account: ${{ needs.get-config.outputs.terraform_st_storage_account }}
-          terraform_st_resource_group: ${{ needs.get-config.outputs.terraform_st_resource_group }}
-          terraform_st_container_name: ${{ needs.get-config.outputs.terraform_st_container_name }}
-          terraform_st_key: ${{ needs.get-config.outputs.terraform_st_key }}
-          terraform_plan_location: ${{ needs.get-config.outputs.location }}
-          branch_name: ${{ needs.set-branch-name.outputs.branch-name }}
-          image_digest: ${{ needs.get-latest-image-digest.outputs.latest_digest }}
-        env:
-          ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
-          ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
-          ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
-          ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
-          AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+    uses: ./.github/workflows/tf-gha-install-terraform.yml
+    with:
+      TFAction: "apply"
+      dply_environment: ${{ needs.get-config.outputs.config-file }}
+      location: ${{ needs.get-config.outputs.location }}
+      namespace: ${{ needs.get-config.outputs.namespace }}
+      postfix: ${{ needs.get-config.outputs.postfix }}
+      environment: ${{ needs.get-config.outputs.environment }}
+      terraform_version: ${{ needs.get-config.outputs.terraform_version }}
+      terraform_workingdir: ${{ needs.get-config.outputs.terraform_workingdir }}
+      terraform_st_location: ${{ needs.get-config.outputs.terraform_st_location }}
+      terraform_st_storage_account: ${{ needs.get-config.outputs.terraform_st_storage_account }}
+      terraform_st_resource_group: ${{ needs.get-config.outputs.terraform_st_resource_group }}
+      terraform_st_container_name: ${{ needs.get-config.outputs.terraform_st_container_name }}
+      terraform_st_key: ${{ needs.get-config.outputs.terraform_st_key }}
+      terraform_plan_location: ${{ needs.get-config.outputs.location }}
+      branch_name: ${{ needs.set-branch-name.outputs.branch-name }}
+      image_digest: ${{ needs.get-latest-image-digest.outputs.latest_digest }}
+    secrets:
+      ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+      ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+      AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
