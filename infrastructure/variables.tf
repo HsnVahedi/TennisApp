@@ -21,6 +21,11 @@ variable "postfix" {
 variable "branch_name" {
   type        = string
   description = "Git branch name"
+
+  validation {
+    condition     = length(var.branch_name) > 0
+    error_message = "The branch_name variable must not be empty."
+  }
 }
 
 variable "db_admin_username" {
