@@ -71,10 +71,11 @@ resource "azurerm_container_app_environment" "aca-environment" {
   location                   = module.resource_group.location
   resource_group_name        = module.resource_group.name
 
-  app_network {
+  vnet_configuration {
     subnet_id = azurerm_subnet.subnet.id
   }
 }
+
 
 
 
