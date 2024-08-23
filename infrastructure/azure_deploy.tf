@@ -38,18 +38,14 @@ resource "azurerm_postgresql_flexible_server" "db" {
   administrator_password = random_password.db_admin_password.result
 
   version = "12"
-  sku_name = "GP_Standard_D2s_v3"
+  sku_name = "B_Standard_B2s"  # Lower-tier SKU for cost savings
 
   storage_mb = 32768
 
   backup_retention_days        = 7
   geo_redundant_backup_enabled = false
 
-  high_availability {
-    mode = "ZoneRedundant"
-    # No manual zone configuration here
-  }
-
+  # High availability is not needed, so this block is removed
   tags = local.tags
 }
 
