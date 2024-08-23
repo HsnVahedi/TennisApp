@@ -24,10 +24,10 @@ module "container_registry" {
   tags     = local.tags
 }
 
-resource "random_password" "db_admin_password" {
-  length  = 16
-  special = true
-}
+# resource "random_password" "db_admin_password" {
+#   length  = 16
+#   special = true
+# }
 
 resource "azurerm_postgresql_flexible_server" "db" {
   name                = "psql-server-${local.safe_prefix}${local.safe_postfix}${var.environment}"
@@ -35,7 +35,8 @@ resource "azurerm_postgresql_flexible_server" "db" {
   resource_group_name = module.resource_group.name
 
   administrator_login    = var.db_admin_username
-  administrator_password = random_password.db_admin_password.result
+  # administrator_password = random_password.db_admin_password.result
+  administrator_password = "K^^LLLwqIi" 
 
   version = "12"
   sku_name = "B_Standard_B2s"  # Lower-tier SKU for cost savings
@@ -96,7 +97,8 @@ resource "azurerm_container_app" "backend" {
 
       env {
         name  = "DATABASE_PASSWORD"
-        value = random_password.db_admin_password.result
+        # value = random_password.db_admin_password.result
+        value = "K^^LLLwqIi"
       }
 
       env {
