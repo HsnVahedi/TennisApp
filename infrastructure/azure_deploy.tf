@@ -196,7 +196,7 @@ resource "azurerm_private_dns_zone_virtual_network_link" "vnet_link" {
   private_dns_zone_name = azurerm_private_dns_zone.db.name
   resource_group_name   = module.resource_group.name
   # virtual_network_id    = var.vnet_id
-  virtual_network_id    = azurerm_subnet.db.virtual_network_id 
+  virtual_network_id    = azurerm_subnet.db.id 
 }
 
 resource "random_password" "db_admin_password" {
