@@ -9,9 +9,6 @@ jobs:
   build-and-push:
     runs-on: ubuntu-latest
     env:
-      # ACR_NAME: ${{ secrets.ACR_NAME }}
-      # TODO: read ACR_NAME from config-infra or from
-      # the output of the terraform apply
       ACR_NAME: craot80002dev 
       AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
 
@@ -31,20 +28,27 @@ jobs:
         id: extract_branch
         run: echo "BRANCH_NAME=${GITHUB_HEAD_REF##*/}" >> $GITHUB_ENV
 
+      - name: Get the current timestamp
+        id: timestamp
+        run: echo "TIMESTAMP=$(date +%Y%m%d%H%M%S)" >> $GITHUB_ENV
+
       - name: Build and push backend image
         run: |
           az acr build --registry ${{ env.ACR_NAME }} \
           --image backend-${{ env.BRANCH_NAME }}:latest \
+          --image backend-${{ env.BRANCH_NAME }}:${{ env.TIMESTAMP }} \
           --target prod backend/tennis/
 
       - name: Build and push frontend prod image
         run: |
           az acr build --registry ${{ env.ACR_NAME }} \
           --image frontend-${{ env.BRANCH_NAME }}:latest \
+          --image frontend-${{ env.BRANCH_NAME }}:${{ env.TIMESTAMP }} \
           --target prod frontend/art-of-tennis/
 
       - name: Build and push celery prod image
         run: |
           az acr build --registry ${{ env.ACR_NAME }} \
           --image celery-${{ env.BRANCH_NAME }}:latest \
+          --image celery-${{ env.BRANCH_NAME }}:${{ env.TIMESTAMP }} \
           --target prod backend/tennis/
