@@ -67,7 +67,6 @@ resource "azurerm_postgresql_flexible_server" "db" {
   backup_retention_days        = 7
   geo_redundant_backup_enabled = false
 
-  # High availability is not needed, so this block is removed
   tags = local.tags
 
   zone = "1"
