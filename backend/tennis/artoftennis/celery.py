@@ -3,10 +3,10 @@ import os
 from celery import Celery
 
 # Determine if the environment is production
-IS_PROD = os.getenv('IS_PROD', 'False').lower() in ('true', '1', 't')
+# IS_PROD = os.getenv('IS_PROD', 'False').lower() in ('true', '1', 't')
 
 # Set the default Django settings module for the 'celery' program.
-settings_module = 'artoftennis.settings.prod' if IS_PROD else 'artoftennis.settings.dev'
+settings_module = 'artoftennis.settings.production' if os.getenv('IS_PROD') else 'artoftennis.settings.dev'
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', settings_module)
 
 app = Celery('artoftennis')

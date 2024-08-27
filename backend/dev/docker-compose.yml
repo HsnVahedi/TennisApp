@@ -15,7 +15,7 @@ services:
       - DATABASE_NAME=tennis
       - DATABASE_PORT=5432
       - PYTHONUNBUFFERED=1
-      - IS_PROD=False 
+      # - IS_PROD=False 
     env_file:
       - .env.local
     volumes:
@@ -38,7 +38,7 @@ services:
       - DATABASE_NAME=tennis
       - DATABASE_PORT=5432
       - PYTHONUNBUFFERED=1
-      - IS_PROD=False 
+      # - IS_PROD=False 
     env_file:
       - .env.local
   redis:

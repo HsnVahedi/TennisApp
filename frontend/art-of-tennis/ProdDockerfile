@@ -1,0 +1,27 @@
+# FROM node:lts-alpine3.19 as base 
+# RUN apk update && apk add --no-cache sudo && echo 'node ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+# USER node
+# WORKDIR /app/art-of-tennis
+# COPY --chown=node:node package*.json ./
+# RUN npm install
+# COPY --chown=node:node . .
+# EXPOSE 3000
+
+
+FROM node:lts-alpine3.19 as base 
+RUN apk update && apk add --no-cache sudo && echo 'node ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+USER node
+WORKDIR /app/art-of-tennis
+COPY --chown=node:node package*.json ./
+RUN sudo chown -R node:node /app/art-of-tennis
+
+########################################
+RUN ls
+########################################
+
+RUN npm install
+COPY --chown=node:node . .
+USER node
+ENV NODE_ENV=development
+CMD sh -c ". entrypoint.sh"
+# EXPOSE 3000

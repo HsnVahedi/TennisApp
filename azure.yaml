@@ -1,0 +1,25 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
+
+name: azure-aca
+metadata:
+    template: azure-aca@0.0.1
+infra:
+    provider: "bicep"
+services:
+    web:
+        project: backend/tennis
+        language: py
+        module: web
+        host: containerapp
+        docker:
+            path: ./ProdDockerfile
+    frontend:
+        project: frontend/art-of-tennis
+        language: js
+        module: frontend
+        host: containerapp
+        docker:
+            path: ./ProdDockerfile
+
+
+# TODO: Look at pyproject.toml and learn the use of it and set it up for this project
