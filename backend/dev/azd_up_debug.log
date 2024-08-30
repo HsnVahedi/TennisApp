@@ -1,0 +1,16 @@
+2024/08/28 10:57:51 main.go:56: azd version: 1.9.6 (commit 0b1a8ad350177078312141f4465ad72205d7c077)
+2024/08/28 10:57:51 main.go:214: using cached latest version: 1.9.5 (expires on: 2024-08-29T06:32:19Z)
+2024/08/28 10:57:51 project.go:120: Reading project from file '/home/hossein/Projects/ArtOfTennis/azure.yaml'
+2024/08/28 10:57:51 middleware.go:108: running middleware 'debug'
+2024/08/28 10:57:51 middleware.go:108: running middleware 'ux'
+2024/08/28 10:57:51 middleware.go:108: running middleware 'experimentation'
+2024/08/28 10:57:51 experimentation.go:42: assignment context: 9936g960:76971;
+2024/08/28 10:57:51 middleware.go:108: running middleware 'telemetry'
+2024/08/28 10:57:51 telemetry.go:43: TraceID: 062fb2ebcc76730d9066f347875eae07
+2024/08/28 10:57:51 middleware.go:108: running middleware 'hooks'
+2024/08/28 10:57:51 project.go:120: Reading project from file '/home/hossein/Projects/ArtOfTennis/azure.yaml'
+2024/08/28 10:57:51 hooks.go:143: service 'celery' does not require any command hooks.
+2024/08/28 10:57:51 hooks.go:143: service 'frontend' does not require any command hooks.
+2024/08/28 10:57:51 hooks.go:143: service 'web' does not require any command hooks.
+2024/08/28 10:57:51 hooks.go:78: azd project is not available or does not contain any command hooks, skipping command hook registrations.
+2024/08/28 10:57:52 importer.go:141: using infrastructure from /home/hossein/Projects/ArtOfTennis/infra directory

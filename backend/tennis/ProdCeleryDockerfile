@@ -16,6 +16,11 @@ RUN apt-get update --yes --quiet && apt-get install --yes --quiet --no-install-r
     && rm -rf /var/lib/apt/lists/*
 
 
+####################################
+RUN apt-get update --yes
+####################################
+
+
 RUN useradd -ms /bin/bash django
 RUN echo 'django ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 USER django
@@ -29,4 +34,4 @@ RUN pip install -r /requirements.txt
 COPY --chown=django:django . .
 
 
-CMD bash -c ". entrypoint.sh"
+CMD bash -c ". celery-entrypoint.sh"

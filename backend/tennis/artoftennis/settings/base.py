@@ -155,9 +155,6 @@ STATICFILES_DIRS = [
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 STATIC_URL = "/static/"
 
-MEDIA_ROOT = os.path.join(BASE_DIR, "media")
-MEDIA_URL = "/media/"
-
 
 # Wagtail settings
 
@@ -246,12 +243,12 @@ SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/accounts/login/'
 ##########################
 ######## Azure ML ########
 ##########################
-RESOURCE_GROUP = os.getenv('RESOURCE_GROUP')
-WORKSPACE_NAME = os.getenv('WORKSPACE_NAME')
-SUBSCRIPTION_ID = os.getenv('SUBSCRIPTION_ID')
-TENANT_ID = os.getenv('TENANT_ID')
-CLIENT_ID = os.getenv('CLIENT_ID')
-CLIENT_SECRET = os.getenv('CLIENT_SECRET')
+RESOURCE_GROUP = os.getenv('ML_RESOURCE_GROUP')
+WORKSPACE_NAME = os.getenv('ML_WORKSPACE_NAME')
+SUBSCRIPTION_ID = os.getenv('ML_SUBSCRIPTION_ID')
+TENANT_ID = os.getenv('ML_TENANT_ID')
+CLIENT_ID = os.getenv('ML_CLIENT_ID')
+CLIENT_SECRET = os.getenv('ML_CLIENT_SECRET')
 ##########################
 ######## Azure ML ########
 ##########################
@@ -291,21 +288,4 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 ##########################
 ##### Wagtail Media ######
-##########################
-
-
-##########################
-######### Celery #########
-##########################
-
-CELERY_BROKER_URL = 'redis://redis:6379/0'
-CELERY_RESULT_BACKEND = 'redis://redis:6379/0'
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_SERIALIZER = 'json'
-CELERY_TIMEZONE = 'UTC'
-
-
-##########################
-######### Celery #########
 ##########################

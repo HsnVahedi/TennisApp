@@ -42,8 +42,8 @@ param daprAppId string = containerName
 @description('Specifies if the resource already exists')
 param exists bool = false
 
-@description('Specifies if Ingress is enabled for the container app')
-param ingressEnabled bool = true
+// @description('Specifies if Ingress is enabled for the container app')
+// param ingressEnabled bool = false
 
 @description('The type of identity for the resource')
 @allowed([ 'None', 'SystemAssigned', 'UserAssigned' ])
@@ -54,6 +54,9 @@ param identityName string = ''
 
 @description('The name of the container image')
 param imageName string = ''
+
+@description('The container registry access name')
+param containerRegistryAccessName string
 
 @description('The secrets required for the container')
 @secure()
@@ -67,13 +70,13 @@ param keyvaultIdentities object = {}
 param env array = []
 
 @description('Specifies if the resource ingress is exposed externally')
-param external bool = true
+param external bool = false
 
 @description('The service binds associated with the container')
 param serviceBinds array = []
 
-@description('The target port for the container')
-param targetPort int = 80
+// @description('The target port for the container')
+// param targetPort int = 80
 
 // Service options
 @description('PostgreSQL service ID')
@@ -83,7 +86,7 @@ resource existingApp 'Microsoft.App/containerApps@2023-05-02-preview' existing =
   name: name
 }
 
-module app 'container-app.bicep' = {
+module app 'celery-container-app.bicep' = {
   name: '${deployment().name}-update'
   params: {
     name: name
@@ -91,7 +94,7 @@ module app 'container-app.bicep' = {
     tags: tags
     identityType: identityType
     identityName: identityName
-    ingressEnabled: ingressEnabled
+    // ingressEnabled: ingressEnabled
     containerName: containerName
     containerAppsEnvironmentName: containerAppsEnvironmentName
     containerRegistryName: containerRegistryName
@@ -109,8 +112,9 @@ module app 'container-app.bicep' = {
     external: external
     env: env
     imageName: !empty(imageName) ? imageName : exists ? existingApp.properties.template.containers[0].image : ''
-    targetPort: targetPort
+    // targetPort: targetPort
     serviceBinds: serviceBinds
+    containerRegistryAccessName: containerRegistryAccessName
   }
 }
 
@@ -118,4 +122,3 @@ output defaultDomain string = app.outputs.defaultDomain
 output imageName string = app.outputs.imageName
 output name string = app.outputs.name
 output uri string = app.outputs.uri
-output containerRegistryAccessName string = app.outputs.containerRegistryAccessName

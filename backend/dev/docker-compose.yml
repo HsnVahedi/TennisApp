@@ -1,5 +1,5 @@
 services:
-  backend: 
+  backend:
     build:
       context: ../tennis
       dockerfile: Dockerfile
@@ -8,12 +8,16 @@ services:
       - "8000:8000"
     depends_on:
       - db
+      - azurite
     environment:
       - DATABASE_HOST=db
       - DATABASE_USER=db_user
       - DATABASE_PASSWORD=db_password
       - DATABASE_NAME=tennis
       - DATABASE_PORT=5432
+      - AZURE_STORAGE_CONNECTION_STRING=DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFeZ/f1RZyueT6SLG6WTyHJQ1hvvlk=;BlobEndpoint=http://azurite:10000/devstoreaccount1;
+      - AZURE_STORAGE_CONTAINER_NAME=media
+      - AZURE_STATIC_CONTAINER_NAME=static
       - PYTHONUNBUFFERED=1
       # - IS_PROD=False 
     env_file:
@@ -31,12 +35,16 @@ services:
     depends_on:
       - backend
       - redis
+      - azurite
     environment:
       - DATABASE_HOST=db
       - DATABASE_USER=db_user
       - DATABASE_PASSWORD=db_password
       - DATABASE_NAME=tennis
       - DATABASE_PORT=5432
+      - AZURE_STORAGE_CONNECTION_STRING=DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFeZ/f1RZyueT6SLG6WTyHJQ1hvvlk=;BlobEndpoint=http://azurite:10000/devstoreaccount1;
+      - AZURE_STORAGE_CONTAINER_NAME=media
+      - AZURE_STATIC_CONTAINER_NAME=static
       - PYTHONUNBUFFERED=1
       # - IS_PROD=False 
     env_file:
@@ -56,7 +64,26 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - art_of_tennis_postgres:/var/lib/postgresql/data 
+      - art_of_tennis_postgres:/var/lib/postgresql/data
+  azurite:
+    image: mcr.microsoft.com/azure-storage/azurite
+    command: "azurite-blob --blobHost 0.0.0.0 --blobPort 10000"
+    ports:
+      - "10000:10000"
+    volumes:
+      - azurite_data:/data
+      - ./setup_azurite.py:/setup_azurite.py  # Mount the setup script into the container
+    environment:
+      - AZURITE_ACCOUNTS=devstoreaccount1:Eby8vdM02xNOcqFeZ/f1RZyueT6SLG6WTyHJQ1hvvlk=
+    # entrypoint: >
+    #   /bin/sh -c "
+    #   azurite-blob --blobHost 0.0.0.0 --blobPort 10000 &
+    #   sleep 5 &&
+    #   python /setup_azurite.py
+    #   " 
+
+
 volumes:
   art_of_tennis_postgres:
   art_of_tennis_redis_data:
+  azurite_data:

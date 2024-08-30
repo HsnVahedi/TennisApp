@@ -19,6 +19,7 @@ param secretKey string
 
 param webAppExists bool = false
 param frontendAppExists bool = false
+param celeryAppExists bool = false
 
 @description('Id of the user or app to assign application roles')
 param principalId string = ''
@@ -70,10 +71,20 @@ module virtualNetwork 'br/public:avm/res/network/virtual-network:0.1.8' = {
             service: 'Microsoft.KeyVault'
           }
         ]
-      }
+      } 
       {
         addressPrefix: '10.0.4.0/23'
         name: 'frontend'
+        tags: tags
+        serviceEndpoints: [
+          {
+            service: 'Microsoft.KeyVault'
+          }
+        ]
+      }
+      {
+        addressPrefix: '10.0.6.0/23'
+        name: 'celery'
         tags: tags
         serviceEndpoints: [
           {
@@ -219,6 +230,15 @@ module monitoring 'core/monitor/monitoring.bicep' = {
 //   }
 // }
 
+module redis 'core/cache/redis.bicep' = {
+  name: 'redis'
+  scope: resourceGroup
+  params: {
+    location: location
+    tags: tags
+  }
+}
+
 
 var containerRegistryName = '${replace(prefix, '-', '')}registry'
 
@@ -226,6 +246,9 @@ var containerRegistryName = '${replace(prefix, '-', '')}registry'
 module containerApps 'core/host/container-apps.bicep' = {
   name: 'container-apps'
   scope: resourceGroup
+  dependsOn: [
+    redis
+  ]
   params: {
     name: 'app'
     location: location
@@ -236,9 +259,28 @@ module containerApps 'core/host/container-apps.bicep' = {
   }
 }
 
+module celeryContainerApps 'core/host/celery-container-apps.bicep' = {
+  name: 'celery-container-apps'
+  scope: resourceGroup
+  dependsOn: [
+    redis, containerApps
+  ]
+  params: {
+    // name: 'celery'
+    // location: location
+    containerAppsEnvironmentName: containerApps.outputs.environmentName
+    containerRegistryName: containerRegistryName
+    // logAnalyticsWorkspaceResourceId: monitoring.outputs.logAnalyticsWorkspaceId
+    // virtualNetworkSubnetId: virtualNetwork.outputs.subnetResourceIds[3]
+  }
+}
+
 module frontendContainerApps 'core/host/frontend-container-apps.bicep' = {
   name: 'frontend-container-apps'
   scope: resourceGroup
+  dependsOn: [
+    containerApps, celeryContainerApps
+  ]
   params: {
     name: 'frontend-app'
     location: location
@@ -272,6 +314,36 @@ module web 'web.bicep' = {
     storageAccountName: blobStorage.outputs.storageAccountName
     staticFilesContainerName: blobStorage.outputs.staticContainerName
     mediaFilesContainerName: blobStorage.outputs.mediaContainerName
+    redisName: redis.outputs.redisName
+  }
+}
+
+
+var containerRegistryAccessName = web.outputs.containerRegistryAccessName 
+
+module celery 'celery.bicep' = {
+  name: 'celery'
+  scope: resourceGroup
+  dependsOn: [web]
+  params: {
+    name: replace('${take(prefix,19)}-celery', '--', '-')
+    location: location
+    tags: tags
+    // applicationInsightsName: monitoring.outputs.applicationInsightsName
+    keyVaultName: keyVault.outputs.name
+    identityName: identityName 
+    containerAppsEnvironmentName: celeryContainerApps.outputs.environmentName
+    containerRegistryName: containerApps.outputs.registryName
+    exists: celeryAppExists
+    dbserverDomainName: db.outputs.dbserverDomainName
+    dbserverUser: db.outputs.dbserverUser
+    dbserverDatabaseName: db.outputs.dbserverDatabaseName
+    dbserverPassword: dbserverPassword
+    storageAccountName: blobStorage.outputs.storageAccountName
+    staticFilesContainerName: blobStorage.outputs.staticContainerName
+    mediaFilesContainerName: blobStorage.outputs.mediaContainerName
+    redisName: redis.outputs.redisName
+    containerRegistryAccessName: containerRegistryAccessName
   }
 }
 
@@ -280,7 +352,7 @@ module frontend 'frontend.bicep' = {
   name: 'frontend'
   scope: resourceGroup
   dependsOn: [
-    web
+    web, celery
   ]
   params: {
     name: replace('${take(prefix,19)}-front', '--', '-')
@@ -293,6 +365,7 @@ module frontend 'frontend.bicep' = {
     exists: frontendAppExists
     backendApiUri: web.outputs.SERVICE_WEB_URI
     // keyVaultName: keyVault.outputs.name
+    containerRegistryAccessName: containerRegistryAccessName
   }
 }
 
@@ -328,6 +401,7 @@ output FRONTEND_URI string = frontend.outputs.uri
 
 output APP_EXISTS bool = webAppExists
 output FRONTEND_EXISTS bool = frontendAppExists
+output CELERY_EXISTS bool = celeryAppExists
 
 output AZURE_KEY_VAULT_ENDPOINT string = keyVault.outputs.uri
 output AZURE_KEY_VAULT_NAME string = keyVault.outputs.name

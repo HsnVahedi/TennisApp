@@ -6,6 +6,7 @@ backend/tennis/media
 backend/tennis/random
 backend/tennis/video.mp4
 backend-tmp
+temp/
 *.mp4
 **/sample-input
 **/.terraform

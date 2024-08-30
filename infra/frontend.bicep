@@ -10,6 +10,7 @@ param identityName string
 param serviceName string = 'frontend'
 param backendApiUri string
 // param keyVaultName string
+param containerRegistryAccessName string
 
 
 // resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' existing = {
@@ -34,7 +35,7 @@ resource webIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-3
 
 
 
-module app 'core/host/container-app-upsert.bicep' = {
+module app 'core/host/frontend-container-app-upsert.bicep' = {
   name: '${serviceName}-container-app-module'
   // dependsOn: [keyVaultRoleAssignment]
   params: {
@@ -45,6 +46,7 @@ module app 'core/host/container-app-upsert.bicep' = {
     exists: exists
     containerAppsEnvironmentName: containerAppsEnvironmentName
     containerRegistryName: containerRegistryName
+    containerRegistryAccessName: containerRegistryAccessName
     // TODO: Optimize these values to be as less as possible:
     // In Azure Container Apps, the available combinations of CPU and memory are predefined. You can allocate CPU and memory resources as follows:
 

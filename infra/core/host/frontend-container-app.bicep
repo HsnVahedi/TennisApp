@@ -107,13 +107,13 @@ var normalizedIdentityType = !empty(identityName) ? 'UserAssigned' : identityTyp
 //   identity: secret.value.identity
 // }] 
 
-module containerRegistryAccess '../security/registry-access.bicep' = if (usePrivateRegistry) {
-  name: containerRegistryAccessName
-  params: {
-    containerRegistryName: containerRegistryName
-    principalId: usePrivateRegistry ? userIdentity.properties.principalId : ''
-  }
-}
+// module containerRegistryAccess '../security/registry-access.bicep' = if (usePrivateRegistry) {
+//   name: containerRegistryAccessName
+//   params: {
+//     containerRegistryName: containerRegistryName
+//     principalId: usePrivateRegistry ? userIdentity.properties.principalId : ''
+//   }
+// }
 
 resource app 'Microsoft.App/containerApps@2023-05-02-preview' = {
   name: name
@@ -123,7 +123,7 @@ resource app 'Microsoft.App/containerApps@2023-05-02-preview' = {
   // otherwise the container app will throw a provision error
   // This also forces us to use an user assigned managed identity since there would no way to 
   // provide the system assigned identity with the ACR pull access before the app is created
-  dependsOn: usePrivateRegistry ? [ containerRegistryAccess ] : []
+  // dependsOn: usePrivateRegistry ? [ containerRegistryAccess ] : []
   identity: {
     type: normalizedIdentityType
     userAssignedIdentities: !empty(identityName) && normalizedIdentityType == 'UserAssigned' ? { '${userIdentity.id}': {} } : null
@@ -131,6 +131,7 @@ resource app 'Microsoft.App/containerApps@2023-05-02-preview' = {
   properties: {
     managedEnvironmentId: containerAppsEnvironment.id
     configuration: {
+      maxInactiveRevisions: 0
       activeRevisionsMode: revisionMode
       ingress: ingressEnabled ? {
         external: external

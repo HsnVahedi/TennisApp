@@ -14,6 +14,12 @@
       "webAppExists": {
         "value": "${SERVICE_WEB_RESOURCE_EXISTS=false}"
       },
+      "frontendAppExists": {
+        "value": "${SERVICE_FRONTEND_RESOURCE_EXISTS=false}"
+      },
+      "celeryAppExists": {
+        "value": "${SERVICE_CELERY_RESOURCE_EXISTS=false}"
+      },
       "dbserverPassword": {
         "value": "$(secretOrRandomPassword ${AZURE_KEY_VAULT_NAME} DBSERVERPASSWORD)"
       },

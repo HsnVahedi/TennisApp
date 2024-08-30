@@ -49,7 +49,7 @@ param daprEnabled bool = false
 param env array = []
 
 @description('Specifies if the resource ingress is exposed externally')
-param external bool = true
+param external bool = false
 
 @description('The name of the user-assigned identity')
 param identityName string = ''
@@ -62,7 +62,7 @@ param identityType string = 'None'
 param imageName string = ''
 
 @description('Specifies if Ingress is enabled for the container app')
-param ingressEnabled bool = true
+// param ingressEnabled bool = true
 
 param revisionMode string = 'Single'
 
@@ -80,12 +80,15 @@ param serviceBinds array = []
 @description('The name of the container apps add-on to use. e.g. redis')
 param serviceType string = ''
 
-@description('The target port for the container')
-param targetPort int = 80
+// @description('The target port for the container')
+// param targetPort int = 80
 
 resource userIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-31' existing = if (!empty(identityName)) {
   name: identityName
 }
+
+@description('The container registry access name')
+param containerRegistryAccessName string
 
 // Private registry support requires both an ACR name and a User Assigned managed identity
 var usePrivateRegistry = !empty(identityName) && !empty(containerRegistryName)
@@ -104,13 +107,13 @@ var keyvaultIdentitySecrets = [for secret in items(keyvaultIdentities): {
   identity: secret.value.identity
 }] 
 
-module containerRegistryAccess '../security/registry-access.bicep' = if (usePrivateRegistry) {
-  name: '${deployment().name}-registry-access'
-  params: {
-    containerRegistryName: containerRegistryName
-    principalId: usePrivateRegistry ? userIdentity.properties.principalId : ''
-  }
-}
+// module containerRegistryAccess '../security/registry-access.bicep' = if (usePrivateRegistry) {
+//   name: containerRegistryAccessName
+//   params: {
+//     containerRegistryName: containerRegistryName
+//     principalId: usePrivateRegistry ? userIdentity.properties.principalId : ''
+//   }
+// }
 
 resource app 'Microsoft.App/containerApps@2023-05-02-preview' = {
   name: name
@@ -120,7 +123,7 @@ resource app 'Microsoft.App/containerApps@2023-05-02-preview' = {
   // otherwise the container app will throw a provision error
   // This also forces us to use an user assigned managed identity since there would no way to 
   // provide the system assigned identity with the ACR pull access before the app is created
-  dependsOn: usePrivateRegistry ? [ containerRegistryAccess ] : []
+  // dependsOn: usePrivateRegistry ? [ containerRegistryAccess ] : []
   identity: {
     type: normalizedIdentityType
     userAssignedIdentities: !empty(identityName) && normalizedIdentityType == 'UserAssigned' ? { '${userIdentity.id}': {} } : null
@@ -128,21 +131,23 @@ resource app 'Microsoft.App/containerApps@2023-05-02-preview' = {
   properties: {
     managedEnvironmentId: containerAppsEnvironment.id
     configuration: {
-      maxInactiveRevisions: 0
       activeRevisionsMode: revisionMode
-      ingress: ingressEnabled ? {
-        external: external
-        targetPort: targetPort
-        transport: 'auto'
-        corsPolicy: {
-          allowedOrigins: union([ 'https://portal.azure.com', 'https://ms.portal.azure.com' ], allowedOrigins)
-        }
-      } : null
+      // ingress: ingressEnabled ? {
+      //   external: external
+      //   targetPort: targetPort
+      //   transport: 'auto'
+      //   corsPolicy: {
+      //     allowedOrigins: union([ 'https://portal.azure.com', 'https://ms.portal.azure.com' ], allowedOrigins)
+      //   }
+      // } : null
+      maxInactiveRevisions: 0
+      ingress: null
       dapr: daprEnabled ? {
         enabled: true
         appId: daprAppId
         appProtocol: daprAppProtocol
-        appPort: ingressEnabled ? targetPort : 0
+        // appPort: ingressEnabled ? targetPort : 0
+        appPort: 0
       } : { enabled: false }
       secrets: concat(keyvalueSecrets, keyvaultIdentitySecrets)
       service: !empty(serviceType) ? { type: serviceType } : null
@@ -183,5 +188,5 @@ output identityPrincipalId string = normalizedIdentityType == 'None' ? '' : (emp
 output imageName string = imageName
 output name string = app.name
 output serviceBind object = !empty(serviceType) ? { serviceId: app.id, name: name } : {}
-output uri string = ingressEnabled ? 'https://${app.properties.configuration.ingress.fqdn}' : ''
-output containerRegistryAccessName string = containerRegistryAccess.name
+// output uri string = ingressEnabled ? 'https://${app.properties.configuration.ingress.fqdn}' : ''
+output uri string = ''

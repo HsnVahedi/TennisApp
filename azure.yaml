@@ -20,6 +20,13 @@ services:
         host: containerapp
         docker:
             path: ./ProdDockerfile
+    celery:
+        project: backend/tennis
+        language: py
+        module: celery
+        host: containerapp
+        docker:
+            path: ./ProdCeleryDockerfile
 
 
 # TODO: Look at pyproject.toml and learn the use of it and set it up for this project

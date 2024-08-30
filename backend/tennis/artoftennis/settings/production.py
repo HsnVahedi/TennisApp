@@ -1,6 +1,6 @@
 from .base import *
 
-DEBUG = False
+DEBUG = True
 
 APPLICATION_URL = os.environ["CONTAINER_APP_NAME"] + "." + os.environ["CONTAINER_APP_ENV_DNS_SUFFIX"]
 
@@ -71,9 +71,42 @@ STATIC_URL = f'https://{AZURE_ACCOUNT_NAME}.blob.core.windows.net/{AZURE_LOCATIO
 # DEFAULT_FILE_STORAGE = 'storages.backends.azure_storage.AzureStorage'
 MEDIA_LOCATION = AZURE_MEDIA_CONTAINER
 MEDIA_URL = f'https://{AZURE_ACCOUNT_NAME}.blob.core.windows.net/{MEDIA_LOCATION}/'
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 # Media root is not needed because media files will be stored in Azure Blob Storage.
 
+
+##########################
+######### Celery #########
+##########################
+
+REDIS_HOST = os.environ.get('REDIS_HOST') 
+REDIS_PORT = os.environ.get('REDIS_PORT') 
+REDIS_PASSWORD = os.environ.get('REDIS_PASSWORD')
+
+# CELERY_BROKER_URL = f'rediss://:{REDIS_PASSWORD}@{REDIS_HOST}:{REDIS_PORT}/0?ssl_cert_reqs=required'
+CELERY_BROKER_URL = f'redis://:{REDIS_PASSWORD}@{REDIS_HOST}:{REDIS_PORT}/0'
+CELERY_RESULT_BACKEND = CELERY_BROKER_URL
+
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'UTC'
+CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
+
+
+# Optional: If using django-celery-beat
+# INSTALLED_APPS += ['django_celery_beat']
+
+# Enable SSL if required by your Redis instance
+# CELERY_BROKER_USE_SSL = {
+#     'ssl_cert_reqs': 'required',
+#     'ssl_ca_certs': '/etc/ssl/certs/ca-certificates.crt',  # adjust to your system
+# }
+
+##########################
+######### Celery #########
+##########################
 
 
 try:
