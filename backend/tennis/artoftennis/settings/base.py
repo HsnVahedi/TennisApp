@@ -96,16 +96,17 @@ WSGI_APPLICATION = "artoftennis.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.getenv('DATABASE_NAME'),
-        "USER": os.getenv('DATABASE_USER'),
-        "PASSWORD": os.getenv('DATABASE_PASSWORD'),
-        "HOST": os.getenv('DATABASE_HOST'),
-        "PORT": os.getenv('DATABASE_PORT'),
-    }
-}
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.postgresql",
+#         "NAME": os.getenv('DATABASE_NAME'),
+#         "USER": os.getenv('DATABASE_USER'),
+#         "PASSWORD": os.getenv('DATABASE_PASSWORD'),
+#         "HOST": os.getenv('DATABASE_HOST'),
+#         "PORT": os.getenv('DATABASE_PORT', '5432'),
+#     }
+# }
+
 
 
 # Password validation
@@ -153,24 +154,6 @@ STATICFILES_DIRS = [
 
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 STATIC_URL = "/static/"
-
-MEDIA_ROOT = os.path.join(BASE_DIR, "media")
-MEDIA_URL = "/media/"
-
-# Default storage settings, with the staticfiles storage updated.
-# See https://docs.djangoproject.com/en/4.2/ref/settings/#std-setting-STORAGES
-STORAGES = {
-    "default": {
-        "BACKEND": "django.core.files.storage.FileSystemStorage",
-    },
-    # ManifestStaticFilesStorage is recommended in production, to prevent
-    # outdated JavaScript / CSS assets being served from cache
-    # (e.g. after a Wagtail upgrade).
-    # See https://docs.djangoproject.com/en/4.2/ref/contrib/staticfiles/#manifeststaticfilesstorage
-    "staticfiles": {
-        "BACKEND": "django.contrib.staticfiles.storage.ManifestStaticFilesStorage",
-    },
-}
 
 
 # Wagtail settings
@@ -260,12 +243,12 @@ SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/accounts/login/'
 ##########################
 ######## Azure ML ########
 ##########################
-RESOURCE_GROUP = os.getenv('RESOURCE_GROUP')
-WORKSPACE_NAME = os.getenv('WORKSPACE_NAME')
-SUBSCRIPTION_ID = os.getenv('SUBSCRIPTION_ID')
-TENANT_ID = os.getenv('TENANT_ID')
-CLIENT_ID = os.getenv('CLIENT_ID')
-CLIENT_SECRET = os.getenv('CLIENT_SECRET')
+RESOURCE_GROUP = os.getenv('ML_RESOURCE_GROUP')
+WORKSPACE_NAME = os.getenv('ML_WORKSPACE_NAME')
+SUBSCRIPTION_ID = os.getenv('ML_SUBSCRIPTION_ID')
+TENANT_ID = os.getenv('ML_TENANT_ID')
+CLIENT_ID = os.getenv('ML_CLIENT_ID')
+CLIENT_SECRET = os.getenv('ML_CLIENT_SECRET')
 ##########################
 ######## Azure ML ########
 ##########################
@@ -305,21 +288,4 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 ##########################
 ##### Wagtail Media ######
-##########################
-
-
-##########################
-######### Celery #########
-##########################
-
-CELERY_BROKER_URL = 'redis://redis:6379/0'
-CELERY_RESULT_BACKEND = 'redis://redis:6379/0'
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_SERIALIZER = 'json'
-CELERY_TIMEZONE = 'UTC'
-
-
-##########################
-######### Celery #########
 ##########################

@@ -10,8 +10,6 @@ from django.contrib.auth import get_user_model
 import io
 from django.core.files.base import ContentFile
 import uuid
-from ml.jobs.obj_detection.ball import invoke as invoke_ball
-from ml.jobs.obj_detection.objs import invoke as invoke_objs
 from ml.jobs.status import check_status, COMPLETED, FAILED, CANCELLED
 from ml.jobs.obj_detection.results import get_results as get_obj_detection_results
 from ml.jobs.obj_detection.results import Result as ObjDetectionResult
@@ -19,6 +17,7 @@ from typing import Dict, List
 import re
 from home.tasks import detect_objects_task
 import time
+from storage.media import download_dir_from_media
 
 
 User = get_user_model()
@@ -91,7 +90,7 @@ class TrimPage(Page):
         from videos.utils import get_video_length, extract_frames
         from videos.models import FramesBatch
         from images.utils import read_image, annotate_image
-        video_length = get_video_length(self.video.file.path)
+        video_length = get_video_length(self.video.file.name)
         batch_duration = 20 # seconds
         number_of_batches = int(video_length // batch_duration)
         if video_length % batch_duration:
@@ -103,7 +102,7 @@ class TrimPage(Page):
             batch = FramesBatch.objects.create(
                 trim_page=self, batch_number=i
             )
-            extract_frames(self.video.file.path, batch.dir_path, 5, start, end)
+            extract_frames(self.video.file.name, batch.dir_path, 5, start, end)
             detect_objects_task.delay(batch.pk)
             time.sleep(10)
             batches.append(batch)
@@ -162,7 +161,8 @@ class TrimPage(Page):
                         for obj_name in ball:
                             detections[frame][obj_name] = ball[obj_name]
                     for file_number in detections:
-                        file_name = f'{batch.dir_path}/{file_number}.jpg'
+                        file_name = download_dir_from_media(batch.dir_path) 
+                        file_name = f"{file_name}/{file_number}.jpg"
                         source_image = read_image(file_name)
                         annotated_image = annotate_image(source_image=source_image, boxes=detections[file_number])
                         self.add_new_frame_page(file_number, source_image, annotated_image, detections[file_number])

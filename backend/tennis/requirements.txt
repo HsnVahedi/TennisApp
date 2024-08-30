@@ -72,3 +72,6 @@ wagtailmedia
 opencv-python
 celery
 redis
+
+gunicorn
+django-storages[azure]

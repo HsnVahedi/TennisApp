@@ -10,6 +10,12 @@ variables:
   postfix: 0002
   location: eastus
   environment: prod
+  acr_name: craot00002prod
+
+
+
+
+
 
   # Azure DevOps
   ado_service_connection_rg: Azure-ARM-Prod

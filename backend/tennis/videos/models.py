@@ -2,6 +2,7 @@ from django.db import models
 import shutil
 from ml.jobs.obj_detection.ball import invoke as invoke_ball
 from ml.jobs.obj_detection.objs import invoke as invoke_objs
+import os
 
 
 class FramesBatch(models.Model):
@@ -39,7 +40,9 @@ class FramesBatch(models.Model):
 
 
     def remove_batch_dir(self):
-        shutil.rmtree(self.dir_path)
+        shutil.rmtree(
+            os.path.join("temp/", self.dir_path)
+        )
 
 
     def __str__(self):
