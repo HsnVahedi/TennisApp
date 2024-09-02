@@ -47,19 +47,19 @@ jobs:
           run: az login --service-principal --username ${{ env.AZURE_CLIENT_ID }} --password ${{ env.AZURE_CLIENT_SECRET }} --tenant ${{ env.AZURE_TENANT_ID }}
 
 
-        - name: Log in with Azure (Client Credentials)
-          if: ${{ env.AZURE_CREDENTIALS != '' }}
-          run: |
-            $info = $Env:AZURE_CREDENTIALS | ConvertFrom-Json -AsHashtable;
-            Write-Host "::add-mask::$($info.clientSecret)"
+        # - name: Log in with Azure (Client Credentials)
+        #   if: ${{ env.AZURE_CREDENTIALS != '' }}
+        #   run: |
+        #     $info = $Env:AZURE_CREDENTIALS | ConvertFrom-Json -AsHashtable;
+        #     Write-Host "::add-mask::$($info.clientSecret)"
 
-            azd auth login `
-              --client-id "$($info.clientId)" `
-              --client-secret "$($info.clientSecret)" `
-              --tenant-id "$($info.tenantId)"
-          shell: pwsh
-          env:
-            AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
+        #     azd auth login `
+        #       --client-id "$($info.clientId)" `
+        #       --client-secret "$($info.clientSecret)" `
+        #       --tenant-id "$($info.tenantId)"
+        #   shell: pwsh
+        #   env:
+        #     AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
 
         - name: Provision Infrastructure
           run: azd provision --no-prompt
