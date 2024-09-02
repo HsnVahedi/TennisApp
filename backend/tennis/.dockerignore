@@ -37,3 +37,9 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+
+# Exclude all .mp4 files
+*.mp4
+
+# Exclude sample-input directory
+/sample-input/
