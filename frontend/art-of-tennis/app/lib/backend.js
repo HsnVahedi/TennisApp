@@ -17,6 +17,12 @@ export const getBackendHost = () => {
 
 export const getBackendUrl = () => {
     const backendHost = getBackendHost()
+    console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+    console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+    console.log('backend host:', backendHost)
+    console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+    console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+    console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
     if (backendHost.includes("https")) {
         return backendHost
     }
@@ -25,5 +31,14 @@ export const getBackendUrl = () => {
 
 
 export const getClientSideBackendUrl = () => {
+    console.log('CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC')
+    console.log('CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC')
+    console.log('client side backend host:', process.env.CLIENT_SIDE_BACKEND_HOST)
+    console.log('CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC')
+    console.log('CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC')
+    if (process.env.CLIENT_SIDE_BACKEND_HOST.includes("https")) {
+        return process.env.CLIENT_SIDE_BACKEND_HOST
+
+    } 
     return `http://${process.env.CLIENT_SIDE_BACKEND_HOST}:${process.env.BACKEND_PORT}`
 }

@@ -12,11 +12,16 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const alreadyLoggedIn = searchParams.get('alreadyLoggedIn') === '1';
-  const path = `${process.env.NEXT_PUBLIC_NEXT_JS_HOME_PAGE_URI}${pathname}`;
 
   const authenticate = () => {
+    // alert('Are you sure?')
+    const azureUri = `https://${process.env.NEXT_PUBLIC_CONTAINER_APP_HOST_URL}`
+    const path = `${process.env.NEXT_PUBLIC_NEXT_JS_HOME_PAGE_URI || azureUri}${pathname}`;
+    alert(path)
     setSigningIn(true);
+    alert('1')
     signIn('django', { callbackUrl: path }, { frontendPage: path });
+    alert('2')
   };  
 
   useEffect(() => {

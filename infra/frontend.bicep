@@ -33,6 +33,11 @@ resource webIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-3
 //   name: storageAccountName
 // } 
 
+param keyVaultName string
+
+resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' existing = {
+  name: keyVaultName
+}
 
 
 module app 'core/host/frontend-container-app-upsert.bicep' = {
@@ -67,9 +72,40 @@ module app 'core/host/frontend-container-app-upsert.bicep' = {
         name: 'SERVER_SIDE_BACKEND_HOST'
         value: backendApiUri
       }
-    ]
+      {
+        name: 'BACKEND_PORT'
+        value: '80'
+      }
+      // {
+      //   name: 'NEXTAUTH_URL'
+      //   value: 'https://tennis-web-cb2im4wz-front.politeglacier-8f26ec6c.eastus.azurecontainerapps.io'
+      // }
+      // {
+      //   name: 'NEXT_PUBLIC_DJANGO_OAUTH_REDIRECT_URL'
+      //   value: app.outputs.uri
+      // }
+      {
+        name: 'NEXT_PUBLIC_DJANGO_CLIENT_ID'
+        secretRef: 'django-oauth-client-id'
+      }
+      {
+        name: 'NEXT_PUBLIC_DJANGO_CLIENT_SECRET'
+        secretRef: 'django-oauth-client-secret'
+      }
+    ] 
+    keyvaultIdentities: {
+      'django-oauth-client-id': {
+        keyVaultUrl: '${keyVault.properties.vaultUri}secrets/django-oauth-client-id'
+        identity: webIdentity.id
+      }
+      'django-oauth-client-secret': {
+        keyVaultUrl: '${keyVault.properties.vaultUri}secrets/django-oauth-client-secret'
+        identity: webIdentity.id
+      }
+    }
   }
 }
+
 
 // resource applicationInsights 'Microsoft.Insights/components@2020-02-02' existing = {
 //   name: applicationInsightsName

@@ -42,6 +42,10 @@ param daprAppProtocol string = 'http'
 @description('The Dapr app ID')
 param daprAppId string = containerName
 
+@description('The keyvault identities required for the container')
+@secure()
+param keyvaultIdentities object = {}
+
 @description('Enable Dapr')
 param daprEnabled bool = false
 
@@ -83,6 +87,10 @@ param serviceType string = ''
 @description('The target port for the container')
 param targetPort int = 80
 
+@description('The secrets required for the container')
+@secure()
+param secrets object = {}
+
 @description('The container registry access name')
 param containerRegistryAccessName string
 
@@ -95,6 +103,17 @@ var usePrivateRegistry = !empty(identityName) && !empty(containerRegistryName)
 
 // Automatically set to `UserAssigned` when an `identityName` has been set
 var normalizedIdentityType = !empty(identityName) ? 'UserAssigned' : identityType
+
+var keyvalueSecrets = [for secret in items(secrets): {
+  name: secret.key
+  value: secret.value
+}]
+
+var keyvaultIdentitySecrets = [for secret in items(keyvaultIdentities): {
+  name: secret.key
+  keyVaultUrl: secret.value.keyVaultUrl
+  identity: secret.value.identity
+}]
 
 // var keyvalueSecrets = [for secret in items(secrets): {
 //   name: secret.key
@@ -147,7 +166,7 @@ resource app 'Microsoft.App/containerApps@2023-05-02-preview' = {
         appProtocol: daprAppProtocol
         appPort: ingressEnabled ? targetPort : 0
       } : { enabled: false }
-      // secrets: concat(keyvalueSecrets, keyvaultIdentitySecrets)
+      secrets: concat(keyvalueSecrets, keyvaultIdentitySecrets)
       service: !empty(serviceType) ? { type: serviceType } : null
       registries: usePrivateRegistry ? [
         {
