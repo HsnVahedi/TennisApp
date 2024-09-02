@@ -53,5 +53,10 @@ class LoginView(DjangoLoginView):
 
 
 def after_social_login(request):
+    print('SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS')
+    print('SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS')
+    print('frontend_url:', request.GET['frontendPage'])
+    print('SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS')
+    print('SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS')
     frontend_url = request.GET['frontendPage']
     return redirect(f'{frontend_url}?alreadyLoggedIn=1')

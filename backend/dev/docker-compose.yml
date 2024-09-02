@@ -8,7 +8,6 @@ services:
       - "8000:8000"
     depends_on:
       - db
-      - azurite
     environment:
       - DATABASE_HOST=db
       - DATABASE_USER=db_user
@@ -35,7 +34,6 @@ services:
     depends_on:
       - backend
       - redis
-      - azurite
     environment:
       - DATABASE_HOST=db
       - DATABASE_USER=db_user
@@ -65,24 +63,6 @@ services:
       - "5432:5432"
     volumes:
       - art_of_tennis_postgres:/var/lib/postgresql/data
-  azurite:
-    image: mcr.microsoft.com/azure-storage/azurite
-    command: "azurite-blob --blobHost 0.0.0.0 --blobPort 10000"
-    ports:
-      - "10000:10000"
-    volumes:
-      - azurite_data:/data
-      - ./setup_azurite.py:/setup_azurite.py  # Mount the setup script into the container
-    environment:
-      - AZURITE_ACCOUNTS=devstoreaccount1:Eby8vdM02xNOcqFeZ/f1RZyueT6SLG6WTyHJQ1hvvlk=
-    # entrypoint: >
-    #   /bin/sh -c "
-    #   azurite-blob --blobHost 0.0.0.0 --blobPort 10000 &
-    #   sleep 5 &&
-    #   python /setup_azurite.py
-    #   " 
-
-
 volumes:
   art_of_tennis_postgres:
   art_of_tennis_redis_data:

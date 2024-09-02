@@ -11,6 +11,5 @@ export default function ProtectedRoute() {
         You will only see this if you are authenticated.
       </div>
     </ProtectionProvider>
-    
   );
 }
