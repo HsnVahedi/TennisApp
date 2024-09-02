@@ -58,6 +58,10 @@ param imageName string = ''
 @description('The container registry access name')
 param containerRegistryAccessName string
 
+@description('The keyvault identities required for the container')
+@secure()
+param keyvaultIdentities object = {}
+
 // @description('The secrets required for the container')
 // @secure()
 // param secrets object = {}
@@ -113,6 +117,7 @@ module app 'frontend-container-app.bicep' = {
     targetPort: targetPort
     serviceBinds: serviceBinds
     containerRegistryAccessName: containerRegistryAccessName
+    keyvaultIdentities: keyvaultIdentities
   }
 }
 

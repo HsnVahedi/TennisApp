@@ -167,6 +167,14 @@ module app 'core/host/celery-container-app-upsert.bicep' = {
         name: 'ML_RESOURCE_GROUP'
         secretRef: 'ml-resource-group'
       }
+      {
+        name: 'GITHUB_OAUTH_CLIENT_ID'
+        secretRef: 'github-oauth-client-id'
+      }
+      {
+        name: 'GITHUB_OAUTH_CLIENT_SECRET'
+        secretRef: 'github-oauth-client-secret'
+      }
     ]
 
 
@@ -201,6 +209,14 @@ module app 'core/host/celery-container-app-upsert.bicep' = {
       }
       'ml-resource-group': {
         keyVaultUrl: '${keyVault.properties.vaultUri}secrets/ml-resource-group'
+        identity: webIdentity.id
+      }
+      'github-oauth-client-id': {
+        keyVaultUrl: '${keyVault.properties.vaultUri}secrets/github-oauth-client-id'
+        identity: webIdentity.id
+      }
+      'github-oauth-client-secret': {
+        keyVaultUrl: '${keyVault.properties.vaultUri}secrets/github-oauth-client-secret'
         identity: webIdentity.id
       }
     }

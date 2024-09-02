@@ -105,7 +105,7 @@ var keyvaultIdentitySecrets = [for secret in items(keyvaultIdentities): {
   name: secret.key
   keyVaultUrl: secret.value.keyVaultUrl
   identity: secret.value.identity
-}] 
+}]
 
 // module containerRegistryAccess '../security/registry-access.bicep' = if (usePrivateRegistry) {
 //   name: containerRegistryAccessName

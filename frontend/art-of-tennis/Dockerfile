@@ -14,6 +14,9 @@ USER node
 WORKDIR /app/art-of-tennis
 COPY --chown=node:node package*.json ./
 RUN sudo chown -R node:node /app/art-of-tennis
+########################################################
+# RUN apk update
+########################################################
 RUN npm install
 COPY --chown=node:node . .
 EXPOSE 3000

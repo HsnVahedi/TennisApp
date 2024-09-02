@@ -359,7 +359,8 @@ module frontend 'frontend.bicep' = {
     location: location
     tags: tags
     // applicationInsightsName: frontendMonitoring.outputs.applicationInsightsName
-    identityName: identityName 
+    identityName: identityName
+    keyVaultName: keyVault.outputs.name
     containerAppsEnvironmentName: frontendContainerApps.outputs.environmentName
     containerRegistryName: frontendContainerApps.outputs.registryName
     exists: frontendAppExists
