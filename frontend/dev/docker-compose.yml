@@ -12,6 +12,8 @@ services:
       - SERVER_SIDE_BACKEND_HOST=backend
       - CLIENT_SIDE_BACKEND_HOST=localhost
       - BACKEND_PORT=8000
+    env_file:
+      - .env.local
     volumes:
       - ../:/app 
   celery:
@@ -31,8 +33,11 @@ services:
       - DATABASE_PASSWORD=db_password
       - DATABASE_NAME=tennis
       - DATABASE_PORT=5432
+      - AZURE_STORAGE_CONNECTION_STRING=DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFeZ/f1RZyueT6SLG6WTyHJQ1hvvlk=;BlobEndpoint=http://azurite:10000/devstoreaccount1;
+      - AZURE_STORAGE_CONTAINER_NAME=media
+      - AZURE_STATIC_CONTAINER_NAME=static
       - PYTHONUNBUFFERED=1
-      - IS_PROD=False 
+      # - IS_PROD=False 
     env_file:
       - .env.local
   redis:
@@ -57,7 +62,7 @@ services:
       - DATABASE_NAME=tennis
       - DATABASE_PORT=5432
       - PYTHONUNBUFFERED=1
-      - IS_PROD=False
+      # - IS_PROD=False
     env_file:
       - .env.local
     volumes:
