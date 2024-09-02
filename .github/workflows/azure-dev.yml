@@ -22,9 +22,9 @@ jobs:
       outputs:
         uri: ${{ steps.output.outputs.uri }}
       env:
-        AZURE_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
-        AZURE_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
-        AZURE_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+        AZURE_CLIENT_ID: ${{ vars.ARM_CLIENT_ID }}
+        AZURE_TENANT_ID: ${{ vars.ARM_TENANT_ID }}
+        AZURE_SUBSCRIPTION_ID: ${{ vars.ARM_SUBSCRIPTION_ID }}
         AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
       steps:
         - name: Checkout
