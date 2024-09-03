@@ -89,30 +89,30 @@ module app 'core/host/frontend-container-app-upsert.bicep' = {
 
 
 
-      // {
-      //   name: 'NEXT_PUBLIC_DJANGO_CLIENT_ID'
-      //   secretRef: 'django-oauth-client-id'
-      // }
-      // {
-      //   name: 'NEXT_PUBLIC_DJANGO_CLIENT_SECRET'
-      //   secretRef: 'django-oauth-client-secret'
-      // }
+      {
+        name: 'NEXT_PUBLIC_DJANGO_CLIENT_ID'
+        secretRef: 'django-oauth-client-id'
+      }
+      {
+        name: 'NEXT_PUBLIC_DJANGO_CLIENT_SECRET'
+        secretRef: 'django-oauth-client-secret'
+      }
 
 
 
 
 
     ] 
-    // keyvaultIdentities: {
-    //   'django-oauth-client-id': {
-    //     keyVaultUrl: '${keyVault.properties.vaultUri}secrets/django-oauth-client-id'
-    //     identity: webIdentity.id
-    //   }
-    //   'django-oauth-client-secret': {
-    //     keyVaultUrl: '${keyVault.properties.vaultUri}secrets/django-oauth-client-secret'
-    //     identity: webIdentity.id
-    //   }
-    // }
+    keyvaultIdentities: {
+      'django-oauth-client-id': {
+        keyVaultUrl: '${keyVault.properties.vaultUri}secrets/django-oauth-client-id'
+        identity: webIdentity.id
+      }
+      'django-oauth-client-secret': {
+        keyVaultUrl: '${keyVault.properties.vaultUri}secrets/django-oauth-client-secret'
+        identity: webIdentity.id
+      }
+    }
   }
 }
 
