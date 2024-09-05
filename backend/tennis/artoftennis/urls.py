@@ -8,7 +8,7 @@ from wagtail.documents import urls as wagtaildocs_urls
 
 from search import views as search_views
 
-from .views import DataAPIView, ProtectedDataAPIView, UserInfo, LoginView, after_social_login
+from .views import DataAPIView, ProtectedDataAPIView, UserInfo, LoginView, after_social_login, BatchImageUploadApiView
 from home.views import ExportTrimView, TrimVideoView
 
 
@@ -26,6 +26,7 @@ urlpatterns = [
     path('data/', DataAPIView.as_view(), name='data_api'),
     path('protected-data/', ProtectedDataAPIView.as_view(), name='protected_data_api'),
     path('after_social_login/', after_social_login, name='after_social_login'),
+    path('batch-image-upload/', BatchImageUploadApiView.as_view(), name='batch_image_upload'),
 ]
 
 
