@@ -67,6 +67,20 @@ const Card = ({ title, description }) => (
   </div>
 );
 
+const VideoCard = ({videoRef, videoSrc}) => {
+  return (
+    <div className="w-full max-w-6xl mb-4">
+      <video
+        ref={videoRef}
+        src={videoSrc}
+        controls
+        className="w-full rounded-lg shadow-lg"
+        style={{ aspectRatio: '16 / 9' }}
+      />
+    </div>
+  )
+}
+
 const VideoCards = ({videoRef, videoSrc}) => (
   <div className="w-full max-w-6xl mb-4">
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8"> 
@@ -76,52 +90,14 @@ const VideoCards = ({videoRef, videoSrc}) => (
     <Card title="title" description="description" />
     <Card title="title" description="description" />
     <Card title="title" description="description" /> */}
-    <div className="w-full max-w-6xl mb-4">
-      <video
-        ref={videoRef}
-        src={videoSrc}
-        controls
-        className="w-full rounded-lg shadow-lg"
-        style={{ aspectRatio: '16 / 9' }}
-      />
+    
+      <VideoCard videoRef={videoRef} videoSrc={videoSrc} />
+      <VideoCard videoRef={videoRef} videoSrc={videoSrc} />
+      <VideoCard videoRef={videoRef} videoSrc={videoSrc} />
+      <VideoCard videoRef={videoRef} videoSrc={videoSrc} />
+      <VideoCard videoRef={videoRef} videoSrc={videoSrc} />
+    
     </div>
-    <div className="w-full max-w-6xl mb-4">
-      <video
-        ref={videoRef}
-        src={videoSrc}
-        controls
-        className="w-full rounded-lg shadow-lg"
-        style={{ aspectRatio: '16 / 9' }}
-      />
-    </div>
-    <div className="w-full max-w-6xl mb-4">
-      <video
-        ref={videoRef}
-        src={videoSrc}
-        controls
-        className="w-full rounded-lg shadow-lg"
-        style={{ aspectRatio: '16 / 9' }}
-      />
-    </div>
-    <div className="w-full max-w-6xl mb-4">
-      <video
-        ref={videoRef}
-        src={videoSrc}
-        controls
-        className="w-full rounded-lg shadow-lg"
-        style={{ aspectRatio: '16 / 9' }}
-      />
-    </div>
-    <div className="w-full max-w-6xl mb-4">
-      <video
-        ref={videoRef}
-        src={videoSrc}
-        controls
-        className="w-full rounded-lg shadow-lg"
-        style={{ aspectRatio: '16 / 9' }}
-      />
-    </div>
-  </div>
   </div>
   
 );
