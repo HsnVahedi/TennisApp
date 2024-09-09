@@ -9,9 +9,9 @@ services:
     depends_on:
       - backend
     environment:
-      - SERVER_SIDE_BACKEND_HOST=backend
-      - CLIENT_SIDE_BACKEND_HOST=localhost
-      - BACKEND_PORT=8000
+      - NEXT_PUBLIC_SERVER_SIDE_BACKEND_HOST=backend
+      - NEXT_PUBLIC_CLIENT_SIDE_BACKEND_HOST=localhost
+      - NEXT_PUBLIC_BACKEND_PORT=8000
     env_file:
       - .env.local
     volumes:
