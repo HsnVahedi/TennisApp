@@ -71,8 +71,8 @@ module app 'core/host/container-app-upsert.bicep' = {
     // 1 vCPU: 2 GB, 3 GB, or 4 GB memory
     // 2 vCPU: 4 GB, 6 GB, or 8 GB memory
     // 4 vCPU: 8 GB, 12 GB, or 16 GB memory
-    containerMemory: '4.0Gi'
-    containerCpuCoreCount: '2'
+    containerMemory: '2.0Gi'
+    containerCpuCoreCount: '1'
     env: [
       {
         name: 'DATABASE_HOST'
