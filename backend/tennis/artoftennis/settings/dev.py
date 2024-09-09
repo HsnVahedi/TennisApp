@@ -9,6 +9,36 @@ SECRET_KEY = "django-insecure-0ch*ij0_yqdydhmnk=zy(=!g$$io&2+fig581^bkn12pv#zfv$
 # SECURITY WARNING: define the correct hosts in production!
 ALLOWED_HOSTS = ["*"]
 
+
+
+ALLOWED_HOSTS = ["*"]
+
+# Remove CSRF Middleware in dev environment
+MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    # "django.middleware.csrf.CsrfViewMiddleware",  # Comment or remove CSRF middleware in dev
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "django.middleware.security.SecurityMiddleware",
+    "wagtail.contrib.redirects.middleware.RedirectMiddleware",
+]
+
+# CORS and CSRF settings
+CORS_ALLOW_ALL_ORIGINS = True  # Allow all origins in dev
+CSRF_TRUSTED_ORIGINS = ['http://localhost:3000']  # Allow your frontend origin
+
+# Disable CSRF cookies in development (optional but safe in dev)
+CSRF_COOKIE_SECURE = False
+
+# CORS_ALLOW_ALL_ORIGINS = True
+# CSRF_TRUSTED_ORIGINS = ['http://localhost:3000']  # Include other domains if needed
+
+# # Completely disable CSRF (use with caution)
+# CSRF_COOKIE_SECURE = False
+
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 DATABASES = {

@@ -106,6 +106,12 @@ class TrimPage(Page):
             detect_objects_task.delay(batch.pk)
             time.sleep(10)
             batches.append(batch)
+        self.store_detections(batches)
+
+    # This method takes a lot of time to complete
+    # Don't call it syncronously. Use a celery task.
+    def store_detections(self, batches):
+        from images.utils import read_image, annotate_image
         while batches:
             random_index = random.randint(
                 0, len(batches) - 1
