@@ -11,7 +11,7 @@ ALLOWED_HOSTS = [
 # CORS_ALLOWED_ORIGINS = [
 #     "https://tennis-web-cb2im4wz-front.politeglacier-8f26ec6c.eastus.azurecontainerapps.io",
 # ]
-# TODO: It's not save to allow all origins. Need to change it to the actual frontend URL.
+# TODO: It's not safe to allow all origins. Need to change it to the actual frontend URL.
 CORS_ALLOW_ALL_ORIGINS = True
 
 

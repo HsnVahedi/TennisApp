@@ -10,7 +10,17 @@ from home.tasks import trim_video_task
 from django.contrib import messages
 from django.urls import reverse
 import io
+from rest_framework.permissions import IsAuthenticated
 from storage.media import write_to_media, read_from_media, download_from_media
+from rest_framework.views import APIView
+from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.response import Response
+from rest_framework import status
+
+
+
+
+
 
 
 class ExportTrimView(View):
@@ -113,3 +123,4 @@ class TrimVideoView(View):
         messages.success(request, "Video trimming started")
         edit_url = reverse('wagtailadmin_pages:edit', args=(page.pk,))
         return HttpResponseRedirect(edit_url)
+    

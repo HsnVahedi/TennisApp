@@ -3,12 +3,6 @@ import { getBackendUrl, getClientSideBackendUrl } from "@/app/lib/backend";
 
 const backendUrl = getBackendUrl();
 
-console.log('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%')
-console.log('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%')
-console.log('NEXT_PUBLIC_DJANGO_CLIENT_ID', process.env.NEXT_PUBLIC_DJANGO_CLIENT_ID)
-console.log('NEXT_PUBLIC_DJANGO_CLIENT_SECRET', process.env.NEXT_PUBLIC_DJANGO_CLIENT_SECRET)
-console.log('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%')
-console.log('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%')
 
 
 let authorizationUrl = getClientSideBackendUrl()
@@ -42,31 +36,31 @@ const DjangoProvider = {
     // },
 }
 
-console.log('666666666666666666666666666666666666666666666666666666666666666')
-console.log('666666666666666666666666666666666666666666666666666666666666666')
-console.log(DjangoProvider)
-console.log('666666666666666666666666666666666666666666666666666666666666666')
-console.log('666666666666666666666666666666666666666666666666666666666666666')
-
 const handler = NextAuth({
   debug: true,
   providers: [
     DjangoProvider,
   ],
-  // callbacks: {
-  //   async signIn({ user, account, profile, email, credentials }) {
-  //     return true
-  //   },
-  //   async redirect({ url, baseUrl }) {
-  //     return url.startsWith(baseUrl) ? url : baseUrl
-  //   },
-  //   async session({ session, user, token }) {
-  //     return session
-  //   },
-  //   async jwt({ token, user, account, profile, isNewUser }) {
-  //     return token
-  //   }
-  // },
+
+
+  callbacks: {
+    // This callback is triggered when a JWT is created or updated
+    async jwt({ token, account }) {
+      // When the user initially signs in, the `account` object contains access token details
+      if (account) {
+        token.accessToken = account.access_token; // Store access token in the JWT
+      }
+      return token; // Return updated token
+    },
+    
+    // This callback is triggered when a session is created or updated
+    async session({ session, token }) {
+      // Add access token to the session object
+      session.accessToken = token.accessToken;
+      return session;
+    },
+  },
+
 });
 
 export { handler as GET, handler as POST };
