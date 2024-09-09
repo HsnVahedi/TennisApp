@@ -101,7 +101,10 @@ module app 'core/host/frontend-container-app-upsert.bicep' = {
         name: 'NEXT_PUBLIC_DJANGO_CLIENT_SECRET'
         secretRef: 'django-oauth-client-secret'
       }
-
+      {
+        name: 'NEXTAUTH_SECRET'
+        secretRef: 'nextauth-secret'
+      }
 
 
 
@@ -114,6 +117,10 @@ module app 'core/host/frontend-container-app-upsert.bicep' = {
       }
       'django-oauth-client-secret': {
         keyVaultUrl: '${keyVault.properties.vaultUri}secrets/django-oauth-client-secret'
+        identity: webIdentity.id
+      }
+      'nextauth-secret': {
+        keyVaultUrl: '${keyVault.properties.vaultUri}secrets/nextauth-secret'
         identity: webIdentity.id
       }
     }
