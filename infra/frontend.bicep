@@ -65,6 +65,10 @@ module app 'core/host/frontend-container-app-upsert.bicep' = {
     targetPort: 3000
     env: [
       {
+        name: 'IS_PROD'
+        value: 'true'
+      }
+      {
         name: 'NEXT_PUBLIC_CLIENT_SIDE_BACKEND_HOST'
         value: backendApiUri
       }
