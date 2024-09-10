@@ -159,6 +159,11 @@ resource app 'Microsoft.App/containerApps@2023-05-02-preview' = {
         corsPolicy: {
           allowedOrigins: union([ 'https://portal.azure.com', 'https://ms.portal.azure.com' ], allowedOrigins)
         }
+        customDomains: [
+          {
+            name: 'artoftennis.ai'
+          }
+        ]
       } : null
       dapr: daprEnabled ? {
         enabled: true
