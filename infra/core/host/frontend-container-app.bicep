@@ -185,7 +185,9 @@ resource app 'Microsoft.App/containerApps@2023-05-02-preview' = {
         customDomains: [
           {
             name: 'artoftennis.ai'
-            certificateId: '${certificate.id}-art-of-t-240909021124'
+            // certificateId: '${certificate.id}-art-of-t-240909021124'
+            certificateId: certificate.id
+            bindingType: 'SniEnabled'
           }
         ]
       } : null
