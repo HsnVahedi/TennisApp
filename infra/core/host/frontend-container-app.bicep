@@ -243,7 +243,7 @@ resource managedEnvironmentManagedCertificate 'Microsoft.App/managedEnvironments
   tags: tags
   properties: {
     subjectName: 'artoftennis.ai' 
-    domainControlValidation: 'A'
+    domainControlValidation: 'CNAME'
   }
 }
 
