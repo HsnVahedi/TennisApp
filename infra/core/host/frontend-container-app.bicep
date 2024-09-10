@@ -147,6 +147,9 @@ var keyvaultIdentitySecrets = [for secret in items(keyvaultIdentities): {
 //     managedDomain: true
 //   }
 // }
+resource certificate 'Microsoft.Web/certificates@2021-02-01' existing = {
+  name: 'artoftennis.ai'
+}
 
 ///////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////
@@ -182,7 +185,7 @@ resource app 'Microsoft.App/containerApps@2023-05-02-preview' = {
         customDomains: [
           {
             name: 'artoftennis.ai'
-            certificateId: 'artoftennis.ai-art-of-t-240909021124'
+            certificateId: certificate.id
           }
         ]
       } : null
