@@ -132,6 +132,7 @@ module applicationGateway 'core/gateway/main.bicep' = {
     frontendAppInternalIp: frontend.outputs.staticIp
     publicIpName: 'public-gateway'
     sslCertificateName: 'ssl-cert'
+    keyVaultName: keyVault.outputs.name
   }
 }
 

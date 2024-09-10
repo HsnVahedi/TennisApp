@@ -32,8 +32,8 @@ param containerRegistryName string = ''
 param containerRegistryHostSuffix string = 'azurecr.io'
 
 // Service options
-@description('PostgreSQL service ID')
-param postgresServiceId string = ''
+// @description('PostgreSQL service ID')
+// param postgresServiceId string = ''
 
 @description('The protocol used by Dapr to connect to the app, e.g., http or grpc')
 @allowed([ 'http', 'grpc' ])
