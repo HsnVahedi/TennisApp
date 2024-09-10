@@ -120,21 +120,21 @@ module privateDnsZone 'br/public:avm/res/network/private-dns-zone:0.3.1' = {
 }
 
 
-module applicationGateway 'core/gateway/main.bicep' = {
-  name: 'applicationGateway'
-  scope: resourceGroup
-  params: {
-    // resourceGroupName: resourceGroup.name
-    location: location
-    applicationGatewayName: '${prefix}-gateway'
-    // frontendAppName: 'frontend'
-    appGatewaySubnetId: virtualNetwork.outputs.subnetResourceIds[4]
-    frontendAppInternalIp: frontend.outputs.staticIp
-    publicIpName: 'public-gateway'
-    sslCertificateName: 'ssl-cert'
-    keyVaultName: keyVault.outputs.name
-  }
-}
+// module applicationGateway 'core/gateway/main.bicep' = {
+//   name: 'applicationGateway'
+//   scope: resourceGroup
+//   params: {
+//     // resourceGroupName: resourceGroup.name
+//     location: location
+//     applicationGatewayName: '${prefix}-gateway'
+//     // frontendAppName: 'frontend'
+//     appGatewaySubnetId: virtualNetwork.outputs.subnetResourceIds[4]
+//     frontendAppInternalIp: frontend.outputs.staticIp
+//     publicIpName: 'public-gateway'
+//     sslCertificateName: 'ssl-cert'
+//     keyVaultName: keyVault.outputs.name
+//   }
+// }
 
 
 module blobStorage 'core/storage/blob.bicep' = {
