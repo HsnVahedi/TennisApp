@@ -147,9 +147,9 @@ var keyvaultIdentitySecrets = [for secret in items(keyvaultIdentities): {
 //     managedDomain: true
 //   }
 // }
-resource certificate 'Microsoft.Web/certificates@2021-02-01' existing = {
-  name: 'artoftennis.ai'
-}
+// resource certificate 'Microsoft.Web/certificates@2021-02-01' existing = {
+//   name: 'artoftennis.ai'
+// }
 
 ///////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////
@@ -182,19 +182,19 @@ resource app 'Microsoft.App/containerApps@2023-05-02-preview' = {
         corsPolicy: {
           allowedOrigins: union([ 'https://portal.azure.com', 'https://ms.portal.azure.com' ], allowedOrigins)
         }
-        customDomains: [
-          {
-            name: certificate.name 
-            // certificateId: '${certificate.id}-art-of-t-240909021124'
-            certificateId: certificate.id
-            bindingType: 'SniEnabled'
-          }
-          // {
-          //   name: managedEnvironmentManagedCertificate.properties.subjectName
-          //   certificateId: managedEnvironmentManagedCertificate.id
-          //   bindingType: 'SniEnabled'
-          // }
-        ]
+        // customDomains: [
+        //   {
+        //     name: certificate.name 
+        //     // certificateId: '${certificate.id}-art-of-t-240909021124'
+        //     certificateId: certificate.id
+        //     bindingType: 'SniEnabled'
+        //   }
+        //   // {
+        //   //   name: managedEnvironmentManagedCertificate.properties.subjectName
+        //   //   certificateId: managedEnvironmentManagedCertificate.id
+        //   //   bindingType: 'SniEnabled'
+        //   // }
+        // ]
       } : null
       dapr: daprEnabled ? {
         enabled: true
