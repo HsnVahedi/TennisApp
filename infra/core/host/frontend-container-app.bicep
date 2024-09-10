@@ -183,17 +183,17 @@ resource app 'Microsoft.App/containerApps@2023-05-02-preview' = {
           allowedOrigins: union([ 'https://portal.azure.com', 'https://ms.portal.azure.com' ], allowedOrigins)
         }
         customDomains: [
-          // {
-          //   name: 'artoftennis.ai'
-          //   // certificateId: '${certificate.id}-art-of-t-240909021124'
-          //   certificateId: certificate.id
-          //   bindingType: 'SniEnabled'
-          // }
           {
-            name: managedEnvironmentManagedCertificate.properties.subjectName
-            certificateId: managedEnvironmentManagedCertificate.id
+            name: certificate.name 
+            // certificateId: '${certificate.id}-art-of-t-240909021124'
+            certificateId: certificate.id
             bindingType: 'SniEnabled'
           }
+          // {
+          //   name: managedEnvironmentManagedCertificate.properties.subjectName
+          //   certificateId: managedEnvironmentManagedCertificate.id
+          //   bindingType: 'SniEnabled'
+          // }
         ]
       } : null
       dapr: daprEnabled ? {
@@ -236,16 +236,16 @@ resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2023-05-01'
   name: containerAppsEnvironmentName
 }
 
-resource managedEnvironmentManagedCertificate 'Microsoft.App/managedEnvironments/managedCertificates@2022-11-01-preview' = {
-  parent: containerAppsEnvironment
-  name: '${containerAppsEnvironment.name}-certificate'
-  location: location
-  tags: tags
-  properties: {
-    subjectName: 'artoftennis.ai' 
-    domainControlValidation: 'CNAME'
-  }
-}
+// resource managedEnvironmentManagedCertificate 'Microsoft.App/managedEnvironments/managedCertificates@2022-11-01-preview' = {
+//   parent: containerAppsEnvironment
+//   name: '${containerAppsEnvironment.name}-certificate'
+//   location: location
+//   tags: tags
+//   properties: {
+//     subjectName: 'artoftennis.ai' 
+//     domainControlValidation: 'CNAME'
+//   }
+// }
 
 output defaultDomain string = containerAppsEnvironment.properties.defaultDomain
 output identityPrincipalId string = normalizedIdentityType == 'None' ? '' : (empty(identityName) ? app.identity.principalId : userIdentity.properties.principalId)
