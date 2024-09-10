@@ -248,6 +248,7 @@ resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2023-05-01'
 // }
 
 output defaultDomain string = containerAppsEnvironment.properties.defaultDomain
+output staticIp string = containerAppsEnvironment.properties.staticIp
 output identityPrincipalId string = normalizedIdentityType == 'None' ? '' : (empty(identityName) ? app.identity.principalId : userIdentity.properties.principalId)
 output imageName string = imageName
 output name string = app.name
