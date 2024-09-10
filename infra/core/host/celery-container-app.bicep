@@ -130,7 +130,7 @@ resource app 'Microsoft.App/containerApps@2023-05-02-preview' = {
   }
   properties: {
     managedEnvironmentId: containerAppsEnvironment.id
-    configuration: {
+    configuration: { 
       activeRevisionsMode: revisionMode
       // ingress: ingressEnabled ? {
       //   external: external
