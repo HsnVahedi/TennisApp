@@ -254,3 +254,4 @@ output imageName string = imageName
 output name string = app.name
 output serviceBind object = !empty(serviceType) ? { serviceId: app.id, name: name } : {}
 output uri string = ingressEnabled ? 'https://${app.properties.configuration.ingress.fqdn}' : ''
+output fqdn string = app.properties.configuration.ingress.fqdn

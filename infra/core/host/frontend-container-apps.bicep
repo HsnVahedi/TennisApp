@@ -54,6 +54,7 @@ module containerAppsEnvironment 'br/public:avm/res/app/managed-environment:0.5.2
 // }
 
 output defaultDomain string = containerAppsEnvironment.outputs.defaultDomain
+output staticIp string = containerAppsEnvironment.outputs.staticIp
 output environmentName string = containerAppsEnvironment.outputs.name
 output environmentId string = containerAppsEnvironment.outputs.resourceId
 

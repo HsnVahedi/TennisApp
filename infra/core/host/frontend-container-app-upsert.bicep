@@ -126,3 +126,4 @@ output staticIp string = app.outputs.staticIp
 output imageName string = app.outputs.imageName
 output name string = app.outputs.name
 output uri string = app.outputs.uri
+output fqdn string = app.outputs.fqdn
