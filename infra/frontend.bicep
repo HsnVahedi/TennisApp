@@ -52,6 +52,7 @@ module app 'core/host/frontend-container-app-upsert.bicep' = {
     containerAppsEnvironmentName: containerAppsEnvironmentName
     containerRegistryName: containerRegistryName
     containerRegistryAccessName: containerRegistryAccessName
+    ingressEnabled: false
     // TODO: Optimize these values to be as less as possible:
     // In Azure Container Apps, the available combinations of CPU and memory are predefined. You can allocate CPU and memory resources as follows:
 

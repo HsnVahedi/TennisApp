@@ -175,27 +175,27 @@ resource app 'Microsoft.App/containerApps@2023-05-02-preview' = {
     configuration: {
       maxInactiveRevisions: 0
       activeRevisionsMode: revisionMode
-      // ingress: ingressEnabled ? {
-      //   external: external
-      //   targetPort: targetPort
-      //   transport: 'auto'
-      //   corsPolicy: {
-      //     allowedOrigins: union([ 'https://portal.azure.com', 'https://ms.portal.azure.com' ], allowedOrigins)
-      //   }
-      //   // customDomains: [
-      //   //   {
-      //   //     name: certificate.name 
-      //   //     // certificateId: '${certificate.id}-art-of-t-240909021124'
-      //   //     certificateId: certificate.id
-      //   //     bindingType: 'SniEnabled'
-      //   //   }
-      //   //   // {
-      //   //   //   name: managedEnvironmentManagedCertificate.properties.subjectName
-      //   //   //   certificateId: managedEnvironmentManagedCertificate.id
-      //   //   //   bindingType: 'SniEnabled'
-      //   //   // }
-      //   // ]
-      // } : null
+      ingress: ingressEnabled ? {
+        external: external
+        targetPort: targetPort
+        transport: 'auto'
+        corsPolicy: {
+          allowedOrigins: union([ 'https://portal.azure.com', 'https://ms.portal.azure.com' ], allowedOrigins)
+        }
+        // customDomains: [
+        //   {
+        //     name: certificate.name 
+        //     // certificateId: '${certificate.id}-art-of-t-240909021124'
+        //     certificateId: certificate.id
+        //     bindingType: 'SniEnabled'
+        //   }
+        //   // {
+        //   //   name: managedEnvironmentManagedCertificate.properties.subjectName
+        //   //   certificateId: managedEnvironmentManagedCertificate.id
+        //   //   bindingType: 'SniEnabled'
+        //   // }
+        // ]
+      } : null
       dapr: daprEnabled ? {
         enabled: true
         appId: daprAppId
