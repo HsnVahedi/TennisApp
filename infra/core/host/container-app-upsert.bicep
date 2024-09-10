@@ -103,7 +103,7 @@ module app 'container-app.bicep' = {
     daprEnabled: daprEnabled
     daprAppId: daprAppId
     daprAppProtocol: daprAppProtocol
-    postgresServiceId: postgresServiceId
+    // postgresServiceId: postgresServiceId
     secrets: secrets
     keyvaultIdentities: keyvaultIdentities
     external: external
