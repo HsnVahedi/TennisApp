@@ -22,6 +22,8 @@ param publicIpName string
 @description('Name of the SSL certificate in Key Vault')
 param sslCertificateName string
 
+param keyVaultName string
+
 // @secure()
 // @description('Key Vault secret ID containing the SSL certificate')
 // param sslCertificateSecretId string
@@ -34,7 +36,8 @@ param tags object = {}
 
 resource sslCert 'Microsoft.KeyVault/vaults/certificates@2021-06-01-preview' = {
 // resource sslCert 'Microsoft.KeyVault/vaults/certificates@2021-04-01-preview' = {
-  name: '${sslCertificateName}-ssl-cert'
+  // name: '${sslCertificateName}-ssl-cert'
+  name: '${keyVaultName}/${sslCertificateName}'
   location: location
   properties: {
     certificatePolicy: {
