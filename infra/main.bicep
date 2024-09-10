@@ -99,6 +99,11 @@ module virtualNetwork 'br/public:avm/res/network/virtual-network:0.1.8' = {
         properties: {
           privateLinkServiceNetworkPolicies: 'Disabled'
         }
+        serviceEndpoints: [
+          {
+            service: 'Microsoft.KeyVault'
+          }
+        ]
       }
     ]
   }
@@ -109,7 +114,24 @@ module privateDnsZone 'br/public:avm/res/network/private-dns-zone:0.3.1' = {
   scope: resourceGroup
   params: {
     name: 'relecloud.net'
+    // name: envDefaultDomain
     tags: tags
+  }
+}
+
+
+module applicationGateway 'core/gateway/main.bicep' = {
+  name: 'applicationGateway'
+  scope: resourceGroup
+  params: {
+    // resourceGroupName: resourceGroup.name
+    location: location
+    applicationGatewayName: '${prefix}-gateway'
+    // frontendAppName: 'frontend'
+    appGatewaySubnetId: virtualNetwork.outputs.subnetResourceIds[4]
+    frontendAppInternalIp: frontend.outputs.staticIp
+    publicIpName: 'public-gateway'
+    sslCertificateName: 'ssl-cert'
   }
 }
 

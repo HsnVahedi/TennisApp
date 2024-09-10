@@ -140,3 +140,4 @@ output SERVICE_WEB_URI string = app.outputs.uri
 output SERVICE_WEB_IMAGE_NAME string = app.outputs.imageName
 
 output uri string = app.outputs.uri
+output staticIp string = app.outputs.staticIp
