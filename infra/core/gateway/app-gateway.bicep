@@ -183,13 +183,13 @@ resource privateLinkService 'Microsoft.Network/privateLinkServices@2023-11-01' =
   location: location
   properties: {
     
-    loadBalancerFrontendIpConfigurations: [
-      { 
-        // id: resourceId('Microsoft.Network/applicationGateways/frontendIPConfigurations', appGateway.name, 'my-frontend')
-        // id: resourceId('Microsoft.Network/loadBalancers/frontendIPConfigurations', loadBalancer.name, 'myFrontend')
-        id: resourceId('Microsoft.Network/loadBalancers/frontendIpConfigurations', appGateway.name, appGateway.properties.frontendIPConfigurations[0].name)
-      }     
-    ]
+    // loadBalancerFrontendIpConfigurations: [
+    //   { 
+    //     id: resourceId('Microsoft.Network/applicationGateways/frontendIPConfigurations', appGateway.name, 'my-frontend')
+    //     // id: resourceId('Microsoft.Network/loadBalancers/frontendIPConfigurations', loadBalancer.name, 'myFrontend')
+    //     // id: resourceId('Microsoft.Network/loadBalancers/frontendIpConfigurations', appGateway.name, appGateway.properties.frontendIPConfigurations[0].name)
+    //   }     
+    // ]
     ipConfigurations: [
       {
         name: 'my-agw-private-link-config'
