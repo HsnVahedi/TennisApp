@@ -100,8 +100,10 @@ resource appGateway 'Microsoft.Network/applicationGateways@2023-11-01' = {
       { 
         name: 'my-agw-backend-setting'
         properties: {
-          protocol: 'Https'
-          port: 443
+          // protocol: 'Https'
+          protocol: 'Http'
+          // port: 443
+          port: 3000
           cookieBasedAffinity: 'Disabled'
           requestTimeout: 20
           pickHostNameFromBackendAddress: true
