@@ -42,7 +42,8 @@ resource privateDnsZoneLink 'Microsoft.Network/privateDnsZones/virtualNetworkLin
   name: '${vnetName}-pdns-link'
   parent: gateWayPrivateDnsZone
   tags: tags
-  location: 'global'
+  // location: 'global'
+  location: location
   properties: {
     registrationEnabled: false
     virtualNetwork: {

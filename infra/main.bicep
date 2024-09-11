@@ -129,7 +129,7 @@ module gatewaySubnet 'core/gateway/virtual-network.bicep' = {
 }
 
 
-module gatewayPrivateDnsZone 'core//gateway/private-dns-zone.bicep' = {
+module gatewayPrivateDnsZone 'core/gateway/private-dns-zone.bicep' = {
   name: 'pdns'
   scope: resourceGroup
   params: {
