@@ -22,6 +22,27 @@ param location string
 @description('The tags that will be applied to the App Gateway')
 param tags object
 
+
+// resource loadBalancer 'Microsoft.Network/loadBalancers@2021-05-01' = {
+//   name: 'myLoadBalancer'
+//   location: location
+//   sku: {
+//     name: 'Standard'
+//   }
+//   properties: {
+//     frontendIPConfigurations: [
+//       {
+//         name: 'myFrontend'
+//         properties: {
+//           publicIPAddress: {
+//             id: publicIp.id
+//           }
+//         }
+//       }
+//     ]
+//   }
+// }
+
 resource appGateway 'Microsoft.Network/applicationGateways@2023-11-01' = {
   name: appGatewayName
   location: location
@@ -161,9 +182,12 @@ resource privateLinkService 'Microsoft.Network/privateLinkServices@2023-11-01' =
   name: privateLinkServiceName
   location: location
   properties: {
+    
     loadBalancerFrontendIpConfigurations: [
       { 
-        id: resourceId('Microsoft.Network/applicationGateways/frontendIPConfigurations', appGateway.name, 'my-frontend')
+        // id: resourceId('Microsoft.Network/applicationGateways/frontendIPConfigurations', appGateway.name, 'my-frontend')
+        // id: resourceId('Microsoft.Network/loadBalancers/frontendIPConfigurations', loadBalancer.name, 'myFrontend')
+        id: resourceId('Microsoft.Network/loadBalancers/frontendIpConfigurations', appGateway.name, appGateway.properties.frontendIPConfigurations[0].name)
       }     
     ]
     ipConfigurations: [
