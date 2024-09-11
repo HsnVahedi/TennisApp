@@ -96,9 +96,10 @@ module virtualNetwork 'br/public:avm/res/network/virtual-network:0.1.8' = {
         addressPrefix: '10.0.8.0/24'
         name: 'gateway' 
         tags: tags
-        properties: {
-          privateLinkServiceNetworkPolicies: 'Disabled'
-        }
+        privateLinkServiceNetworkPolicies: 'Disabled'
+        // properties: {
+        //   privateLinkServiceNetworkPolicies: 'Disabled'
+        // }
         // serviceEndpoints: [
         //   {
         //     service: 'Microsoft.KeyVault'
