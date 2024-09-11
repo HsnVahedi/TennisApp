@@ -134,10 +134,14 @@ class BatchImageUploadApiView(APIView):
         
         # trims_page.add_child(instance=trim_page)
         # trim_page.save_revision().publish()
+        print('PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP')
+        print('PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP')
         trim_page = TrimPage.objects.get(pk=trim_id)
         batch = FramesBatch.objects.create(
             trim_page=trim_page, batch_number=batch_id
         )
+        print('TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT')
+        print('TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT')
         files = request.FILES.getlist('images')
         # Only first 30 files are processed
         for i, file in enumerate(files[:30]):

@@ -30,7 +30,7 @@ urlpatterns = [
     path('data/', DataAPIView.as_view(), name='data_api'),
     path('protected-data/', ProtectedDataAPIView.as_view(), name='protected_data_api'),
     path('after_social_login/', after_social_login, name='after_social_login'),
-    path('batch-image-upload/<int:trim_id>/<int:batch_id>', BatchImageUploadApiView.as_view(), name='batch_image_upload'),
+    path('batch-image-upload/<int:trim_id>/<int:batch_id>/', BatchImageUploadApiView.as_view(), name='batch_image_upload'),
     path('create-trim/', CreateTrimView.as_view(), name='create_trim'),
 ]
 
