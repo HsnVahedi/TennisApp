@@ -99,11 +99,11 @@ module virtualNetwork 'br/public:avm/res/network/virtual-network:0.1.8' = {
         properties: {
           privateLinkServiceNetworkPolicies: 'Disabled'
         }
-        serviceEndpoints: [
-          {
-            service: 'Microsoft.KeyVault'
-          }
-        ]
+        // serviceEndpoints: [
+        //   {
+        //     service: 'Microsoft.KeyVault'
+        //   }
+        // ]
       }
     ]
   }
