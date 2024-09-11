@@ -18,7 +18,7 @@ export async function POST(req: NextRequest, { params }) {
   const formData = await req.formData(); // Extract formData from the request
 
   try {
-    const batchUploadUrl = `${getBackendUrl()}/batch-image-upload/${trimId}/${batchNumber}`;
+    const batchUploadUrl = `${getBackendUrl()}/batch-image-upload/${trimId}/${batchNumber}/`;
 
     // Make the request to your backend API with the token
     const response = await fetch(batchUploadUrl, {
