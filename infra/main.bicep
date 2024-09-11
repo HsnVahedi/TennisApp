@@ -109,7 +109,6 @@ module virtualNetwork 'br/public:avm/res/network/virtual-network:0.1.8' = {
   }
 }
 
-
 module privateDnsZone 'br/public:avm/res/network/private-dns-zone:0.3.1' = {
   name: 'privateDnsZoneDeployment'
   scope: resourceGroup
@@ -120,46 +119,57 @@ module privateDnsZone 'br/public:avm/res/network/private-dns-zone:0.3.1' = {
   }
 }
 
-module gatewaySubnet 'core/gateway/virtual-network.bicep' = {
-  name: 'gatewaySubnet'
-  scope: resourceGroup
-  params: {
-    vnetName: virtualNetwork.outputs.name
-  }
-}
+//////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
 
 
-module gatewayPrivateDnsZone 'core/gateway/private-dns-zone.bicep' = {
-  name: 'pdns'
-  scope: resourceGroup
-  params: {
-    defaultDomain: frontendContainerApps.outputs.defaultDomain
-    envStaticIp: frontendContainerApps.outputs.staticIp
-    tags: tags
-    vnetName: virtualNetwork.outputs.name
-    vnetId: virtualNetwork.outputs.resourceId
-    location: location
-  }
-}
+
+// module gatewaySubnet 'core/gateway/virtual-network.bicep' = {
+//   name: 'gatewaySubnet'
+//   scope: resourceGroup
+//   params: {
+//     vnetName: virtualNetwork.outputs.name
+//   }
+// }
 
 
-module appGateway 'core/gateway/app-gateway.bicep' = {
-  scope: resourceGroup
-  name: 'appgateway'
-  params: {
-    appGatewayName: 'gateway'
-    // containerAppFqdn: containerApp.outputs.fqdn
-    containerAppFqdn: frontend.outputs.fqdn
-    envSubnetId: virtualNetwork.outputs.subnetResourceIds[2]
-    ipAddressName: 'ipaddress' 
-    location: location
-    privateLinkServiceName: 'privatelinkservice' 
-    subnetId: gatewaySubnet.outputs.subnetId 
-    tags: tags
-  }
-}
+// module gatewayPrivateDnsZone 'core/gateway/private-dns-zone.bicep' = {
+//   name: 'pdns'
+//   scope: resourceGroup
+//   params: {
+//     defaultDomain: frontendContainerApps.outputs.defaultDomain
+//     envStaticIp: frontendContainerApps.outputs.staticIp
+//     tags: tags
+//     vnetName: virtualNetwork.outputs.name
+//     vnetId: virtualNetwork.outputs.resourceId
+//     location: location
+//   }
+// }
 
 
+// module appGateway 'core/gateway/app-gateway.bicep' = {
+//   scope: resourceGroup
+//   name: 'appgateway'
+//   params: {
+//     appGatewayName: 'gateway'
+//     // containerAppFqdn: containerApp.outputs.fqdn
+//     containerAppFqdn: frontend.outputs.fqdn
+//     envSubnetId: virtualNetwork.outputs.subnetResourceIds[2]
+//     ipAddressName: 'ipaddress' 
+//     location: location
+//     privateLinkServiceName: 'privatelinkservice' 
+//     subnetId: gatewaySubnet.outputs.subnetId 
+//     tags: tags
+//   }
+// }
+
+
+//////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
 
 module blobStorage 'core/storage/blob.bicep' = {
   name: 'blobStorage'
