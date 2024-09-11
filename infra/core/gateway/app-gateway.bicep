@@ -13,8 +13,8 @@ param envSubnetId string
 @description('The FQDN of the Container App')
 param containerAppFqdn string
 
-@description('The name of the Private Link Service')
-param privateLinkServiceName string
+// @description('The name of the Private Link Service')
+// param privateLinkServiceName string
 
 @description('The location where the App Gateway will be deployed')
 param location string
@@ -23,25 +23,6 @@ param location string
 param tags object
 
 
-// resource loadBalancer 'Microsoft.Network/loadBalancers@2021-05-01' = {
-//   name: 'myLoadBalancer'
-//   location: location
-//   sku: {
-//     name: 'Standard'
-//   }
-//   properties: {
-//     frontendIPConfigurations: [
-//       {
-//         name: 'myFrontend'
-//         properties: {
-//           publicIPAddress: {
-//             id: publicIp.id
-//           }
-//         }
-//       }
-//     ]
-//   }
-// }
 
 resource appGateway 'Microsoft.Network/applicationGateways@2023-11-01' = {
   name: appGatewayName
@@ -76,25 +57,25 @@ resource appGateway 'Microsoft.Network/applicationGateways@2023-11-01' = {
         }
       }
     ]
-    privateLinkConfigurations: [
-      { 
-        name: 'my-agw-private-link'
-        properties: {
-          ipConfigurations: [
-            { 
-              name: 'privateLinkIpConfig'
-              properties: {
-                primary: true
-                privateIPAllocationMethod: 'Dynamic'
-                subnet: {
-                  id: subnetId
-                }
-              }
-            }
-          ]
-        }
-      }
-    ]
+    // privateLinkConfigurations: [
+    //   { 
+    //     name: 'my-agw-private-link'
+    //     properties: {
+    //       ipConfigurations: [
+    //         { 
+    //           name: 'privateLinkIpConfig'
+    //           properties: {
+    //             primary: true
+    //             privateIPAllocationMethod: 'Dynamic'
+    //             subnet: {
+    //               id: subnetId
+    //             }
+    //           }
+    //         }
+    //       ]
+    //     }
+    //   }
+    // ]
     frontendPorts: [
       { 
         name: 'port_80'
@@ -178,30 +159,28 @@ resource publicIp 'Microsoft.Network/publicIPAddresses@2023-11-01' = {
   }
 }
 
-resource privateLinkService 'Microsoft.Network/privateLinkServices@2023-11-01' = {
-  name: privateLinkServiceName
-  location: location
-  properties: {
+// resource privateLinkService 'Microsoft.Network/privateLinkServices@2023-11-01' = {
+//   name: privateLinkServiceName
+//   location: location
+//   properties: {
     
-    // loadBalancerFrontendIpConfigurations: [
-    //   { 
-    //     id: resourceId('Microsoft.Network/applicationGateways/frontendIPConfigurations', appGateway.name, 'my-frontend')
-    //     // id: resourceId('Microsoft.Network/loadBalancers/frontendIPConfigurations', loadBalancer.name, 'myFrontend')
-    //     // id: resourceId('Microsoft.Network/loadBalancers/frontendIpConfigurations', appGateway.name, appGateway.properties.frontendIPConfigurations[0].name)
-    //   }     
-    // ]
-    ipConfigurations: [
-      {
-        name: 'my-agw-private-link-config'
-        properties: {
-          privateIPAllocationMethod: 'Dynamic'
-          privateIPAddressVersion: 'IPv4'
-          primary: true
-          subnet: {
-            id: envSubnetId
-          }
-        }
-      }
-    ]
-  }
-}
+//     loadBalancerFrontendIpConfigurations: [
+//       { 
+//         id: resourceId('Microsoft.Network/applicationGateways/frontendIPConfigurations', appGateway.name, 'my-frontend')
+//       }     
+//     ]
+//     ipConfigurations: [
+//       {
+//         name: 'my-agw-private-link-config'
+//         properties: {
+//           privateIPAllocationMethod: 'Dynamic'
+//           privateIPAddressVersion: 'IPv4'
+//           primary: true
+//           subnet: {
+//             id: envSubnetId
+//           }
+//         }
+//       }
+//     ]
+//   }
+// }
