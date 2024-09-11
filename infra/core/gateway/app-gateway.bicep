@@ -103,7 +103,8 @@ resource appGateway 'Microsoft.Network/applicationGateways@2023-11-01' = {
           // protocol: 'Https'
           protocol: 'Http'
           // port: 443
-          port: 3000
+          // port: 3000
+          port: 80
           cookieBasedAffinity: 'Disabled'
           requestTimeout: 100
           pickHostNameFromBackendAddress: true
