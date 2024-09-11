@@ -17,11 +17,11 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
     // alert('Are you sure?')
     const azureUri = `${process.env.NEXT_PUBLIC_DOMAIN}`
     const path = `${process.env.NEXT_PUBLIC_NEXT_JS_HOME_PAGE_URI || azureUri}${pathname}`;
-    alert(path)
+    // alert(path)
     setSigningIn(true);
-    alert('1')
+    // alert('1')
     signIn('django', { callbackUrl: path }, { frontendPage: path });
-    alert('2')
+    // alert('2')
   };  
 
   useEffect(() => {
