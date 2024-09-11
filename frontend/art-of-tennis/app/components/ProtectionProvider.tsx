@@ -15,7 +15,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
 
   const authenticate = () => {
     // alert('Are you sure?')
-    const azureUri = `https://${process.env.NEXT_PUBLIC_CONTAINER_APP_HOST_URL}`
+    const azureUri = `${process.env.NEXT_PUBLIC_DOMAIN}`
     const path = `${process.env.NEXT_PUBLIC_NEXT_JS_HOME_PAGE_URI || azureUri}${pathname}`;
     alert(path)
     setSigningIn(true);
