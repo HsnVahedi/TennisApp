@@ -159,7 +159,7 @@ module appGateway 'core/gateway/app-gateway.bicep' = {
     envSubnetId: virtualNetwork.outputs.subnetResourceIds[2]
     ipAddressName: 'ipaddress' 
     location: location
-    privateLinkServiceName: 'privatelinkservice' 
+    // privateLinkServiceName: 'privatelinkservice' 
     subnetId: virtualNetwork.outputs.subnetResourceIds[4] 
     tags: tags
   }
