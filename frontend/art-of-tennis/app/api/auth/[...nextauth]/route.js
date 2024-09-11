@@ -7,7 +7,7 @@ const backendUrl = getBackendUrl();
 
 let authorizationUrl = getClientSideBackendUrl()
 authorizationUrl = `${authorizationUrl}/o/authorize/?response_type=code&client_id=${process.env.NEXT_PUBLIC_DJANGO_CLIENT_ID}`
-const redirectUri = process.env.NEXT_PUBLIC_DJANGO_REDIRECT_URI || `https://${process.env.NEXT_PUBLIC_CONTAINER_APP_HOST_URL}/api/auth/callback/django`
+const redirectUri = process.env.NEXT_PUBLIC_DJANGO_REDIRECT_URI || `${process.env.NEXT_PUBLIC_DOMAIN}/api/auth/callback/django`
 authorizationUrl = `${authorizationUrl}&redirect_uri=${redirectUri}&scope=read+write`
 authorizationUrl = authorizationUrl 
 
