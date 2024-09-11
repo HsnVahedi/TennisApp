@@ -8,7 +8,7 @@ param vnetId string
 
 resource gateWayPrivateDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' = {
   name: defaultDomain
-  location: location
+  location: 'global' 
   tags: tags
 }
 
