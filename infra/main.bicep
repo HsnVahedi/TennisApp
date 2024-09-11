@@ -92,22 +92,23 @@ module virtualNetwork 'br/public:avm/res/network/virtual-network:0.1.8' = {
           }
         ]
       }
-      {
-        addressPrefix: '10.0.8.0/24'
-        name: 'gateway' 
-        tags: tags
-        properties: {
-          privateLinkServiceNetworkPolicies: 'Disabled'
-        }
-        serviceEndpoints: [
-          {
-            service: 'Microsoft.KeyVault'
-          }
-        ]
-      }
+      // {
+      //   addressPrefix: '10.0.8.0/24'
+      //   name: 'gateway' 
+      //   tags: tags
+      //   properties: {
+      //     privateLinkServiceNetworkPolicies: 'Disabled'
+      //   }
+      //   serviceEndpoints: [
+      //     {
+      //       service: 'Microsoft.KeyVault'
+      //     }
+      //   ]
+      // }
     ]
   }
 }
+
 
 module privateDnsZone 'br/public:avm/res/network/private-dns-zone:0.3.1' = {
   name: 'privateDnsZoneDeployment'
@@ -116,6 +117,14 @@ module privateDnsZone 'br/public:avm/res/network/private-dns-zone:0.3.1' = {
     name: 'relecloud.net'
     // name: envDefaultDomain
     tags: tags
+  }
+}
+
+module gatewaySubnet 'core/gateway/virtual-network.bicep' = {
+  name: 'gatewaySubnet'
+  scope: resourceGroup
+  params: {
+    vnetName: virtualNetwork.outputs.name
   }
 }
 
@@ -145,7 +154,7 @@ module appGateway 'core/gateway/app-gateway.bicep' = {
     ipAddressName: 'ipaddress' 
     location: location
     privateLinkServiceName: 'privatelinkservice' 
-    subnetId: virtualNetwork.outputs.subnetResourceIds[4]
+    subnetId: gatewaySubnet.outputs.subnetId 
     tags: tags
   }
 }
