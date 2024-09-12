@@ -143,6 +143,8 @@ const App = () => {
       currentTime += interval;
     }
 
+    alert(`number of frames extracted: ${frames.length}`)
+
 
     try {
       const response = await fetch(`/api/createTrim/`, {
