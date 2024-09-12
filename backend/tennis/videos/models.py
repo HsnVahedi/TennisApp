@@ -13,6 +13,7 @@ class FramesBatch(models.Model):
     )
     dir_path = models.CharField(max_length=512, unique=True)
     batch_number = models.BigIntegerField()
+    batch_size = models.PositiveIntegerField(default=0, blank=True, null=True)
     ball_job_id = models.CharField(max_length=256, null=True, blank=True)
     objs_job_id = models.CharField(max_length=256, null=True, blank=True)
 
