@@ -1,4 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
+import {
+    useSession, signOut
+} from "next-auth/react";
 
 const MenuIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -30,6 +33,7 @@ const SideMenu = ({ isOpen, onClose }) => (
 
 const PageLayout = ({ children }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { data: session, status } = useSession();
   return (
     <div className="min-h-screen bg-gradient-to-r from-green-400 to-yellow-400 font-sans pt-16">
       <header className="bg-purple-900 p-4 flex justify-between items-center fixed top-0 left-0 right-0 z-10 shadow-md">
@@ -42,8 +46,14 @@ const PageLayout = ({ children }) => {
         <nav className="hidden md:block">
           <a href="#" className="text-white ml-4 hover:text-green-100">All Tools</a>
           <a href="#" className="text-white ml-4 hover:text-green-100">Pricing</a>
-          <a href="#" className="text-white ml-4 hover:text-green-100">Log in</a>
-          <a href="#" className="text-white ml-4 hover:text-green-100">Sign up</a>
+          {session && session.user ? (
+            <a href="#" className="text-white ml-4 hover:text-green-100"
+              onClick={() => signOut()}>
+              Sign Out
+            </a>
+          ) : (
+            <a href="#" className="text-white ml-4 hover:text-green-100">Sign In</a>
+          )}
         </nav>
       </header>
       <SideMenu isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
