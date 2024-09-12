@@ -167,6 +167,11 @@ class TrimPage(Page):
                         for obj_name in ball:
                             detections[frame][obj_name] = ball[obj_name]
                     for file_number in detections:
+                        print('FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF')
+                        print('FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF')
+                        print('file_number:', file_number)
+                        print('FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF')
+                        print('FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF')
                         file_name = download_dir_from_media(batch.dir_path) 
                         file_name = f"{file_name}/{file_number}.jpg"
                         source_image = read_image(file_name)

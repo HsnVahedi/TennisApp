@@ -123,21 +123,21 @@ class BatchImageUploadApiView(APIView):
     @transaction.atomic
     def post(self, request, *args, **kwargs):
         from home.tasks import detect_objects_task, store_detections_task
+        files = request.FILES.getlist('images')
+        files = files[:30]
+        batch_size = len(files)
         trim_id = self.kwargs.get('trim_id')
         batch_id = self.kwargs.get('batch_id')
-        print('PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP')
-        print('PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP')
         trim_page = TrimPage.objects.get(pk=trim_id)
         batch = FramesBatch.objects.create(
-            trim_page=trim_page, batch_number=batch_id
+            trim_page=trim_page, batch_number=batch_id,
+            batch_size=batch_size
         )
-        print('TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT')
-        print('TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT')
-        files = request.FILES.getlist('images')
         # Only first 30 files are processed
-        for i, file in enumerate(files[:30]):
+        for i, file in enumerate(files):
             # Construct the local path for the file
-            local_file_path = os.path.join(batch.dir_path, f'{i}.jpg')
+            file_number = 30 * (batch_id - 1) + i
+            local_file_path = os.path.join(batch.dir_path, f'{file_number}.jpg')
             os.makedirs(os.path.dirname(local_file_path), exist_ok=True)
             with open(local_file_path, 'wb') as destination:
                 destination.write(file.read())
