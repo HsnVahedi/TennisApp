@@ -118,13 +118,14 @@ class CreateTrimView(APIView):
 class BatchImageUploadApiView(APIView):
     permission_classes = [IsAuthenticated]
     parser_classes = (MultiPartParser, FormParser)
-
+    MAX_BATCH_SIZE = 30
 
     @transaction.atomic
     def post(self, request, *args, **kwargs):
         from home.tasks import detect_objects_task, store_detections_task
         files = request.FILES.getlist('images')
-        files = files[:30]
+        # Only first 30 files are processed
+        files = files[:BatchImageUploadApiView.MAX_BATCH_SIZE]
         batch_size = len(files)
         trim_id = self.kwargs.get('trim_id')
         batch_id = self.kwargs.get('batch_id')
@@ -133,7 +134,6 @@ class BatchImageUploadApiView(APIView):
             trim_page=trim_page, batch_number=batch_id,
             batch_size=batch_size
         )
-        # Only first 30 files are processed
         for i, file in enumerate(files):
             # Construct the local path for the file
             file_number = 30 * (batch_id - 1) + i

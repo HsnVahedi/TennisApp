@@ -164,7 +164,7 @@ const App = () => {
 
         // Add images to the formData
         batch.forEach((image, index) => {
-          formData.append("images", image, `frame-${i + index}.jpg`);
+          formData.append("images", image, `frame-${i}-${index}.jpg`);
         });
 
         
