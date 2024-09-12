@@ -206,6 +206,7 @@ class TrimPage(Page):
         try:
             frame_page_title = f'{self.slug} Frame {frame_number}'
             self.add_child(instance=FramePage(
+                frame_number=frame_number,
                 title=frame_page_title,
                 original_image=source_image_instance,
                 annotated_image=annotated_image_instance,
@@ -223,6 +224,7 @@ class TrimPage(Page):
 class FramePage(Page):
     parent_page_types = ['TrimPage']
 
+    frame_number = models.PositiveBigIntegerField(null=True, blank=True, default=0)
     original_image = models.ForeignKey(
         Image,
         null=True,

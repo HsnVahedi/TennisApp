@@ -46,7 +46,7 @@ class ExportTrimView(View):
                 # )
             frames_dir = 'frames'
             annotated_frames_dir = 'annotated_frames'
-            frame_pages = FramePage.objects.child_of(page).live()
+            frame_pages = FramePage.objects.child_of(page).live().order_by('frame_number')
             for frame_page in frame_pages:
                 if frame_page.original_image:
                     original_image_name = frame_page.original_image.file.name
@@ -56,7 +56,7 @@ class ExportTrimView(View):
                         original_image_path,
                         os.path.join(
                             frames_dir,
-                            os.path.basename(original_image_path)
+                            f'{frame_page.frame_number}-{os.path.basename(original_image_path)}'
                         ),
                     )
                     os.remove(original_image_path)
@@ -68,7 +68,7 @@ class ExportTrimView(View):
                         annotated_image_path,
                         os.path.join(
                             annotated_frames_dir,
-                            os.path.basename(annotated_image_name)
+                            f'{frame_page.frame_number}-{os.path.basename(annotated_image_path)}'
                         ),
                     )
                     os.remove(annotated_image_path)

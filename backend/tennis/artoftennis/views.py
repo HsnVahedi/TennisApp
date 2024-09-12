@@ -125,15 +125,6 @@ class BatchImageUploadApiView(APIView):
         from home.tasks import detect_objects_task, store_detections_task
         trim_id = self.kwargs.get('trim_id')
         batch_id = self.kwargs.get('batch_id')
-        
-        # trims_page = get_or_create_trims_page(
-        #     # User.objects.get(username='django')
-        #     request.user
-        # )
-        # trim_page = TrimPage()
-        
-        # trims_page.add_child(instance=trim_page)
-        # trim_page.save_revision().publish()
         print('PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP')
         print('PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP')
         trim_page = TrimPage.objects.get(pk=trim_id)
@@ -153,9 +144,6 @@ class BatchImageUploadApiView(APIView):
             media_url = write_to_media(local_file_path)
             os.remove(local_file_path)
             print(f'File {file.name} saved to media storage at {media_url}')
-            
-
-
         detect_objects_task.delay(batch.pk)
         store_detections_task.delay(trim_page.pk, [batch.pk])
         return Response(
