@@ -72,13 +72,7 @@ class ExportTrimView(View):
                         ),
                     )
                     os.remove(annotated_image_path)
-                    # zip_file.writestr(
-                    #     os.path.join(
-                    #         annotated_frames_dir,
-                    #         os.path.basename(annotated_image_name)
-                    #     ),
-                    #     annotated_image
-                    # )
+
 
     def get(self, request, *args, **kwargs):
         print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
