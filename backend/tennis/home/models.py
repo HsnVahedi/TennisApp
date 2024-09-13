@@ -1,4 +1,5 @@
 from django.db import models
+from django.db import transaction
 from wagtail.models import Page
 from wagtail.admin.panels import FieldPanel
 from wagtail.images.models import Image
@@ -18,6 +19,8 @@ import re
 from home.tasks import detect_objects_task
 import time
 from storage.media import download_dir_from_media
+import traceback
+
 
 
 User = get_user_model()
@@ -118,11 +121,11 @@ class TrimPage(Page):
             ) 
             batch = batches[random_index]
             batch.refresh_from_db()
-            print('WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWw')
-            print('WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWw')
-            print(f'Checking Batch {batch.batch_number}: {batch.dir_path}')
-            print('WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWw')
-            print('WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWw')
+            # print('WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWw')
+            # print('WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWw')
+            # print(f'Checking Batch {batch.batch_number}: {batch.dir_path}')
+            # print('WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWw')
+            # print('WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWw')
             ball_job_id = batch.ball_job_id
             objs_job_id = batch.objs_job_id
             # if the images are successfully uploaded
@@ -166,12 +169,13 @@ class TrimPage(Page):
                             detections[frame][obj_name] = objs[obj_name]
                         for obj_name in ball:
                             detections[frame][obj_name] = ball[obj_name]
+                    print('NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN')
+                    print('NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN')
+                    print(f'NUMBER OF FILES: {len(detections.keys())}')
+                    print(f'FILES          : {list(detections.keys())}') 
+                    print('NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN')
+                    print('NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN')
                     for file_number in detections:
-                        print('FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF')
-                        print('FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF')
-                        print('file_number:', file_number)
-                        print('FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF')
-                        print('FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF')
                         file_name = download_dir_from_media(batch.dir_path) 
                         file_name = f"{file_name}/{file_number}.jpg"
                         source_image = read_image(file_name)
@@ -209,20 +213,24 @@ class TrimPage(Page):
         
         # Create a new FramePage
         try:
-            frame_page_title = f'{self.slug} Frame {frame_number}'
-            self.add_child(instance=FramePage(
-                frame_number=frame_number,
-                title=frame_page_title,
-                original_image=source_image_instance,
-                annotated_image=annotated_image_instance,
-                detections=detections
-            ))
+            frame_page_title = f'{uuid.uuid4()} Frame {frame_number}'
+            with transaction.atomic():
+                # Make sure the page is updated from db and is locked for writing
+                self_page = TrimPage.objects.select_for_update().get(pk=self.pk)
+                self_page.add_child(instance=FramePage(
+                    frame_number=frame_number,
+                    title=frame_page_title,
+                    original_image=source_image_instance,
+                    annotated_image=annotated_image_instance,
+                    detections=detections
+                ))
         except Exception as e:
             print('', 'MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM')
             print('MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM')
             print(f'error in creating FramePage: {frame_page_title}')
             print('MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM')
             print('MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM', '')
+            traceback.print_exc()
 
 
 
