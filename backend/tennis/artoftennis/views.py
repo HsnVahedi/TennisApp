@@ -125,6 +125,11 @@ class BatchImageUploadApiView(APIView):
         from home.tasks import detect_objects_task, store_detections_task
         files = request.FILES.getlist('images')
         # Only first 30 files are processed
+        print('SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS')
+        print('SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS')
+        print(f'number of files in batch {self.kwargs.get("batch_id")}: {len(files)}')
+        print('SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS')
+        print('SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS')
         files = files[:BatchImageUploadApiView.MAX_BATCH_SIZE]
         batch_size = len(files)
         trim_id = self.kwargs.get('trim_id')
