@@ -57,6 +57,14 @@ class VideoUploadViewSet(viewsets.ViewSet):
             'chunk_number': chunk_number,
             'chunk_url': chunk_url
         }, status=status.HTTP_202_ACCEPTED)
+    
+
+    @staticmethod
+    def get_chunck_media_dir(upload_id):
+        if os.getenv('IS_PROD'):
+            return f'media/chunks/{upload_id}/'
+        else:
+            return f'chunks/{upload_id}/'
 
 
 
@@ -70,7 +78,7 @@ class VideoUploadViewSet(viewsets.ViewSet):
         except VideoUpload.DoesNotExist:
             return Response({'error': 'Upload not found'}, status=status.HTTP_404_NOT_FOUND)
 
-        chunk_dir = f'chunks/{upload_id}/'
+        chunk_dir = self.get_chunck_media_dir(upload_id)
 
         # Download all chunks to a local directory
         local_chunk_dir = download_dir_from_media(chunk_dir)
