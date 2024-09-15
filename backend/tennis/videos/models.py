@@ -2,7 +2,19 @@ from django.db import models
 import shutil
 from ml.jobs.obj_detection.ball import invoke as invoke_ball
 from ml.jobs.obj_detection.objs import invoke as invoke_objs
+from django.contrib.auth import get_user_model
 import os
+
+
+User = get_user_model()
+
+
+class VideoUpload(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    upload_id = models.CharField(max_length=32, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    completed = models.BooleanField(default=False)
 
 
 class FramesBatch(models.Model):
