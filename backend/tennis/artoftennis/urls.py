@@ -5,6 +5,7 @@ from django.contrib import admin
 from wagtail.admin import urls as wagtailadmin_urls
 from wagtail import urls as wagtail_urls
 from wagtail.documents import urls as wagtaildocs_urls
+from videos import urls as videos_urls
 
 from search import views as search_views
 
@@ -32,6 +33,7 @@ urlpatterns = [
     path('after_social_login/', after_social_login, name='after_social_login'),
     path('batch-image-upload/<int:trim_id>/<int:batch_id>/', BatchImageUploadApiView.as_view(), name='batch_image_upload'),
     path('create-trim/', CreateTrimView.as_view(), name='create_trim'),
+    path('videos/', include(videos_urls)),
 ]
 
 

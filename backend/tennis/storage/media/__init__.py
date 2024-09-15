@@ -30,13 +30,21 @@ def get_all_media_files(directory):
     return media_file_paths
 
 
-def write_to_media(local_path: str) -> str:
-    # file_name = os.path.basename(local_path)
+
+def write_video_to_media(local_path: str) -> str:
+    media_path = f"media/{os.path.basename(local_path)}"
     with open(local_path, 'rb') as file:
-        # default_storage.save(f"{file_name}", file)
-        default_storage.save(f"{local_path}", file)
-    # return default_storage.url(file_name)
-    return default_storage.url(local_path)
+        saved_name = default_storage.save(media_path, file)
+    return saved_name 
+
+
+def write_to_media(local_path: str, ignore_path_structure: bool = False) -> str:
+    media_path = local_path
+    if ignore_path_structure:
+        media_path = os.path.basename(local_path)
+    with open(local_path, 'rb') as file:
+        default_storage.save(f"{media_path}", file)
+    return default_storage.url(media_path)
 
 
 def write_bytes_to_media(file_name: str, content: Union[bytes, io.BytesIO]) -> str:
