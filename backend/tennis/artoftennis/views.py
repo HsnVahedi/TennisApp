@@ -20,6 +20,7 @@ from django.contrib.auth import get_user_model
 import uuid
 from storage.media import write_to_media
 import os
+from home.utils import get_or_create_trims_page
 
 
 ImageModel = get_image_model()
@@ -72,34 +73,6 @@ class LoginView(DjangoLoginView):
 def after_social_login(request):
     frontend_url = request.GET['frontendPage']
     return redirect(f'{frontend_url}?alreadyLoggedIn=1')
-
-
-def get_or_create_user_page(user):
-    home_page = HomePage.objects.first()
-    user_page = UserPage.objects.filter(user=user).first()
-    if not user_page:
-        user_page = UserPage(user=user)
-        home_page.add_child(instance=user_page)
-        user_page.save_revision().publish()
-    return user_page
-
-
-def get_or_create_trims_page(user):
-    user_page = get_or_create_user_page(user)
-
-    # Get the children of the user page and filter for a TrimsPage
-    trims_page = user_page.get_children().type(TrimsPage).first()
-
-    if not trims_page:
-        # Create a new TrimsPage as a child of the user page
-        trims_page = TrimsPage(
-            # parent=user_page
-        )
-        user_page.add_child(instance=trims_page)
-        trims_page.save_revision().publish()
-
-    return trims_page
-
 
 
 class CreateTrimView(APIView):

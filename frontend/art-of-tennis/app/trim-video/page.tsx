@@ -80,127 +80,107 @@ const VideoCards = ({videoRef, videoSrc}) => (
 );
 
 const App = () => {
-  const [isVideoUploaded, setIsVideoUploaded] = useState(false);
-  const [videoSrc, setVideoSrc] = useState('');
-  const [isTrimming, setIsTrimming] = useState(false);
-  // const [isTrimmingInProgress, setIsTrimmingInProgress] = useState(false);
-  // const [ffmpeg, setFFmpeg] = useState(null);
-  const videoRef = useRef(null);
-
-  const videoFileName = 'input.mp4'
-
-  // useEffect(() => {
-  //   const loadFFmpeg = async () => {
-  //     const ffmpegInstance = new FFmpeg({ log: true });
-  //     setFFmpeg(ffmpegInstance);
-  //     await ffmpegInstance.load();
-  //   };
-
-  //   loadFFmpeg();
-  // }, []);
+  const [isVideoSelected, setIsVideoSelected] = useState(false);
+  const [videoPreviewUrl, setVideoPreviewUrl] = useState('');
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const fileInputRef = useRef(null);
   const { data: session } = useSession();
 
-  
-  // The client-side part to call the server-side API
-  const extractFramesAndInvokeApi = async () => {
-    const video = videoRef.current;
-    if (!video) {
-      console.error("No video found.");
+  const handleFileSelect = (event) => {
+    const file = event.target.files[0];
+    if (file && file.type.startsWith('video/')) {
+      setIsVideoSelected(true);
+      const tempUrl = URL.createObjectURL(file);
+      setVideoPreviewUrl(tempUrl);
+      setTimeout(() => URL.revokeObjectURL(tempUrl), 1000);
+    } else {
+      alert('Please select a valid video file.');
+    }
+  };
+
+  const initiateUpload = async (filename) => {
+    const response = await fetch('/api/videos/initiate_upload/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${session.accessToken}`,
+      },
+      body: JSON.stringify({ filename }),
+    });
+    if (!response.ok) throw new Error('Failed to initiate upload');
+    return response.json();
+  };
+
+  const uploadChunk = async (chunk, uploadId, chunkNumber) => {
+    const formData = new FormData();
+    formData.append('chunk', chunk);
+
+    const response = await fetch(`/api/videos/upload_chunk/?upload_id=${uploadId}&chunk_number=${chunkNumber}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${session.accessToken}`,
+      },
+      body: formData,
+    });
+    if (!response.ok) throw new Error('Chunk upload failed');
+    return response.json();
+  };
+
+  const completeUpload = async (uploadId) => {
+    const response = await fetch('/api/videos/complete_upload/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${session.accessToken}`,
+      },
+      body: JSON.stringify({ upload_id: uploadId }),
+    });
+    if (!response.ok) throw new Error('Failed to complete upload');
+    return response.json();
+  };
+
+  const handleTrimClick = async () => {
+    if (!isVideoSelected || !fileInputRef.current.files[0]) {
+      alert('Please select a video first.');
       return;
     }
 
-    // Ensure video metadata is loaded
-    await new Promise((resolve) => {
-      if (video.readyState >= 2) resolve();
-      else video.addEventListener("loadedmetadata", resolve);
-    });
-
-    const fps = 5;
-    const duration = video.duration;
-    const canvas = document.createElement("canvas");
-    const context = canvas.getContext("2d");
-    
-    const frames = [];
-    const interval = 1 / fps;
-    let currentTime = 0;
-
-    // Set canvas size to match video resolution
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-
-    // Extract frames at 5 FPS
-    while (currentTime < duration) {
-      video.currentTime = currentTime;
-      await new Promise((resolve) => {
-        video.addEventListener("seeked", () => {
-          context.drawImage(video, 0, 0, canvas.width, canvas.height);
-          canvas.toBlob((blob) => {
-            frames.push(blob);
-            resolve();
-          }, "image/jpeg");
-        }, { once: true });
-      });
-      currentTime += interval;
-    }
-
-    alert(`number of frames extracted: ${frames.length}`)
-
+    setIsUploading(true);
+    setUploadProgress(0);
 
     try {
-      const response = await fetch(`/api/createTrim/`, {
-        method: "POST",
-      });
-      const data = await response.json();
-      alert(JSON.stringify(data))
-      const trim_id = data.id
-      // Process frames in batches of 30
-      const batchSize = 30;
-      let batchNumber = 1;
+      const file = fileInputRef.current.files[0];
+      const chunkSize = 5 * 1024 * 1024; // 5MB chunks
+      const fileSize = file.size;
+      const chunks = Math.ceil(fileSize / chunkSize);
 
+      // Initiate upload
+      const { upload_id } = await initiateUpload(file.name);
 
-      for (let i = 0; i < frames.length; i += batchSize) {
-        const batch = frames.slice(i, i + batchSize);
+      // Upload chunks
+      for (let i = 0; i < chunks; i++) {
+        const start = i * chunkSize;
+        const end = Math.min(start + chunkSize, fileSize);
+        const chunk = file.slice(start, end);
 
-        const formData = new FormData();
-        formData.append("title", `Batch ${batchNumber}`);
-
-        // Add images to the formData
-        batch.forEach((image, index) => {
-          formData.append("images", image, `frame-${i}-${index}.jpg`);
-        });
-
-        
-
-        try {
-          // Correctly format the URL to hit the new API route
-          const response = await fetch(`/api/batchImageUpload/${trim_id}/${batchNumber}`, {
-            method: "POST",
-            body: formData,
-          });
-
-          if (!response.ok) {
-            throw new Error("Failed to upload batch");
-          }
-
-          const data = await response.json();
-          console.log(`Batch ${batchNumber} uploaded successfully:`, data);
-        } catch (error) {
-          console.error("Error uploading batch:", error);
-        }
-
-        batchNumber++;
+        await uploadChunk(chunk, upload_id, i);
+        setUploadProgress(((i + 1) / chunks) * 100);
       }
+
+      // Complete upload
+      await completeUpload(upload_id);
+
+      setIsUploading(false);
+      alert('Video uploaded successfully!');
     } catch (error) {
-      console.error("Error creating a new trim:", error);
+      console.error('Error uploading video:', error);
+      setIsUploading(false);
+      alert('Failed to upload video. Please try again.');
     }
-
-    
-
-    console.log("All batches uploaded successfully.");
   };
 
 
- 
 
   const tools = [
     { title: "PDF to Word", description: "Convert PDF to editable Word documents" },
@@ -211,93 +191,63 @@ const App = () => {
     { title: "Split PDF", description: "Separate one PDF into multiple files" }
   ];
 
-  const handleFileUpload = async (event) => {
-    // if (!ffmpeg) return;
-    const file = event.target.files[0];
-    if (file && file.type.startsWith('video/')) {
-      setIsVideoUploaded(true);
-      const videoUrl = URL.createObjectURL(file);
-      setVideoSrc(videoUrl);
-      // await ffmpeg.writeFile(videoFileName, await fetchFile(file));
-      setIsTrimming(false);
-      // setIsTrimmingInProgress(false);
-    } else {
-      alert('Please upload a valid video file.');
-    }
-  };
-
-  const handleTrimClick = async () => {
-    setIsTrimming(true);
-    await extractFramesAndInvokeApi();
-    // setIsTrimmingInProgress(true);
-  };
 
   return (
     <PageLayout>
-        <main className="flex flex-col items-center justify-center space-y-4">
-          {isVideoUploaded ? (
-            <div className="w-full max-w-6xl mb-4">
-              <video
-                ref={videoRef}
-                src={videoSrc}
-                controls
-                className="w-full rounded-lg shadow-lg"
-                style={{ aspectRatio: '16 / 9' }}
-              />
-            </div>
-          ) : (
-            <div className="w-full max-w-6xl mb-4">
-              <Image
-                src="/trim-video.jpeg"
-                alt="Fallback image"
-                layout="responsive"
-                width={16}
-                height={9}
-                className="w-full rounded-lg shadow-lg"
-              />
-            </div>
-          )}
-          <label className="cursor-pointer w-full max-w-md">
-            <input
-              type="file"
-              accept="video/*"
-              className="hidden"
-              onChange={handleFileUpload}
+      <main className="flex flex-col items-center justify-center space-y-4">
+        {isVideoSelected ? (
+          <VideoCard videoSrc={videoPreviewUrl} videoRef={null} />
+        ) : (
+          <div className="w-full max-w-6xl mb-4">
+            <Image
+              src="/trim-video.jpeg"
+              alt="Fallback image"
+              layout="responsive"
+              width={16}
+              height={9}
+              className="w-full rounded-lg shadow-lg"
             />
-            <div className="bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold py-4 px-8 rounded-lg shadow-lg hover:from-orange-600 hover:to-orange-700 transition duration-300 flex items-center justify-center w-full">
-              <span className="flex-grow text-center">{isVideoUploaded ? "Upload another Video" : "Upload your Video"}</span>
-              <UploadIcon />
-            </div>
-          </label>
-          {isVideoUploaded && (
-            <>
-              <button 
-                onClick={handleTrimClick}
-                className={`
-                  bg-gradient-to-r from-purple-700 to-purple-900 
-                  text-white font-bold py-4 px-8 rounded-lg shadow-lg 
-                  flex items-center justify-center w-full max-w-md
-                  ${isTrimming 
-                    ? 'opacity-50 cursor-not-allowed' 
-                    : 'hover:from-purple-800 hover:to-purple-950 transition duration-300'
-                  }
-                `}
-                disabled={isTrimming}
-              >
-                <span className="flex-grow text-center">
-                  {isTrimming ? "Trimming in Progress" : "Trim your Video"}
-                </span>
-                {isTrimming ? <ProgressIcon /> : <TrimIcon />}
-              </button>
-              {isTrimming && <VideoCards videoRef={videoRef} videoSrc={videoSrc} />}
-            </>
-          )}
-        </main>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
-          {tools.map((tool, index) => (
-            <Card key={index} title={tool.title} description={tool.description} />
-          ))}
-        </div>
+          </div>
+        )}
+        <label className="cursor-pointer w-full max-w-md">
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="video/*"
+            className="hidden"
+            onChange={handleFileSelect}
+          />
+          <div className="bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold py-4 px-8 rounded-lg shadow-lg hover:from-orange-600 hover:to-orange-700 transition duration-300 flex items-center justify-center w-full">
+            <span className="flex-grow text-center">{isVideoSelected ? "Select another Video" : "Select your Video"}</span>
+            <UploadIcon />
+          </div>
+        </label>
+        {isVideoSelected && (
+          <button 
+            onClick={handleTrimClick}
+            className={`
+              bg-gradient-to-r from-purple-700 to-purple-900 
+              text-white font-bold py-4 px-8 rounded-lg shadow-lg 
+              flex items-center justify-center w-full max-w-md
+              ${isUploading 
+                ? 'opacity-50 cursor-not-allowed' 
+                : 'hover:from-purple-800 hover:to-purple-950 transition duration-300'
+              }
+            `}
+            disabled={isUploading}
+          >
+            <span className="flex-grow text-center">
+              {isUploading ? `Uploading: ${uploadProgress.toFixed(0)}%` : "Trim your Video"}
+            </span>
+            {isUploading ? <ProgressIcon /> : <TrimIcon />}
+          </button>
+        )}
+      </main>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+        {tools.map((tool, index) => (
+          <Card key={index} title={tool.title} description={tool.description} />
+        ))}
+      </div>
     </PageLayout>
   );
 };
