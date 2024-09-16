@@ -11,7 +11,7 @@ def detect_objects_task(batch_pk: int) -> None:
     batch.detect_objs()
 
 
-@shared_task
+@shared_task(time_limit=500 * 60)
 def trim_video_task(trim_page_pk: int) -> None:
     from .models import TrimPage
     trim_page = TrimPage.objects.get(pk=trim_page_pk)
