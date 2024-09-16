@@ -2,6 +2,9 @@ from celery import shared_task
 import os
 import tempfile
 import uuid
+from home.tasks import trim_video_task
+
+
 
 @shared_task(time_limit=100 * 60)
 def process_video_upload_task(upload_id: str, user_id: int) -> None:
@@ -104,3 +107,5 @@ def process_video_upload_task(upload_id: str, user_id: int) -> None:
     # Mark the upload as completed
     upload.completed = True
     upload.save()
+
+    trim_video_task.delay(trim_page.pk)
