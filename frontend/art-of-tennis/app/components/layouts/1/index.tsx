@@ -15,21 +15,27 @@ const CloseIcon = () => (
   </svg>
 );
 
-const SideMenu = ({ isOpen, onClose }) => (
-  <div className={`fixed inset-0 bg-purple-900 z-50 transform ${isOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 ease-in-out`}>
-    <div className="flex justify-end p-4">
-      <button onClick={onClose} className="text-white">
-        <CloseIcon />
-      </button>
+const SideMenu = ({ isOpen, onClose }) => {
+  const { data: session, status } = useSession();
+  return (
+    <div className={`fixed inset-0 bg-purple-900 z-50 transform ${isOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 ease-in-out`}>
+      <div className="flex justify-end p-4">
+        <button onClick={onClose} className="text-white">
+          <CloseIcon />
+        </button>
+      </div>
+      <nav className="flex flex-col items-center">
+        <a href="#" className="text-white py-2 hover:text-green-100">All Tools</a>
+        <a href="#" className="text-white py-2 hover:text-green-100">Pricing</a>
+        {session && session.user ? (
+          <a href="#" onClick={() => signOut()} className="text-white py-2 hover:text-green-100">Sign Out</a>
+        ): (
+          <a href="#" className="text-white ml-4 hover:text-green-100">Sign In</a>
+        )}
+      </nav>
     </div>
-    <nav className="flex flex-col items-center">
-      <a href="#" className="text-white py-2 hover:text-green-100">All Tools</a>
-      <a href="#" className="text-white py-2 hover:text-green-100">Pricing</a>
-      <a href="#" className="text-white py-2 hover:text-green-100">Log in</a>
-      <a href="#" className="text-white py-2 hover:text-green-100">Sign up</a>
-    </nav>
-  </div>
-);
+  );
+} 
 
 const PageLayout = ({ children }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -41,7 +47,7 @@ const PageLayout = ({ children }) => {
           <button onClick={() => setIsMenuOpen(true)} className="text-white mr-4 block md:hidden">
             <MenuIcon />
           </button>
-          <div className="text-white text-2xl font-bold">iLovePDF</div>
+          <div className="text-white text-2xl font-bold">Art of Tennis</div>
         </div>
         <nav className="hidden md:block">
           <a href="#" className="text-white ml-4 hover:text-green-100">All Tools</a>
