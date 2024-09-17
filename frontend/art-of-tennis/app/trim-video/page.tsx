@@ -166,32 +166,32 @@ const App = () => {
   const tools = [
     {
       title: "Trim Video",
-      description: "Do you record your Tennis play? Trim your tennis videos with ease.", link: "/trim-video",
+      description: "Record your tennis games? Easily trim and edit your videos with just a few clicks.", link: "/trim-video",
       icon: VideoIcon
     },
     {
       title: "Ball Picker Drones",
-      description: "Are you tired of picking up the balls? Let our new ball picker drones do the work for you!", link: "/trim-video",
+      description: "Tired of chasing down tennis balls? Let our cutting-edge drones handle the cleanup for you!", link: "/trim-video",
       icon: DroneIcon
     },
     {
       title: "Tennis Ball Machines",
-      description: "Do you want to practice with the newest ball machines? No need to buy a new one, just rent it!", link: "/trim-video",
+      description: "Want to sharpen your skills with the latest ball machines? Skip the purchase—rent the newest models with ease!", link: "/trim-video",
       icon: TennisMachineIcon
     },
     {
       title: "Find Tennis Players",
-      description: "Do you want to play right NOW? Find tennis players at your level and start playing now!", link: "/trim-video",
+      description: "Ready to play right now? Find players at your level and jump into a match today!", link: "/trim-video",
       icon: TennisPlayerIcon
     },
     {
       title: "Find your Racket",
-      description: "Are you ready to change your racket? Don't buy it before testing 10 different ones! Test the latest racket models now!", link: "/trim-video",
+      description: "Looking to upgrade your racket? Try out 10 of the latest models before you decide!", link: "/trim-video",
       icon: TennisRacketIcon
     },
     {
       title: "Smart Tennis Club",
-      description: "Let us show you how you can make your tennis courts smarter! Let's make your tennis club much more fun!", link: "/trim-video",
+      description: "Discover how to make your tennis courts smarter! Transform your club into a more fun and tech-savvy experience.", link: "/trim-video",
       icon: IntelligenceIcon
     }
   ];
@@ -214,40 +214,6 @@ const App = () => {
             />
           </div>
         )}
-        {/* <label className="cursor-pointer w-full max-w-md">
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="video/*"
-            className="hidden"
-            onChange={handleFileSelect}
-          />
-          <div className="bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold py-4 px-8 rounded-lg shadow-lg hover:from-orange-600 hover:to-orange-700 transition duration-300 flex items-center justify-center w-full">
-            <span className="flex-grow text-center">{isVideoSelected ? "Select another Video" : "Select your Video"}</span>
-            <UploadIcon />
-          </div>
-        </label> */}
-
-        {/* <label className="cursor-pointer w-full max-w-md">
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="video/*"
-            className="hidden"
-            onChange={handleFileSelect}
-          />
-          <div className="
-            bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold py-4 px-8 rounded-lg shadow-lg
-            hover:from-orange-600 hover:to-orange-700 hover:shadow-xl
-            active:translate-y-1 active:shadow-inner
-            transition duration-300 flex items-center justify-center w-full
-          ">
-            <span className="flex-grow text-center">
-              {isVideoSelected ? "Select another Video" : "Select your Video"}
-            </span>
-            <UploadIcon />
-          </div>
-        </label> */}
 
         <label className="w-full max-w-md">
           <input
@@ -277,24 +243,6 @@ const App = () => {
           </div>
         </label>
         {isVideoSelected && (
-          // <button 
-          //   onClick={handleTrimClick}
-          //   className={`
-          //     bg-gradient-to-r from-purple-700 to-purple-900 
-          //     text-white font-bold py-4 px-8 rounded-lg shadow-lg 
-          //     flex items-center justify-center w-full max-w-md
-          //     ${isUploading 
-          //       ? 'opacity-50 cursor-not-allowed' 
-          //       : 'hover:from-purple-800 hover:to-purple-950 transition duration-300'
-          //     }
-          //   `}
-          //   disabled={isUploading}
-          // >
-          //   <span className="flex-grow text-center">
-          //     {isUploading ? `Uploading: ${uploadProgress.toFixed(0)}%` : "Trim your Video"}
-          //   </span>
-          //   {isUploading ? <ProgressIcon /> : <TrimIcon />}
-          // </button>
           <button 
             onClick={handleTrimClick}
             className={`
