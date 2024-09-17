@@ -23,7 +23,7 @@ const Card = ({ title, description, link, icon: IconComponent }) => (
     ">
       <IconComponent />
       <h3 className="text-xl font-semibold mb-2 text-gray-800">{title}</h3>
-      <p className="text-sm text-gray-600">{description}</p>
+      <p className="text-md text-gray-600">{description}</p>
     </div>
   </Link>
 );
@@ -41,7 +41,7 @@ const TrimIcon = () => (
 );
 
 const ProgressIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" className="ml-2 animate-spin">
+  <svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" viewBox="0 0 24 24" className="ml-2 animate-spin">
     <path fill="currentColor" d="M12 22q-2.05 0-3.875-.788t-3.187-2.15t-2.15-3.187T2 12q0-2.075.788-3.887t2.15-3.175t3.187-2.15T12 2q.425 0 .713.288T13 3t-.288.713T12 4Q8.675 4 6.337 6.338T4 12t2.338 5.663T12 20t5.663-2.337T20 12q0-.425.288-.712T21 11t.713.288T22 12q0 2.05-.788 3.875t-2.15 3.188t-3.175 2.15T12 22"/>
   </svg>
 );
@@ -59,18 +59,6 @@ const VideoCard = ({videoRef, videoSrc}) => {
     </div>
   );
 };
-
-const VideoCards = ({videoRef, videoSrc}) => (
-  <div className="w-full max-w-6xl mb-4">
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
-      <VideoCard videoRef={videoRef} videoSrc={videoSrc} />
-      <VideoCard videoRef={videoRef} videoSrc={videoSrc} />
-      <VideoCard videoRef={videoRef} videoSrc={videoSrc} />
-      <VideoCard videoRef={videoRef} videoSrc={videoSrc} />
-      <VideoCard videoRef={videoRef} videoSrc={videoSrc} />
-    </div>
-  </div>
-);
 
 const App = () => {
   const [isVideoSelected, setIsVideoSelected] = useState(false);
@@ -226,7 +214,7 @@ const App = () => {
             />
           </div>
         )}
-        <label className="cursor-pointer w-full max-w-md">
+        {/* <label className="cursor-pointer w-full max-w-md">
           <input
             ref={fileInputRef}
             type="file"
@@ -238,8 +226,75 @@ const App = () => {
             <span className="flex-grow text-center">{isVideoSelected ? "Select another Video" : "Select your Video"}</span>
             <UploadIcon />
           </div>
+        </label> */}
+
+        {/* <label className="cursor-pointer w-full max-w-md">
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="video/*"
+            className="hidden"
+            onChange={handleFileSelect}
+          />
+          <div className="
+            bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold py-4 px-8 rounded-lg shadow-lg
+            hover:from-orange-600 hover:to-orange-700 hover:shadow-xl
+            active:translate-y-1 active:shadow-inner
+            transition duration-300 flex items-center justify-center w-full
+          ">
+            <span className="flex-grow text-center">
+              {isVideoSelected ? "Select another Video" : "Select your Video"}
+            </span>
+            <UploadIcon />
+          </div>
+        </label> */}
+
+        <label className="w-full max-w-md">
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="video/*"
+            className="hidden"
+            onChange={handleFileSelect}
+            disabled={isUploading}
+          />
+          <div
+            className={`
+              bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold py-4 px-8 rounded-lg shadow-lg
+              flex items-center justify-center w-full
+              ${
+                isUploading
+                  ? 'opacity-50 cursor-not-allowed'
+                  : 'hover:from-orange-600 hover:to-orange-700 hover:shadow-xl active:translate-y-1 active:shadow-inner cursor-pointer'
+              }
+              transition duration-300
+            `}
+          >
+            <span className="flex-grow text-center">
+              {isVideoSelected ? 'Select another Video' : 'Select your Video'}
+            </span>
+            <UploadIcon />
+          </div>
         </label>
         {isVideoSelected && (
+          // <button 
+          //   onClick={handleTrimClick}
+          //   className={`
+          //     bg-gradient-to-r from-purple-700 to-purple-900 
+          //     text-white font-bold py-4 px-8 rounded-lg shadow-lg 
+          //     flex items-center justify-center w-full max-w-md
+          //     ${isUploading 
+          //       ? 'opacity-50 cursor-not-allowed' 
+          //       : 'hover:from-purple-800 hover:to-purple-950 transition duration-300'
+          //     }
+          //   `}
+          //   disabled={isUploading}
+          // >
+          //   <span className="flex-grow text-center">
+          //     {isUploading ? `Uploading: ${uploadProgress.toFixed(0)}%` : "Trim your Video"}
+          //   </span>
+          //   {isUploading ? <ProgressIcon /> : <TrimIcon />}
+          // </button>
           <button 
             onClick={handleTrimClick}
             className={`
@@ -248,8 +303,9 @@ const App = () => {
               flex items-center justify-center w-full max-w-md
               ${isUploading 
                 ? 'opacity-50 cursor-not-allowed' 
-                : 'hover:from-purple-800 hover:to-purple-950 transition duration-300'
+                : 'hover:from-purple-800 hover:to-purple-950 hover:shadow-xl active:translate-y-1 active:shadow-inner'
               }
+              transition duration-300
             `}
             disabled={isUploading}
           >
