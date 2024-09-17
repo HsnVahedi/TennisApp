@@ -1,7 +1,8 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
     useSession, signOut
 } from "next-auth/react";
+import Link from 'next/link';
 
 const MenuIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -25,8 +26,6 @@ const SideMenu = ({ isOpen, onClose }) => {
         </button>
       </div>
       <nav className="flex flex-col items-center">
-        <a href="#" className="text-white py-2 hover:text-green-100">All Tools</a>
-        <a href="#" className="text-white py-2 hover:text-green-100">Pricing</a>
         {session && session.user ? (
           <a href="#" onClick={() => signOut()} className="text-white py-2 hover:text-green-100">Sign Out</a>
         ): (
@@ -47,11 +46,11 @@ const PageLayout = ({ children }) => {
           <button onClick={() => setIsMenuOpen(true)} className="text-white mr-4 block md:hidden">
             <MenuIcon />
           </button>
-          <div className="text-white text-2xl font-bold">Art of Tennis</div>
+          <Link href="/">
+            <div className="text-white text-2xl font-bold">Art of Tennis</div>
+          </Link>
         </div>
         <nav className="hidden md:block">
-          <a href="#" className="text-white ml-4 hover:text-green-100">All Tools</a>
-          <a href="#" className="text-white ml-4 hover:text-green-100">Pricing</a>
           {session && session.user ? (
             <a href="#" className="text-white ml-4 hover:text-green-100"
               onClick={() => signOut()}>
