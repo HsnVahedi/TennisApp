@@ -3,6 +3,10 @@ import {
     useSession, signOut
 } from "next-auth/react";
 import Link from 'next/link';
+import {
+  Camera, TrendingUp, Award, Users,
+  Zap, Smartphone, Instagram, Facebook, Twitter, Youtube
+} from 'lucide-react';
 
 const MenuIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -36,6 +40,61 @@ const SideMenu = ({ isOpen, onClose }) => {
   );
 } 
 
+
+const Footer = () => {
+  const footerSections = [
+    {
+      title: "PRODUCT",
+      links: ["SWING STICK", "HOW-TO VIDEO", "FAQ", "TEAMS", "TRACK AN ORDER"]
+    },
+    {
+      title: "COMMUNITY",
+      links: ["REFER A FRIEND", "GIFT ART OF TENNIS", "AMBASSADORS", "NEWSLETTERS", "FORUM", "ART OF TENNIS GUIDELINES"]
+    },
+    {
+      title: "COMPANY",
+      links: ["ABOUT US", "CAREERS", "EULA", "PRIVACY POLICY", "CONTACT US"]
+    }
+  ];
+
+  return (
+    <footer className="bg-purple-900 text-white py-12">
+      <div className="max-w-6xl mx-auto px-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div>
+            <h3 className="text-2xl font-bold mb-4">Art of Tennis</h3>
+            {/* <button className="bg-black text-white px-4 py-2 rounded flex items-center">
+              <img src="/api/placeholder/20/20" alt="App Store" className="mr-2" />
+              Download on the App Store
+            </button> */}
+            <div className="mt-4 flex space-x-4">
+              <Instagram size={24} />
+              <Facebook size={24} />
+              <Twitter size={24} />
+              <Youtube size={24} />
+            </div>
+          </div>
+          {footerSections.map((section, index) => (
+            <div key={index}>
+              <h4 className="text-green-400 font-semibold mb-4">{section.title}</h4>
+              <ul>
+                {section.links.map((link, linkIndex) => (
+                  <li key={linkIndex} className="mb-2">
+                    <a href="#" className="hover:text-green-400 transition duration-300">{link}</a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+        <div className="mt-8 pt-8 border-t border-gray-700 text-center text-sm">
+          <p>&copy; 2024 Art of Tennis. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+  );
+};
+
 const PageLayout = ({ children }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { data: session, status } = useSession();
@@ -65,6 +124,7 @@ const PageLayout = ({ children }) => {
       <section className="max-w-6xl mx-auto mt-16 text-center text-white px-4 pb-16">
         {children} 
       </section>
+      <Footer />
     </div>
   );
 }
