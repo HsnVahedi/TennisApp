@@ -1,36 +1,6 @@
 import React from 'react';
 import { Instagram, Linkedin, Facebook } from 'lucide-react';
 
-// const MemberCard = ({ name, role, content, rating, imageUrl, instagram, linkedin, facebook }) => (
-//   <div className="bg-transparent rounded-lg p-6 text-purple-800">
-//     <div className="flex items-center mb-4">
-//       <img src={imageUrl} alt={name} className="w-20 h-20 rounded-full mr-4" />
-//       <div className="text-left">
-//         <h4 className="font-semibold">{name}</h4>
-//         <p>{role}</p>
-//       </div>
-//     </div>
-//     <p className="mb-4 text-left">{content}</p>
-//     <div className="flex items-center space-x-4">
-//       {instagram && (
-//         <a href={instagram} target="_blank" rel="noopener noreferrer">
-//           <Instagram className="w-6 h-6 text-gray-600 hover:text-purple-800" />
-//         </a>
-//       )}
-//       {linkedin && (
-//         <a href={linkedin} target="_blank" rel="noopener noreferrer">
-//           <Linkedin className="w-6 h-6 text-gray-600 hover:text-purple-800" />
-//         </a>
-//       )}
-//       {facebook && (
-//         <a href={facebook} target="_blank" rel="noopener noreferrer">
-//           <Facebook className="w-6 h-6 text-gray-600 hover:text-purple-800" />
-//         </a>
-//       )}
-//     </div>
-//   </div>
-// );
-
 
 const MemberCard = ({ name, role, content, rating, imageUrl, instagram, linkedin, facebook }) => (
   <div className="bg-transparent rounded-lg p-6 text-purple-800">

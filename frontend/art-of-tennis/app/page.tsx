@@ -9,7 +9,7 @@ import {
   Zap, Smartphone} from 'lucide-react';
 import { Features } from "@/app/components/features";
 import { Members } from "@/app/components/team";
-
+import ContactUs from "@/app/components/contact-us";
 
 
 
@@ -65,6 +65,7 @@ export default function Home() {
         </section> */}
       </main>
       <Members />
+      <ContactUs />
     </PageLayout>
   );
 }
