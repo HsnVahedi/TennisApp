@@ -1,105 +1,79 @@
+"use client";
+
+
 import Image from "next/image";
-import styles from "./page.module.css";
-import { getBackendUrl } from "@/app/lib/backend";
+import PageLayout from "@/app/components/layouts/1";
+import React, { useState, useEffect } from 'react';
+import {
+  Camera, TrendingUp, Award, Users,
+  Zap, Smartphone, Instagram, Facebook, Twitter, Youtube
+} from 'lucide-react';
+import { Features } from "@/app/components/features";
+import { Members } from "@/app/components/team";
 
-export default async function Home() {
-  const data = await getData();
+
+
+
+
+
+
+
+const Hero = () => {
+
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          {`data: ${data}`} Get started by editing&nbsp;
-          <code className={styles.code}>app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
+    <div className="w-full max-w-6xl mb-4">
+      <Image
+        src="/main-bg.jpeg"
+        alt="Fallback image"
+        layout="responsive"
+        width={16}
+        height={9}
+        className="w-full rounded-lg shadow-lg"
+      />
+    </div>
+  );
+};
 
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
 
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
 
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
 
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore starter templates for Next.js.</p>
-        </a>
 
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
+
+export default function Home() {
+  const features = [
+    { title: "Trim Video", description: "Edit and perfect your tennis game footage with ease", icon: Camera },
+    { title: "Ball Picker Drones", description: "Automate ball collection with cutting-edge drone technology", icon: Zap },
+    { title: "Tennis Ball Machines", description: "Practice with advanced ball machines for skill improvement", icon: TrendingUp },
+    { title: "Find Tennis Players", description: "Connect with players at your skill level for matches", icon: Users },
+    { title: "Find your Racket", description: "Discover the perfect racket with our testing program", icon: Award },
+    { title: "Smart Tennis Club", description: "Transform your club with IoT and AI technologies", icon: Smartphone },
+  ];
+
+  return (
+    <PageLayout>
+      <Hero />
+      {/* <main className="max-w-6xl mx-auto px-4 pt-20 pb-16"> */}
+      <main className="flex flex-col items-center justify-center space-y-4">
+        {/* <Hero /> */}
+        <Features />
+
+        {/* <section className="text-center my-16">
+          <h2 className="text-3xl font-bold mb-4 text-purple-900">Join the Tennis Revolution</h2>
+          <p className="text-xl mb-8 text-purple-900">Experience the future of tennis training and community</p>
+          <button className="bg-purple-700 text-white font-bold py-2 px-4 rounded hover:bg-purple-600 transition duration-300">
+            Sign Up Now
+          </button>
+        </section> */}
+      </main>
+      <Members />
+    </PageLayout>
   );
 }
 
 
-const getData = async () => {
-  const backendUrl = getBackendUrl();
-  const res = await fetch(`${backendUrl}/data`);
-  const data = await res.json();
-  return data.data
-} 
+// const getData = async () => {
+//   const backendUrl = getBackendUrl();
+//   const res = await fetch(`${backendUrl}/data`);
+//   const data = await res.json();
+//   return data.data
+// } 
