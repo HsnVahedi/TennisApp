@@ -3,11 +3,10 @@
 
 import Image from "next/image";
 import PageLayout from "@/app/components/layouts/1";
-import React, { useState, useEffect } from 'react';
+import React, {  } from 'react';
 import {
   Camera, TrendingUp, Award, Users,
-  Zap, Smartphone, Instagram, Facebook, Twitter, Youtube
-} from 'lucide-react';
+  Zap, Smartphone} from 'lucide-react';
 import { Features } from "@/app/components/features";
 import { Members } from "@/app/components/team";
 
