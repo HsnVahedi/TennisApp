@@ -1,6 +1,7 @@
 from celery import shared_task
 from typing import List
-import time
+from django.utils import timezone
+
 
 
 @shared_task(time_limit=10 * 60)
@@ -12,10 +13,17 @@ def detect_objects_task(batch_pk: int) -> None:
 
 
 @shared_task(time_limit=500 * 60)
-def trim_video_task(trim_page_pk: int) -> None:
+def detect_objects_in_video_task(trim_page_pk: int, upload_id: int, user_id: int) -> None:
     from .models import TrimPage
+    from videos.models import VideoUpload
     trim_page = TrimPage.objects.get(pk=trim_page_pk)
-    trim_page.trim_video()
+    trim_page.detect_objects()
+    video_upload = VideoUpload.objects.get(
+        upload_id=upload_id, user_id=user_id
+    )
+    video_upload.objects_detected = True
+    video_upload.objects_detected_at = timezone.now()
+    video_upload.save()
 
 
 @shared_task(time_limit=100 * 60)

@@ -11,9 +11,18 @@ User = get_user_model()
 
 class VideoUpload(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+
     upload_id = models.CharField(max_length=32, unique=True)
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    uploaded_at = models.DateTimeField(blank=True, null=True)
+    objects_detected_at = models.DateTimeField(blank=True, null=True)
+    completed_at = models.DateTimeField(blank=True, null=True)
+
+    uploaded = models.BooleanField(default=False)
+    objects_detected = models.BooleanField(default=False)
     completed = models.BooleanField(default=False)
 
 

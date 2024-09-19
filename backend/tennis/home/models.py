@@ -89,10 +89,9 @@ class TrimPage(Page):
 
     # This method takes a lot of time to complete
     # Don't call it syncronously. Use a celery task.
-    def trim_video(self):
+    def detect_objects(self):
         from videos.utils import get_video_length, extract_frames
         from videos.models import FramesBatch
-        from images.utils import read_image, annotate_image
         video_length = get_video_length(self.video.file.name)
         batch_duration = 20 # seconds
         number_of_batches = int(video_length // batch_duration)

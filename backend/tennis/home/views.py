@@ -6,7 +6,7 @@ from django.shortcuts import get_object_or_404
 from django.views import View
 from .models import TrimPage, FramePage
 import uuid
-from home.tasks import trim_video_task
+from home.tasks import detect_objects_in_video_task
 from django.contrib import messages
 from django.urls import reverse
 import io
@@ -111,7 +111,7 @@ class TrimVideoView(View):
         page = get_object_or_404(Page, id=page_id).specific
         if not isinstance(page, TrimPage):
             raise Http404("This action is only applicable to TrimPage instances.")
-        trim_video_task.delay(page.pk)
+        detect_objects_in_video_task.delay(page.pk)
         page.trimming = True
         page.save()
         messages.success(request, "Video trimming started")

@@ -2,7 +2,8 @@ from celery import shared_task
 import os
 import tempfile
 import uuid
-from home.tasks import trim_video_task
+from home.tasks import detect_objects_in_video_task
+from django.utils import timezone
 
 
 
@@ -104,8 +105,10 @@ def process_video_upload_task(upload_id: str, user_id: int) -> None:
         os.remove(os.path.join(local_chunk_dir, chunk_file))
     os.rmdir(local_chunk_dir)
 
-    # Mark the upload as completed
-    upload.completed = True
+    # Update the VideoUpload object
+    upload.uploaded_at = timezone.now()
+    upload.uploaded = True
+    # Update the VideoUpload object
     upload.save()
 
-    trim_video_task.delay(trim_page.pk)
+    detect_objects_in_video_task.delay(trim_page.pk, upload_id, user_id)
