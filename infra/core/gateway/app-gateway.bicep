@@ -32,16 +32,16 @@ resource appGateway 'Microsoft.Network/applicationGateways@2023-11-01' = {
     '1'
   ]
   properties: {
-    sku: {
-      tier: 'Standard'
-      name: 'Standard'
-      capacity: 1
-    }
     // sku: {
-    //   tier: 'Standard_v2'
+    //   tier: 'Standard'
+    //   name: 'Standard'
     //   capacity: 1
-    //   name: 'Standard_v2'
     // }
+    sku: {
+      tier: 'Standard_v2'
+      capacity: 1
+      name: 'Standard_v2'
+    }
     gatewayIPConfigurations: [
       { 
         name: 'appgateway-subnet'
