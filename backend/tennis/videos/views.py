@@ -7,6 +7,8 @@ from .models import VideoUpload
 import uuid
 from storage.media import write_bytes_to_media
 from videos.tasks import process_video_upload_task
+from videos.serializers import VideoUploadStatusSerializer
+from rest_framework.views import APIView
 
 
 class VideoUploadViewSet(viewsets.ViewSet):
@@ -79,3 +81,38 @@ class VideoUploadViewSet(viewsets.ViewSet):
         return Response({
             'message': 'Upload completed successfully',
         }, status=status.HTTP_200_OK) 
+
+
+
+class VideoUploadStatusView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, upload_id):
+        try:
+            # Retrieve the VideoUpload instance for the authenticated user
+            upload = VideoUpload.objects.get(upload_id=upload_id, user=request.user)
+        except VideoUpload.DoesNotExist:
+            return Response({'error': 'Upload not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Serialize the data
+        serializer = VideoUploadStatusSerializer(upload)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+
+class VideoMediaUrlView(APIView):
+    permission_classes = [IsAuthenticated]
+
+
+    def get(self, request, upload_id):
+        try:
+            # Retrieve the VideoUpload instance for the authenticated user
+            upload = VideoUpload.objects.get(upload_id=upload_id, user=request.user)
+        except VideoUpload.DoesNotExist:
+            return Response({'error': 'Upload not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        media_url = upload.get_media_url()
+
+        return Response({
+            'media_url': media_url,
+        }, status=status.HTTP_200_OK)

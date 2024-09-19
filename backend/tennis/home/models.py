@@ -187,6 +187,10 @@ class TrimPage(Page):
                 time.sleep(20)             
 
 
+    def trim_video(self):
+        time.sleep(60)
+
+
     def get_frames_batches(self):
         return self.frames_batches.all()
 

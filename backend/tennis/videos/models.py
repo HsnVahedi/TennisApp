@@ -4,6 +4,7 @@ from ml.jobs.obj_detection.ball import invoke as invoke_ball
 from ml.jobs.obj_detection.objs import invoke as invoke_objs
 from django.contrib.auth import get_user_model
 import os
+from django.core.files.storage import default_storage
 
 
 User = get_user_model()
@@ -12,7 +13,10 @@ User = get_user_model()
 class VideoUpload(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
+    video_path  = models.CharField(max_length=2024, blank=True, null=True)
+
     upload_id = models.CharField(max_length=32, unique=True)
+    trim_page_id = models.PositiveIntegerField(blank=True, null=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -24,6 +28,11 @@ class VideoUpload(models.Model):
     uploaded = models.BooleanField(default=False)
     objects_detected = models.BooleanField(default=False)
     completed = models.BooleanField(default=False)
+
+    def get_media_url(self):
+        if self.video_path:
+            return default_storage.url(self.video_path)
+        return None
 
 
 class FramesBatch(models.Model):
