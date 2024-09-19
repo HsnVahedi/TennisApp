@@ -106,13 +106,13 @@ resource appGateway 'Microsoft.Network/applicationGateways@2023-11-01' = {
         name: 'my-agw-backend-setting'
         properties: {
           protocol: 'Https'
-          // protocol: 'Http'
           port: 443
-          // port: 3000
-          // port: 80
           cookieBasedAffinity: 'Disabled'
           requestTimeout: 200
           pickHostNameFromBackendAddress: true
+          probe: {
+            id: resourceId('Microsoft.Network/applicationGateways/probes', appGatewayName, 'my-custom-probe')
+          }
         }
       }
     ]
@@ -148,9 +148,25 @@ resource appGateway 'Microsoft.Network/applicationGateways@2023-11-01' = {
         }
       }
     ]
+    probes: [
+      {
+        name: 'my-custom-probe'
+        properties: {
+          protocol: 'Https' // Use 'Http' if appropriate for your backend
+          host: containerAppFqdn
+          path: '/'
+          interval: 5 * 60 // Probes every 60 seconds
+          timeout: 30
+          unhealthyThreshold: 2
+          pickHostNameFromBackendHttpSettings: true
+        }
+      }
+    ]
     enableHttp2: true
   }
 }
+
+
 
 resource publicIp 'Microsoft.Network/publicIPAddresses@2023-11-01' = {
   name: ipAddressName
