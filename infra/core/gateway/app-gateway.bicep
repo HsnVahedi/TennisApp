@@ -153,15 +153,29 @@ resource appGateway 'Microsoft.Network/applicationGateways@2023-11-01' = {
         name: 'my-custom-probe'
         properties: {
           protocol: 'Https' // Use 'Http' if appropriate for your backend
-          host: containerAppFqdn
+          // host is omitted because pickHostNameFromBackendHttpSettings is true
           path: '/'
-          interval: 5 * 60 // Probes every 60 seconds
+          interval: 60 // Probes every 60 seconds
           timeout: 30
           unhealthyThreshold: 2
           pickHostNameFromBackendHttpSettings: true
         }
       }
     ]
+    // probes: [
+    //   {
+    //     name: 'my-custom-probe'
+    //     properties: {
+    //       protocol: 'Https' // Use 'Http' if appropriate for your backend
+    //       host: containerAppFqdn
+    //       path: '/'
+    //       interval: 5 * 60 // Probes every 60 seconds
+    //       timeout: 30
+    //       unhealthyThreshold: 2
+    //       pickHostNameFromBackendHttpSettings: true
+    //     }
+    //   }
+    // ]
     enableHttp2: true
   }
 }
