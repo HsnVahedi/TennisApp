@@ -28,9 +28,9 @@ resource appGateway 'Microsoft.Network/applicationGateways@2023-11-01' = {
   name: appGatewayName
   location: location
   tags: tags
-  zones: [
-    '1'
-  ]
+  // zones: [
+  //   '1'
+  // ]
   properties: {
     // sku: {
     //   tier: 'Standard'
@@ -41,6 +41,10 @@ resource appGateway 'Microsoft.Network/applicationGateways@2023-11-01' = {
       tier: 'Standard_v2'
       capacity: 1
       name: 'Standard_v2'
+      // capacity: {
+      //   min: 1
+      //   max: 2
+      // }
     }
     gatewayIPConfigurations: [
       { 
@@ -155,7 +159,7 @@ resource appGateway 'Microsoft.Network/applicationGateways@2023-11-01' = {
           protocol: 'Https' // Use 'Http' if appropriate for your backend
           // host is omitted because pickHostNameFromBackendHttpSettings is true
           path: '/'
-          interval: 60 // Probes every 60 seconds
+          interval: 90 // Probes every 60 seconds
           timeout: 30
           unhealthyThreshold: 2
           pickHostNameFromBackendHttpSettings: true
@@ -176,7 +180,7 @@ resource appGateway 'Microsoft.Network/applicationGateways@2023-11-01' = {
     //     }
     //   }
     // ]
-    enableHttp2: true
+    enableHttp2: false
   }
 }
 
