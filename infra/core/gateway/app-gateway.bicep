@@ -28,9 +28,9 @@ resource appGateway 'Microsoft.Network/applicationGateways@2023-11-01' = {
   name: appGatewayName
   location: location
   tags: tags
-  // zones: [
-  //   '1'
-  // ]
+  zones: [
+    '1'
+  ]
   properties: {
     // sku: {
     //   tier: 'Standard'
