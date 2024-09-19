@@ -105,6 +105,8 @@ def process_video_upload_task(upload_id: str, user_id: int) -> None:
         os.remove(os.path.join(local_chunk_dir, chunk_file))
     os.rmdir(local_chunk_dir)
 
+    upload.trim_page_id = trim_page.pk
+    upload.video_path = video_path
     # Update the VideoUpload object
     upload.uploaded_at = timezone.now()
     upload.uploaded = True

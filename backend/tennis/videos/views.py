@@ -97,3 +97,22 @@ class VideoUploadStatusView(APIView):
         # Serialize the data
         serializer = VideoUploadStatusSerializer(upload)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+
+class VideoMediaUrlView(APIView):
+    permission_classes = [IsAuthenticated]
+
+
+    def get(self, request, upload_id):
+        try:
+            # Retrieve the VideoUpload instance for the authenticated user
+            upload = VideoUpload.objects.get(upload_id=upload_id, user=request.user)
+        except VideoUpload.DoesNotExist:
+            return Response({'error': 'Upload not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        media_url = upload.get_media_url()
+
+        return Response({
+            'media_url': media_url,
+        }, status=status.HTTP_200_OK)
