@@ -9,6 +9,8 @@ import PageLayout from "@/app/components/layouts/1";
 import { Members } from "@/app/components/team";
 import { Features } from "@/app/components/features";
 import ContactUs from "@/app/components/contact-us";
+import { useRouter } from 'next/navigation';
+
 
 const UploadIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" viewBox="0 0 48 48" className="ml-2">
@@ -49,6 +51,7 @@ const App = () => {
   const [uploadProgress, setUploadProgress] = useState(0);
   const fileInputRef = useRef(null);
   const { data: session } = useSession();
+  const router = useRouter();
 
   const handleFileSelect = (event) => {
     const file = event.target.files[0];
@@ -138,7 +141,7 @@ const App = () => {
       await completeUpload(upload_id);
 
       setIsUploading(false);
-      alert('Video uploaded successfully!');
+      router.push(`/trim-video/${upload_id}`);
     } catch (error) {
       console.error('Error uploading video:', error);
       setIsUploading(false);
