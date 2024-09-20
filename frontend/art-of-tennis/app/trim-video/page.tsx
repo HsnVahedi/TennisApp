@@ -1,7 +1,7 @@
 "use client";
 
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { useSession } from "next-auth/react";
 import { useRouter } from 'next/navigation';
@@ -66,6 +66,13 @@ const Progress = ({ value, className }) => (
 );
 
 
+const ProcessingIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="3em" height="3em" viewBox="0 0 24 24" className="animate-spin">
+    <path fill="currentColor" d="M12 2a10 10 0 0 1 10 10a10 10 0 0 1-10 10a10 10 0 0 1-10-10a10 10 0 0 1 10-10m0 2a8 8 0 0 0-8 8a8 8 0 0 0 8 8a8 8 0 0 0 8-8a8 8 0 0 0-8-8m0 1c3.86 0 7 3.14 7 7h-2a5 5 0 0 0-5-5v-2z"/>
+  </svg>
+);
+
+
 const App = () => {
   const [isVideoSelected, setIsVideoSelected] = useState(false);
   const [videoPreviewUrl, setVideoPreviewUrl] = useState('');
@@ -73,10 +80,70 @@ const App = () => {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [showDialog, setShowDialog] = useState(false);
   const [uploadComplete, setUploadComplete] = useState(false);
+  const [uploadId, setUploadId] = useState(null);
+  const [videoStatus, setVideoStatus] = useState('');
   const fileInputRef = useRef(null);
   const { data: session } = useSession();
   const router = useRouter();
 
+  useEffect(() => {
+    let intervalId = null;
+
+    const startFetchingStatus = async () => {
+      if (uploadComplete && uploadId) {
+        console.log(`Starting to fetch video status for upload ID: ${uploadId}`);
+        await fetchVideoStatus(); // Fetch immediately
+        intervalId = setInterval(fetchVideoStatus, 5000);
+      }
+    };
+
+    startFetchingStatus();
+
+    return () => {
+      if (intervalId) {
+        console.log('Clearing interval');
+        clearInterval(intervalId);
+      }
+    };
+  }, [uploadComplete, uploadId]);
+
+
+  const fetchVideoStatus = async () => {
+    if (!session?.accessToken) {
+      console.log('No access token available');
+      return;
+    }
+
+    const requestId = Math.random().toString(36).substring(7);
+    try {
+      console.log(`Fetching video status for upload ID: ${uploadId}, Request ID: ${requestId}`);
+      const response = await fetch(`/api/videos/trim_status?upload_id=${uploadId}&request_id=${requestId}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${session.accessToken}`,
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch video status');
+      }
+
+      const data = await response.json();
+      console.log(`Video status for upload ID ${uploadId}, Request ID: ${requestId}:`, data.status);
+      setVideoStatus(data.status);
+
+      if (data.status === 'COMPLETED') {
+        console.log(`Video processing completed for upload ID: ${uploadId}, Request ID: ${requestId}`);
+      }
+    } catch (error) {
+      console.error(`Error fetching video status for upload ID ${uploadId}, Request ID: ${requestId}:`, error);
+    }
+  };
+
+  
   const handleFileSelect = (event) => {
     const file = event.target.files[0];
     if (file && file.type.startsWith('video/')) {
@@ -151,6 +218,7 @@ const App = () => {
 
       // Initiate upload
       const { upload_id } = await initiateUpload(file.name);
+      setUploadId(upload_id);
 
       // Upload chunks
       for (let i = 0; i < chunks; i++) {
@@ -166,18 +234,15 @@ const App = () => {
       await completeUpload(upload_id);
 
       setUploadComplete(true);
-      setTimeout(() => {
-        setIsUploading(false);
-        // setShowDialog(false);
-        // router.push(`/trim-video/${upload_id}`);
-      }, 2000);
+      setVideoStatus('UPLOADING');
+      console.log('Upload completed, uploadId:', upload_id);
     } catch (error) {
       console.error('Error uploading video:', error);
       setIsUploading(false);
       setShowDialog(false);
       alert('Failed to upload video. Please try again.');
     }
-  };
+  }; 
 
   return (
     <PageLayout>
@@ -250,16 +315,46 @@ const App = () => {
         <Dialog open={showDialog}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>{uploadComplete ? "Upload Complete!" : "Uploading Video"}</DialogTitle>
+              <DialogTitle>
+                {!uploadComplete ? "Uploading Video" : 
+                 videoStatus === 'COMPLETED' ? "Processing Complete!" : 
+                 "Processing Video"}
+              </DialogTitle>
             </DialogHeader>
-            <div className="py-4">
-              {uploadComplete ? (
-                <p className="text-center text-green-600 font-semibold">Your video has been successfully uploaded!</p>
-              ) : (
+            <div className="py-6">
+              {!uploadComplete ? (
                 <>
-                  <p className="text-center mb-2">Uploading ... {uploadProgress.toFixed(0)}%</p>
-                  <Progress value={uploadProgress} className="w-full" />
+                  <p className="text-center mb-4 text-lg text-purple-900">Uploading ... {uploadProgress.toFixed(0)}%</p>
+                  <Progress value={uploadProgress} className="w-full mb-4" />
+                  <div className="flex justify-center">
+                    <UploadIcon />
+                  </div>
                 </>
+              ) : (
+                <div className="text-center">
+                  <p className="text-xl text-purple-900 font-semibold mb-4">
+                    {videoStatus === 'UPLOADING' && "Finalizing upload..."}
+                    {videoStatus === 'DETECTING' && "Detecting objects in video..."}
+                    {videoStatus === 'TRIMMING' && "Trimming video..."}
+                    {videoStatus === 'COMPLETED' && "Video processing complete!"}
+                  </p>
+                  {videoStatus !== 'COMPLETED' && (
+                    <div className="flex justify-center">
+                      <ProcessingIcon />
+                    </div>
+                  )}
+                  {videoStatus === 'COMPLETED' && (
+                    <>
+                      <div className="text-6xl mb-4">🎉</div>
+                      <button
+                        onClick={() => setShowDialog(false)}
+                        className="bg-gradient-to-r from-purple-700 to-purple-900 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:from-purple-800 hover:to-purple-950 transition duration-300"
+                      >
+                        Close
+                      </button>
+                    </>
+                  )}
+                </div>
               )}
             </div>
           </DialogContent>
