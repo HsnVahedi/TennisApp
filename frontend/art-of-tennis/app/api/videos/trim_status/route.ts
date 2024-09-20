@@ -30,11 +30,11 @@ export async function GET(req: NextRequest) {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token.accessToken}`,
-        'Cache-Control': 'no-cache, no-store, must-revalidate',
-        'Pragma': 'no-cache',
-        'Expires': '0',
+        // 'Cache-Control': 'no-cache, no-store, must-revalidate',
+        // 'Pragma': 'no-cache',
+        // 'Expires': '0',
       },
-      cache: 'no-store',
+      // cache: 'no-store',
     });
 
     if (!response.ok) {
@@ -47,11 +47,11 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json(data, { 
       status: 200,
-      headers: {
-        'Cache-Control': 'no-cache, no-store, must-revalidate',
-        'Pragma': 'no-cache',
-        'Expires': '0',
-      }
+      // headers: {
+      //   'Cache-Control': 'no-cache, no-store, must-revalidate',
+      //   'Pragma': 'no-cache',
+      //   'Expires': '0',
+      // }
     });
   } catch (error) {
     console.error(`Error in API route at ${timestamp}:`, error);
@@ -60,5 +60,5 @@ export async function GET(req: NextRequest) {
 }
 
 // Disable caching for this route
-export const dynamic = 'force-dynamic';
+// export const dynamic = 'force-dynamic';
 export const fetchCache = 'force-no-store';

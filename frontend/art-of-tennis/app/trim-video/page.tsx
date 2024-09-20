@@ -117,14 +117,15 @@ const App = () => {
     const requestId = Math.random().toString(36).substring(7);
     try {
       console.log(`Fetching video status for upload ID: ${uploadId}, Request ID: ${requestId}`);
-      const response = await fetch(`/api/videos/trim_status?upload_id=${uploadId}&request_id=${requestId}`, {
+      // const response = await fetch(`/api/videos/trim_status?upload_id=${uploadId}&request_id=${requestId}`, {
+      const response = await fetch(`/api/videos/trim_status?upload_id=${uploadId}`, {
         method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${session.accessToken}`,
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-          'Pragma': 'no-cache',
-          'Expires': '0',
-        },
+        // headers: {
+        //   'Authorization': `Bearer ${session.accessToken}`,
+        //   'Cache-Control': 'no-cache, no-store, must-revalidate',
+        //   'Pragma': 'no-cache',
+        //   'Expires': '0',
+        // },
       });
 
       if (!response.ok) {
