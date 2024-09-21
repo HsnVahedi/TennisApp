@@ -20,6 +20,9 @@ from home.tasks import detect_objects_task
 import time
 from storage.media import download_dir_from_media
 import traceback
+from moviepy.editor import VideoFileClip
+import tempfile
+import os
 
 
 
@@ -187,8 +190,70 @@ class TrimPage(Page):
                 time.sleep(20)             
 
 
-    def trim_video(self):
-        time.sleep(60)
+    # This method takes a lot of time to complete
+    # Don't call it syncronously. Use a celery task.
+    def trim_video(self, video_upload):
+        from storage.media import write_video_to_media
+        from videos.models import VideoClip
+        if not self.video:
+            raise ValueError("No video associated with this TrimPage")
+
+        video_path = self.video.file.path
+        
+        with VideoFileClip(video_path) as video:
+            video_length = video.duration
+        
+            # Choose a random number of clips between 1 and video_length (in seconds)
+            n_clips = random.randint(1, int(video_length))
+            
+            clip_duration = video_length / n_clips
+
+            print()
+            print('DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD')
+            print('DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD')
+            print('Clip Duration:', clip_duration)
+            print('DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD')
+            print('DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD')
+            print()
+
+            with transaction.atomic():
+                for i in range(n_clips):
+                    start_time = i * clip_duration
+                    end_time = (i + 1) * clip_duration
+
+                    # Create a subclip
+                    clip = video.subclip(start_time, end_time)
+
+                    # Create a temporary file for the clip
+                    with tempfile.NamedTemporaryFile(suffix='.mp4', delete=False) as temp_file:
+                        temp_path = temp_file.name
+
+                    # Write the clip to the temporary file
+                    clip.write_videofile(temp_path, codec='libx264')
+
+                    # Write the clip to media storage
+                    media_path = write_video_to_media(temp_path)
+
+                    print()
+                    print('MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM')
+                    print('MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM')
+                    print('Media Path:', media_path)
+                    print('MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM')
+                    print('MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM')
+                    print()
+
+                    # Create VideoClip object
+                    VideoClip.objects.create(
+                        video_upload=video_upload,
+                        clip_path=media_path,
+                        clip_number=i
+                    )
+
+                    # Remove the temporary file
+                    os.unlink(temp_path)
+
+        self.trimming = False
+        self.save() 
 
 
     def get_frames_batches(self):

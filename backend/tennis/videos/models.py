@@ -35,6 +35,25 @@ class VideoUpload(models.Model):
         return None
 
 
+class VideoClip(models.Model):
+    video_upload = models.ForeignKey(
+        'videos.VideoUpload',
+        on_delete=models.CASCADE,
+        related_name='video_clips'
+    )
+    clip_path = models.CharField(max_length=2024, blank=True, null=True)
+    clip_number = models.PositiveIntegerField(db_index=True)
+
+    class Meta:
+        unique_together = ('video_upload', 'clip_number')
+        ordering = ['clip_number']
+
+    def get_media_url(self):
+        if self.clip_path:
+            return default_storage.url(self.clip_path)
+        return None
+
+
 class FramesBatch(models.Model):
     trim_page = models.ForeignKey(
         'home.TrimPage',

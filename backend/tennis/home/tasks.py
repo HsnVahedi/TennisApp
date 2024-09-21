@@ -44,10 +44,10 @@ def trim_video_task(trim_page_pk: int, upload_id: int, user_id: int) -> None:
     from home.models import TrimPage
     from videos.models import VideoUpload
     trim_page = TrimPage.objects.get(pk=trim_page_pk)
-    trim_page.trim_video()
     video_upload = VideoUpload.objects.get(
         upload_id=upload_id, user_id=user_id
     )
+    trim_page.trim_video(video_upload)
     video_upload.completed = True
     video_upload.completed_at = timezone.now()
     video_upload.save()
