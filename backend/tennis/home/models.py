@@ -23,6 +23,7 @@ import traceback
 from moviepy.editor import VideoFileClip
 import tempfile
 import os
+from storage.media import download_from_media
 
 
 
@@ -198,7 +199,7 @@ class TrimPage(Page):
         if not self.video:
             raise ValueError("No video associated with this TrimPage")
 
-        video_path = self.video.file.path
+        video_path = download_from_media(self.video.file.name)
         
         with VideoFileClip(video_path) as video:
             video_length = video.duration
