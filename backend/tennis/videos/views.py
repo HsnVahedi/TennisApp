@@ -64,8 +64,6 @@ class VideoUploadViewSet(viewsets.ViewSet):
             return f'chunks/{upload_id}/'
 
 
-
-
     @action(detail=False, methods=['post'])
     def complete_upload(self, request):
         upload_id = request.data.get('upload_id')
