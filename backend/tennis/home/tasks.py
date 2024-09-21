@@ -48,6 +48,6 @@ def trim_video_task(trim_page_pk: int, upload_id: int, user_id: int) -> None:
     video_upload = VideoUpload.objects.get(
         upload_id=upload_id, user_id=user_id
     )
-    video_upload.video_trimmed = True
-    video_upload.video_trimmed_at = timezone.now()
+    video_upload.completed = True
+    video_upload.completed_at = timezone.now()
     video_upload.save()
