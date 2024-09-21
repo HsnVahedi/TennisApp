@@ -1,10 +1,11 @@
-
 "use client";
 
-import ProtectionProvider from "@/app/components/ProtectionProvider";
-import React, { useState, useRef } from 'react';
+
+import React, { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { useSession } from "next-auth/react";
+import { useRouter } from 'next/navigation';
+import ProtectionProvider from "@/app/components/ProtectionProvider";
 import PageLayout from "@/app/components/layouts/1";
 import { Members } from "@/app/components/team";
 import { Features } from "@/app/components/features";
@@ -22,12 +23,6 @@ const TrimIcon = () => (
   </svg>
 );
 
-const ProgressIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" viewBox="0 0 24 24" className="ml-2 animate-spin">
-    <path fill="currentColor" d="M12 22q-2.05 0-3.875-.788t-3.187-2.15t-2.15-3.187T2 12q0-2.075.788-3.887t2.15-3.175t3.187-2.15T12 2q.425 0 .713.288T13 3t-.288.713T12 4Q8.675 4 6.337 6.338T4 12t2.338 5.663T12 20t5.663-2.337T20 12q0-.425.288-.712T21 11t.713.288T22 12q0 2.05-.788 3.875t-2.15 3.188t-3.175 2.15T12 22"/>
-  </svg>
-);
-
 const VideoCard = ({ videoRef, videoSrc }) => {
   return (
     <div className="w-full max-w-6xl mb-4">
@@ -42,14 +37,114 @@ const VideoCard = ({ videoRef, videoSrc }) => {
   );
 };
 
+
+const Dialog = ({ open, children }) => {
+  if (!open) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg p-8 max-w-md w-full mx-4">
+        {children}
+      </div>
+    </div>
+  );
+};
+
+const DialogContent = ({ children }) => <div className="w-full">{children}</div>;
+
+const DialogHeader = ({ children }) => <div className="mb-6">{children}</div>;
+
+const DialogTitle = ({ children }) => <h2 className="text-2xl font-bold text-purple-900">{children}</h2>;
+
+const Progress = ({ value, className }) => (
+  <div className={`w-full bg-gray-200 rounded-full h-4 ${className}`}>
+    <div
+      className="bg-gradient-to-r from-green-400 to-yellow-400 h-4 rounded-full transition-all duration-300 ease-in-out"
+      style={{ width: `${value}%` }}
+    ></div>
+  </div>
+);
+
+
+const ProcessingIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="3em" height="3em" viewBox="0 0 24 24" className="animate-spin">
+    <path fill="currentColor" d="M12 2a10 10 0 0 1 10 10a10 10 0 0 1-10 10a10 10 0 0 1-10-10a10 10 0 0 1 10-10m0 2a8 8 0 0 0-8 8a8 8 0 0 0 8 8a8 8 0 0 0 8-8a8 8 0 0 0-8-8m0 1c3.86 0 7 3.14 7 7h-2a5 5 0 0 0-5-5v-2z"/>
+  </svg>
+);
+
+
 const App = () => {
   const [isVideoSelected, setIsVideoSelected] = useState(false);
   const [videoPreviewUrl, setVideoPreviewUrl] = useState('');
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [showDialog, setShowDialog] = useState(false);
+  const [uploadComplete, setUploadComplete] = useState(false);
+  const [uploadId, setUploadId] = useState(null);
+  const [videoStatus, setVideoStatus] = useState('');
   const fileInputRef = useRef(null);
   const { data: session } = useSession();
+  const router = useRouter();
 
+  useEffect(() => {
+    let intervalId = null;
+
+    const startFetchingStatus = async () => {
+      if (uploadComplete && uploadId) {
+        console.log(`Starting to fetch video status for upload ID: ${uploadId}`);
+        await fetchVideoStatus(); // Fetch immediately
+        intervalId = setInterval(fetchVideoStatus, 5000);
+      }
+    };
+
+    startFetchingStatus();
+
+    return () => {
+      if (intervalId) {
+        console.log('Clearing interval');
+        clearInterval(intervalId);
+      }
+    };
+  }, [uploadComplete, uploadId]);
+
+
+  const fetchVideoStatus = async () => {
+    if (!session?.accessToken) {
+      console.log('No access token available');
+      return;
+    }
+
+    const requestId = Math.random().toString(36).substring(7);
+    try {
+      console.log(`Fetching video status for upload ID: ${uploadId}, Request ID: ${requestId}`);
+      // const response = await fetch(`/api/videos/trim_status?upload_id=${uploadId}&request_id=${requestId}`, {
+      const response = await fetch(`/api/videos/trim_status?upload_id=${uploadId}`, {
+        method: 'GET',
+        // headers: {
+        //   'Authorization': `Bearer ${session.accessToken}`,
+        //   'Cache-Control': 'no-cache, no-store, must-revalidate',
+        //   'Pragma': 'no-cache',
+        //   'Expires': '0',
+        // },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch video status');
+      }
+
+      const data = await response.json();
+      console.log(`Video status for upload ID ${uploadId}, Request ID: ${requestId}:`, data.status);
+      setVideoStatus(data.status);
+
+      if (data.status === 'COMPLETED') {
+        console.log(`Video processing completed for upload ID: ${uploadId}, Request ID: ${requestId}`);
+      }
+    } catch (error) {
+      console.error(`Error fetching video status for upload ID ${uploadId}, Request ID: ${requestId}:`, error);
+    }
+  };
+
+  
   const handleFileSelect = (event) => {
     const file = event.target.files[0];
     if (file && file.type.startsWith('video/')) {
@@ -114,6 +209,7 @@ const App = () => {
 
     setIsUploading(true);
     setUploadProgress(0);
+    setShowDialog(true);
 
     try {
       const file = fileInputRef.current.files[0];
@@ -123,6 +219,7 @@ const App = () => {
 
       // Initiate upload
       const { upload_id } = await initiateUpload(file.name);
+      setUploadId(upload_id);
 
       // Upload chunks
       for (let i = 0; i < chunks; i++) {
@@ -137,19 +234,20 @@ const App = () => {
       // Complete upload
       await completeUpload(upload_id);
 
-      setIsUploading(false);
-      alert('Video uploaded successfully!');
+      setUploadComplete(true);
+      setVideoStatus('UPLOADING');
+      console.log('Upload completed, uploadId:', upload_id);
     } catch (error) {
       console.error('Error uploading video:', error);
       setIsUploading(false);
+      setShowDialog(false);
       alert('Failed to upload video. Please try again.');
     }
-  };
+  }; 
 
   return (
     <PageLayout>
       <main className="flex flex-col items-center justify-center space-y-4">
-        {/* Move the input outside and add an id */}
         <input
           ref={fileInputRef}
           id="video-input"
@@ -163,16 +261,11 @@ const App = () => {
         {isVideoSelected ? (
           <VideoCard videoSrc={videoPreviewUrl} videoRef={null} />
         ) : (
-          // Wrap the image in a label with htmlFor
           <label
             htmlFor="video-input"
             className={`
               w-full max-w-6xl mb-4 cursor-pointer
-              ${
-                isUploading
-                  ? 'opacity-50 cursor-not-allowed'
-                  : 'hover:shadow-xl active:translate-y-1 active:shadow-inner'
-              }
+              ${isUploading ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-xl active:translate-y-1 active:shadow-inner'}
               transition duration-300
             `}
           >
@@ -187,17 +280,12 @@ const App = () => {
           </label>
         )}
 
-        {/* Wrap the button in a label with htmlFor */}
         <label htmlFor="video-input" className="w-full max-w-md">
           <div
             className={`
               bg-gradient-to-r from-orange-500 to-orange-600 text-white font-bold py-4 px-8 rounded-lg shadow-lg
               flex items-center justify-center w-full
-              ${
-                isUploading
-                  ? 'opacity-50 cursor-not-allowed'
-                  : 'hover:from-orange-600 hover:to-orange-700 hover:shadow-xl active:translate-y-1 active:shadow-inner cursor-pointer'
-              }
+              ${isUploading ? 'opacity-50 cursor-not-allowed' : 'hover:from-orange-600 hover:to-orange-700 hover:shadow-xl active:translate-y-1 active:shadow-inner cursor-pointer'}
               transition duration-300
             `}
           >
@@ -215,23 +303,64 @@ const App = () => {
               bg-gradient-to-r from-purple-700 to-purple-900 
               text-white font-bold py-4 px-8 rounded-lg shadow-lg 
               flex items-center justify-center w-full max-w-md
-              ${
-                isUploading
-                  ? 'opacity-50 cursor-not-allowed'
-                  : 'hover:from-purple-800 hover:to-purple-950 hover:shadow-xl active:translate-y-1 active:shadow-inner'
-              }
+              ${isUploading ? 'opacity-50 cursor-not-allowed' : 'hover:from-purple-800 hover:to-purple-950 hover:shadow-xl active:translate-y-1 active:shadow-inner'}
               transition duration-300
             `}
             disabled={isUploading}
           >
-            <span className="flex-grow text-center">
-              {isUploading
-                ? `Uploading: ${uploadProgress.toFixed(0)}%`
-                : 'Trim your Video'}
-            </span>
-            {isUploading ? <ProgressIcon /> : <TrimIcon />}
+            <span className="flex-grow text-center">Trim your Video</span>
+            <TrimIcon />
           </button>
         )}
+
+        <Dialog open={showDialog}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>
+                {!uploadComplete ? "Uploading Video" : 
+                 videoStatus === 'COMPLETED' ? "Processing Complete!" : 
+                 "Processing Video"}
+              </DialogTitle>
+            </DialogHeader>
+            <div className="py-6">
+              {!uploadComplete ? (
+                <>
+                  <p className="text-center mb-4 text-lg text-purple-900">Uploading ... {uploadProgress.toFixed(0)}%</p>
+                  <Progress value={uploadProgress} className="w-full mb-4" />
+                  <div className="flex justify-center">
+                    <UploadIcon />
+                  </div>
+                </>
+              ) : (
+                <div className="text-center">
+                  <p className="text-xl text-purple-900 font-semibold mb-4">
+                    {videoStatus === 'UPLOADING' && "Finalizing upload..."}
+                    {videoStatus === 'DETECTING' && "Detecting objects in video..."}
+                    {videoStatus === 'TRIMMING' && "Trimming video..."}
+                    {videoStatus === 'COMPLETED' && "Video processing complete!"}
+                  </p>
+                  {videoStatus !== 'COMPLETED' && (
+                    <div className="flex justify-center">
+                      <ProcessingIcon />
+                    </div>
+                  )}
+                  {videoStatus === 'COMPLETED' && (
+                    <>
+                      <div className="text-6xl mb-4">🎉</div>
+                      <button
+                        onClick={() => setShowDialog(false)}
+                        className="bg-gradient-to-r from-purple-700 to-purple-900 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:from-purple-800 hover:to-purple-950 transition duration-300"
+                      >
+                        Close
+                      </button>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
+          </DialogContent>
+        </Dialog>
+
       </main>
       <Features />
       <Members />
@@ -239,6 +368,8 @@ const App = () => {
     </PageLayout>
   );
 };
+
+
 
 export default () => {
   return (
