@@ -14,15 +14,17 @@ interface Clip {
 const ClipCard = ({ clip }: { clip: Clip }) => {
   const [videoLoaded, setVideoLoaded] = useState(false);
 
+  const clipUrl = process.env.IS_PROD ? clip.media_url : `${getBackendUrl()}${clip.media_url}`
+
   const handleDownload = () => {
-    window.open(`${getBackendUrl()}${clip.media_url}`, '_blank');
+    window.open(clipUrl, '_blank');
   };
 
   return (
     <div className="border rounded-lg overflow-hidden shadow-md">
       {videoLoaded ? (
         <video
-          src={`${getBackendUrl()}${clip.media_url}`}
+          src={clipUrl}
           className="w-full h-48 object-cover"
           controls
         />
