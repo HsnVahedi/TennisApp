@@ -14,7 +14,20 @@ interface Clip {
 const ClipCard = ({ clip }: { clip: Clip }) => {
   const [videoLoaded, setVideoLoaded] = useState(false);
 
+  console.log('1111111111111111111111111111111111111111')
+  console.log(process.env.IS_PROD)
+  console.log('1111111111111111111111111111111111111111')
+  console.log()
+  console.log('2222222222222222222222222222222222222222')
+  console.log(clip.media_url)
+  console.log('2222222222222222222222222222222222222222')
+  console.log()
+
   const clipUrl = process.env.IS_PROD ? clip.media_url : `${getBackendUrl()}${clip.media_url}`
+
+  console.log('3333333333333333333333333333333333333333')
+  console.log(clipUrl)
+  console.log('3333333333333333333333333333333333333333')
 
   const handleDownload = () => {
     window.open(clipUrl, '_blank');
