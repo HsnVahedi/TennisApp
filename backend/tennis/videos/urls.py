@@ -1,7 +1,8 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from videos.views import (
-    VideoUploadViewSet, VideoUploadStatusView, VideoMediaUrlView
+    VideoUploadViewSet, VideoUploadStatusView, VideoMediaUrlView,
+    VideoClipsListView
 ) 
 
 
@@ -16,6 +17,10 @@ urlpatterns = [
     path(
         'upload/media-url/<str:upload_id>/',
         VideoMediaUrlView.as_view(), name='video-media-url'
+    ),
+    path(
+        'trim/clips/<str:upload_id>/',
+        VideoClipsListView.as_view(), name='video-clips-list'
     ),
     path('', include(router.urls)),
 ]
