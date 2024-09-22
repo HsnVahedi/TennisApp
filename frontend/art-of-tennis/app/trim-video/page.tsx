@@ -10,6 +10,8 @@ import PageLayout from "@/app/components/layouts/1";
 import { Members } from "@/app/components/team";
 import { Features } from "@/app/components/features";
 import ContactUs from "@/app/components/contact-us";
+import Link from 'next/link';
+
 
 const UploadIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" viewBox="0 0 48 48" className="ml-2">
@@ -347,12 +349,18 @@ const App = () => {
                   {videoStatus === 'COMPLETED' && (
                     <>
                       <div className="text-6xl mb-4">🎉</div>
-                      <button
+                      {/* <button
                         onClick={() => setShowDialog(false)}
                         className="bg-gradient-to-r from-purple-700 to-purple-900 text-white font-bold py-3 px-6 rounded-lg shadow-lg hover:from-purple-800 hover:to-purple-950 transition duration-300"
                       >
                         Close
-                      </button>
+                      </button> */}
+                      <Link
+                        href={`/trim-video/clips/${uploadId}`}
+                        className="bg-gradient-to-r from-purple-700 to-purple-900 text-white font-bold py-4 px-8 rounded-lg shadow-lg hover:from-purple-800 hover:to-purple-950 transition duration-300 block text-center"
+                      >
+                        Click here to see your trimmed videos!
+                      </Link>  
                     </>
                   )}
                 </div>

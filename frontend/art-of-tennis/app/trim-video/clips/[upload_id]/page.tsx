@@ -16,7 +16,7 @@ const Hero = () => {
   return (
     <div className="w-full max-w-6xl mb-4">
       <Image
-        src="/main-bg.jpeg"
+        src="/trim-video.jpeg"
         alt="Fallback image"
         layout="responsive"
         width={16}
