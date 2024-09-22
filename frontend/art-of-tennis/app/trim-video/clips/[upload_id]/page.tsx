@@ -15,7 +15,7 @@ const ClipCard = ({ clip }: { clip: Clip }) => {
   const [videoLoaded, setVideoLoaded] = useState(false);
 
   console.log('1111111111111111111111111111111111111111')
-  console.log(process.env.IS_PROD)
+  console.log(process.env.NEXT_PUBLIC_IS_PROD)
   console.log('1111111111111111111111111111111111111111')
   console.log()
   console.log('2222222222222222222222222222222222222222')
@@ -23,7 +23,7 @@ const ClipCard = ({ clip }: { clip: Clip }) => {
   console.log('2222222222222222222222222222222222222222')
   console.log()
 
-  const clipUrl = process.env.IS_PROD ? clip.media_url : `${getBackendUrl()}${clip.media_url}`
+  const clipUrl = process.env.NEXT_PUBLIC_IS_PROD ? clip.media_url : `${getBackendUrl()}${clip.media_url}`
 
   console.log('3333333333333333333333333333333333333333')
   console.log(clipUrl)
