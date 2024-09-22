@@ -3,12 +3,13 @@ from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from .models import VideoUpload
+from videos.models import VideoUpload, VideoClip
 import uuid
 from storage.media import write_bytes_to_media
 from videos.tasks import process_video_upload_task
-from videos.serializers import VideoUploadStatusSerializer
+from videos.serializers import VideoUploadStatusSerializer, VideoClipSerializer
 from rest_framework.views import APIView
+
 
 
 class VideoUploadViewSet(viewsets.ViewSet):
@@ -107,3 +108,17 @@ class VideoMediaUrlView(APIView):
         return Response({
             'media_url': media_url,
         }, status=status.HTTP_200_OK)
+
+
+class VideoClipsListView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, upload_id):
+        try:
+            video_upload = VideoUpload.objects.get(upload_id=upload_id, user=request.user)
+        except VideoUpload.DoesNotExist:
+            return Response({'error': 'Video upload not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        video_clips = VideoClip.objects.filter(video_upload=video_upload).order_by('clip_number')
+        serializer = VideoClipSerializer(video_clips, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

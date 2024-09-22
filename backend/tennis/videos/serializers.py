@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import VideoUpload
+from videos.models import VideoUpload, VideoClip
 
 class VideoUploadStatusSerializer(serializers.ModelSerializer):
     status = serializers.SerializerMethodField()
@@ -17,3 +17,14 @@ class VideoUploadStatusSerializer(serializers.ModelSerializer):
             return 'DETECTING'
         else:
             return 'UPLOADING'
+
+
+class VideoClipSerializer(serializers.ModelSerializer):
+    media_url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = VideoClip
+        fields = ['id', 'clip_number', 'media_url']
+
+    def get_media_url(self, obj):
+        return obj.get_media_url()
