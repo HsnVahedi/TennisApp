@@ -333,17 +333,20 @@ resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2023-05-01'
 //   ]
 // }
 
-resource app 'Microsoft.App/containerApps@2023-05-02-preview' existing = {
-  name: name
-}
+// resource app 'Microsoft.App/containerApps@2023-05-02-preview' existing = {
+//   name: name
+// }
 
 
 
+output identityPrincipalId string = normalizedIdentityType == 'None' ? '' : (empty(identityName) ? containerAppModule.outputs.identityPrincipalId : userIdentity.properties.principalId)
+output uri string = ingressEnabled ? 'https://${containerAppModule.outputs.fqdn}' : ''
+output fqdn string = containerAppModule.outputs.fqdn
 output defaultDomain string = containerAppsEnvironment.properties.defaultDomain
 output staticIp string = containerAppsEnvironment.properties.staticIp
-output identityPrincipalId string = normalizedIdentityType == 'None' ? '' : (empty(identityName) ? app.identity.principalId : userIdentity.properties.principalId)
+// output identityPrincipalId string = normalizedIdentityType == 'None' ? '' : (empty(identityName) ? app.identity.principalId : userIdentity.properties.principalId)
 output imageName string = imageName
-output name string = app.name
-output serviceBind object = !empty(serviceType) ? { serviceId: app.id, name: name } : {}
-output uri string = ingressEnabled ? 'https://${app.properties.configuration.ingress.fqdn}' : ''
-output fqdn string = app.properties.configuration.ingress.fqdn
+output name string = containerAppModule.outputs.appName
+output serviceBind object = !empty(serviceType) ? { serviceId: containerAppModule.outputs.appId, name: name } : {}
+// output uri string = ingressEnabled ? 'https://${app.properties.configuration.ingress.fqdn}' : ''
+// output fqdn string = app.properties.configuration.ingress.fqdn
