@@ -2,6 +2,8 @@ metadata description = 'Creates a container app in an Azure Container App enviro
 param name string
 param location string = resourceGroup().location
 param tags object = {}
+@description('Custom domain name')
+param customDomain string
 
 @description('Allowed origins')
 param allowedOrigins array = []
@@ -182,6 +184,12 @@ resource app 'Microsoft.App/containerApps@2023-05-02-preview' = {
         corsPolicy: {
           allowedOrigins: union([ 'https://portal.azure.com', 'https://ms.portal.azure.com' ], allowedOrigins)
         }
+        customDomains: [
+          {
+            name: customDomain
+            certificateId: managedCert.id
+          }
+        ]
         // customDomains: [
         //   {
         //     name: certificate.name 
@@ -232,9 +240,22 @@ resource app 'Microsoft.App/containerApps@2023-05-02-preview' = {
   }
 }
 
+
 resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2023-05-01' existing = {
   name: containerAppsEnvironmentName
 }
+
+resource managedCert 'Microsoft.App/managedEnvironments/managedCertificates@2023-05-01' = {
+  name: '${uniqueString(containerAppsEnvironment.id, customDomain)}-cert'
+  parent: containerAppsEnvironment
+  location: location
+  properties: {
+    subjectName: customDomain
+    domainControlValidation: 'CNameDnsRecord' // Optional
+  }
+}
+
+
 
 // resource managedEnvironmentManagedCertificate 'Microsoft.App/managedEnvironments/managedCertificates@2022-11-01-preview' = {
 //   parent: containerAppsEnvironment
