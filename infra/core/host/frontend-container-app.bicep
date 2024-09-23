@@ -109,16 +109,6 @@ resource deploymentScriptIdentity 'Microsoft.ManagedIdentity/userAssignedIdentit
 
 
 
-// resource deploymentScriptRoleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
-//   name: guid(resourceGroup().id, deploymentScriptIdentity.name, 'container-app-contributor-role-assignment')
-//   scope: resourceGroup()
-//   properties: {
-//     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'bb13af17-19db-4de7-a5e0-f7f21f6e39c4') // Azure Container Apps Contributor Role ID
-//     principalId: deploymentScriptIdentity.properties.principalId
-//   }
-// }
-
-
 resource deploymentScriptRoleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
   name: guid(resourceGroup().id, deploymentScriptIdentity.name, 'container-app-contributor-role-assignment')
   scope: resourceGroup()
@@ -298,7 +288,7 @@ resource mapCustomDomainScript 'Microsoft.Resources/deploymentScripts@2023-08-01
   identity: {
     type: 'UserAssigned'
     userAssignedIdentities: {
-      deploymentScriptIdentityId: {}
+      '${deploymentScriptIdentityId}': {}
     }
   }
   properties: {
@@ -330,7 +320,7 @@ resource updateAppScript 'Microsoft.Resources/deploymentScripts@2023-08-01' = {
   identity: {
     type: 'UserAssigned'
     userAssignedIdentities: {
-      deploymentScriptIdentityId: {}
+      '${deploymentScriptIdentityId}': {}
     }
   }
   properties: {
