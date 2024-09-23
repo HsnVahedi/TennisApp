@@ -233,7 +233,7 @@ module containerAppModule '../frontend/containerApp.bicep' = {
     tags: tags
     identityName: identityName
     normalizedIdentityType: normalizedIdentityType
-    userIdentity: userIdentity
+    // userIdentity: userIdentity
     containerAppsEnvironmentId: containerAppsEnvironment.id
     allowedOrigins: allowedOrigins
     containerCpuCoreCount: containerCpuCoreCount

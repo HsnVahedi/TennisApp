@@ -3,7 +3,7 @@ param location string
 param tags object
 param identityName string
 param normalizedIdentityType string
-param userIdentity object
+// param userIdentity object
 param containerAppsEnvironmentId string
 param revisionMode string
 param ingressEnabled bool
@@ -27,14 +27,24 @@ param usePrivateRegistry bool
 param containerRegistryName string
 param containerRegistryHostSuffix string
 
+
+
+
+
 resource app 'Microsoft.App/containerApps@2023-05-02-preview' = {
   name: name
   location: location
   tags: tags
+  // identity: {
+  //   type: normalizedIdentityType
+  //   userAssignedIdentities: !empty(identityName) && normalizedIdentityType == 'UserAssigned' ? {
+  //     '${userIdentity.id}': {}
+  //   } : null
+  // }
   identity: {
     type: normalizedIdentityType
     userAssignedIdentities: !empty(identityName) && normalizedIdentityType == 'UserAssigned' ? {
-      '${userIdentity.id}': {}
+      '${resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', identityName)}': {}
     } : null
   }
   properties: {
@@ -69,7 +79,8 @@ resource app 'Microsoft.App/containerApps@2023-05-02-preview' = {
       registries: usePrivateRegistry ? [
         {
           server: '${containerRegistryName}.${containerRegistryHostSuffix}'
-          identity: userIdentity.id
+          // identity: userIdentity.id
+          identity: resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', identityName)
         }
       ] : []
     }
@@ -93,7 +104,7 @@ resource app 'Microsoft.App/containerApps@2023-05-02-preview' = {
   }
 }
 
+output identityPrincipalId string = normalizedIdentityType == 'UserAssigned' ? app.identity.userAssignedIdentities[resourceId('Microsoft.ManagedIdentity/userAssignedIdentities', identityName)].principalId : app.identity.principalId
 output appId string = app.id
-output identityPrincipalId string = app.identity.principalId
 output fqdn string = app.properties.configuration.ingress.fqdn
 output appName string = app.name
