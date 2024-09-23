@@ -265,11 +265,11 @@ resource mapCustomDomainScript 'Microsoft.Resources/deploymentScripts@2020-10-01
   location: location
   kind: 'AzureCLI'
   properties: {
-    // Update the azCliVersion to a more recent version or remove it
+    // It's safe to remove azCliVersion to use the default
     azCliVersion: '2.47.0' // Alternatively, you can remove this line
     scriptContent: format('''
       az extension add --upgrade --name containerapp
-      az containerapp custom-domain create --resource-group "{0}" --name "{1}" --domain-name "{2}"
+      az containerapp ingress custom-domain bind --resource-group "{0}" --name "{1}" --domain-name "{2}"
     ''', resourceGroup().name, name, customDomain)
     timeout: 'PT30M'
     cleanupPreference: 'OnSuccess'
@@ -305,11 +305,11 @@ resource updateAppScript 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
   location: location
   kind: 'AzureCLI'
   properties: {
-    // Update the azCliVersion to a more recent version or remove it
+    // It's safe to remove azCliVersion to use the default
     azCliVersion: '2.47.0' // Alternatively, you can remove this line
     scriptContent: format('''
       az extension add --upgrade --name containerapp
-      az containerapp custom-domain update --resource-group "{0}" --name "{1}" --domain-name "{2}" --certificate-id "{3}"
+      az containerapp ingress custom-domain bind --resource-group "{0}" --name "{1}" --domain-name "{2}" --certificate-id "{3}"
     ''', resourceGroup().name, name, customDomain, managedCertModule.outputs.managedCertId)
     timeout: 'PT30M'
     cleanupPreference: 'OnSuccess'
