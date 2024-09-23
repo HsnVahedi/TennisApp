@@ -387,7 +387,7 @@ resource comprehensiveDeploymentScript 'Microsoft.Resources/deploymentScripts@20
 
       echo "Starting comprehensive deployment script..."
 
-      # Function to execute a command with retries
+      # Function to execute a command with retries and improved error handling
       execute_with_retry() {
         local max_attempts=3
         local retry_delay=30
@@ -415,6 +415,7 @@ resource comprehensiveDeploymentScript 'Microsoft.Resources/deploymentScripts@20
         done
 
         echo "All attempts failed for: $description" >&2
+        echo "Final command output: $output" >&2
         return $exit_code
       }
 
@@ -433,9 +434,15 @@ resource comprehensiveDeploymentScript 'Microsoft.Resources/deploymentScripts@20
       elapsed=0
       while [ $elapsed -lt $timeout ]; do
         status=$(az containerapp certificate show --resource-group "$RESOURCE_GROUP" --name "$CERT_NAME" --query "properties.provisioningState" -o tsv)
+        echo "Current certificate status: $status"
         if [ "$status" == "Succeeded" ]; then
           echo "Certificate is ready."
           break
+        elif [ "$status" == "Failed" ]; then
+          echo "Certificate creation failed." >&2
+          cert_details=$(az containerapp certificate show --resource-group "$RESOURCE_GROUP" --name "$CERT_NAME" -o json)
+          echo "Certificate details: $cert_details" >&2
+          exit 1
         fi
         sleep 60
         elapsed=$((elapsed + 60))
@@ -449,6 +456,7 @@ resource comprehensiveDeploymentScript 'Microsoft.Resources/deploymentScripts@20
 
       # Get the certificate ID
       cert_id=$(az containerapp certificate show --resource-group "$RESOURCE_GROUP" --name "$CERT_NAME" --query "id" -o tsv)
+      echo "Certificate ID: $cert_id"
 
       # Bind certificate to custom domain
       execute_with_retry "az containerapp hostname bind --resource-group \"$RESOURCE_GROUP\" --name \"$APP_NAME\" --hostname \"$CUSTOM_DOMAIN\" --certificate-id \"$cert_id\" --environment \"$ENVIRONMENT\"" "Bind certificate to custom domain"
