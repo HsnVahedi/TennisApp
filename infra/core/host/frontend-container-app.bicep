@@ -187,9 +187,10 @@ resource app 'Microsoft.App/containerApps@2023-05-02-preview' = {
         customDomains: [
           {
             name: customDomain
-            // certificateId: managedCert.id
+            certificateId: '' 
           }
         ]
+
         // customDomains: [
         //   {
         //     name: certificate.name 
