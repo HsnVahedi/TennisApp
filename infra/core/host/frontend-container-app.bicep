@@ -100,23 +100,6 @@ resource userIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-
   name: identityName
 }
 
-// Private registry support requires both an ACR name and a User Assigned managed identity
-var usePrivateRegistry = !empty(identityName) && !empty(containerRegistryName)
-
-// Automatically set to `UserAssigned` when an `identityName` has been set
-var normalizedIdentityType = !empty(identityName) ? 'UserAssigned' : identityType
-
-var keyvalueSecrets = [for secret in items(secrets): {
-  name: secret.key
-  value: secret.value
-}]
-
-var keyvaultIdentitySecrets = [for secret in items(keyvaultIdentities): {
-  name: secret.key
-  keyVaultUrl: secret.value.keyVaultUrl
-  identity: secret.value.identity
-}]
-
 // var keyvalueSecrets = [for secret in items(secrets): {
 //   name: secret.key
 //   value: secret.value
@@ -136,142 +119,225 @@ var keyvaultIdentitySecrets = [for secret in items(keyvaultIdentities): {
 //   }
 // }
 
+// Private registry support requires both an ACR name and a User Assigned managed identity
+var usePrivateRegistry = !empty(identityName) && !empty(containerRegistryName)
 
-///////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////
-// Custom Domain
-///////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////
-// resource customDomain 'Microsoft.Web/domains@2022-03-01' = {
-//   name: 'artoftennis.ai'
-//   location: resourceGroup().location
+// Automatically set to `UserAssigned` when an `identityName` has been set
+var normalizedIdentityType = !empty(identityName) ? 'UserAssigned' : identityType
+
+var keyvalueSecrets = [for secret in items(secrets): {
+  name: secret.key
+  value: secret.value
+}]
+
+var keyvaultIdentitySecrets = [for secret in items(keyvaultIdentities): {
+  name: secret.key
+  keyVaultUrl: secret.value.keyVaultUrl
+  identity: secret.value.identity
+}]
+
+
+
+
+
+
+// resource app 'Microsoft.App/containerApps@2023-05-02-preview' = {
+//   name: name
+//   location: location
+//   tags: tags
+//   // It is critical that the identity is granted ACR pull access before the app is created
+//   // otherwise the container app will throw a provision error
+//   // This also forces us to use an user assigned managed identity since there would no way to 
+//   // provide the system assigned identity with the ACR pull access before the app is created
+//   // dependsOn: usePrivateRegistry ? [ containerRegistryAccess ] : []
+//   identity: {
+//     type: normalizedIdentityType
+//     userAssignedIdentities: !empty(identityName) && normalizedIdentityType == 'UserAssigned' ? { '${userIdentity.id}': {} } : null
+//   }
 //   properties: {
-//     managedDomain: true
+//     managedEnvironmentId: containerAppsEnvironment.id
+//     configuration: {
+//       maxInactiveRevisions: 0
+//       activeRevisionsMode: revisionMode
+//       ingress: ingressEnabled ? {
+//         external: external
+//         targetPort: targetPort
+//         transport: 'auto'
+//         corsPolicy: {
+//           allowedOrigins: union([ 'https://portal.azure.com', 'https://ms.portal.azure.com' ], allowedOrigins)
+//         }
+//         customDomains: [
+//           {
+//             name: customDomain
+//             certificateId: '' 
+//           }
+//         ]
+
+//         // customDomains: [
+//         //   {
+//         //     name: certificate.name 
+//         //     // certificateId: '${certificate.id}-art-of-t-240909021124'
+//         //     certificateId: certificate.id
+//         //     bindingType: 'SniEnabled'
+//         //   }
+//         //   // {
+//         //   //   name: managedEnvironmentManagedCertificate.properties.subjectName
+//         //   //   certificateId: managedEnvironmentManagedCertificate.id
+//         //   //   bindingType: 'SniEnabled'
+//         //   // }
+//         // ]
+//       } : null
+//       dapr: daprEnabled ? {
+//         enabled: true
+//         appId: daprAppId
+//         appProtocol: daprAppProtocol
+//         appPort: ingressEnabled ? targetPort : 0
+//       } : { enabled: false }
+//       secrets: concat(keyvalueSecrets, keyvaultIdentitySecrets)
+//       service: !empty(serviceType) ? { type: serviceType } : null
+//       registries: usePrivateRegistry ? [
+//         {
+//           server: '${containerRegistryName}.${containerRegistryHostSuffix}'
+//           identity: userIdentity.id
+//         }
+//       ] : []
+//     }
+//     template: {
+//       serviceBinds: !empty(serviceBinds) ? serviceBinds : null
+//       containers: [
+//         {
+//           image: !empty(imageName) ? imageName : 'mcr.microsoft.com/azuredocs/containerapps-helloworld:latest'
+//           name: containerName
+//           env: env
+//           resources: {
+//             cpu: json(containerCpuCoreCount)
+//             memory: containerMemory
+//           }
+//         }
+//       ]
+//       scale: {
+//         minReplicas: containerMinReplicas
+//         maxReplicas: containerMaxReplicas
+//       }
+//     }
 //   }
 // }
-// resource certificate 'Microsoft.Web/certificates@2021-02-01' existing = {
-//   name: 'artoftennis.ai'
-// }
 
-///////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////
-// Custom Domain
-///////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////
 
-resource app 'Microsoft.App/containerApps@2023-05-02-preview' = {
-  name: name
-  location: location
-  tags: tags
-  // It is critical that the identity is granted ACR pull access before the app is created
-  // otherwise the container app will throw a provision error
-  // This also forces us to use an user assigned managed identity since there would no way to 
-  // provide the system assigned identity with the ACR pull access before the app is created
-  // dependsOn: usePrivateRegistry ? [ containerRegistryAccess ] : []
-  identity: {
-    type: normalizedIdentityType
-    userAssignedIdentities: !empty(identityName) && normalizedIdentityType == 'UserAssigned' ? { '${userIdentity.id}': {} } : null
-  }
-  properties: {
-    managedEnvironmentId: containerAppsEnvironment.id
-    configuration: {
-      maxInactiveRevisions: 0
-      activeRevisionsMode: revisionMode
-      ingress: ingressEnabled ? {
-        external: external
-        targetPort: targetPort
-        transport: 'auto'
-        corsPolicy: {
-          allowedOrigins: union([ 'https://portal.azure.com', 'https://ms.portal.azure.com' ], allowedOrigins)
-        }
-        customDomains: [
-          {
-            name: customDomain
-            certificateId: '' 
-          }
-        ]
-
-        // customDomains: [
-        //   {
-        //     name: certificate.name 
-        //     // certificateId: '${certificate.id}-art-of-t-240909021124'
-        //     certificateId: certificate.id
-        //     bindingType: 'SniEnabled'
-        //   }
-        //   // {
-        //   //   name: managedEnvironmentManagedCertificate.properties.subjectName
-        //   //   certificateId: managedEnvironmentManagedCertificate.id
-        //   //   bindingType: 'SniEnabled'
-        //   // }
-        // ]
-      } : null
-      dapr: daprEnabled ? {
-        enabled: true
-        appId: daprAppId
-        appProtocol: daprAppProtocol
-        appPort: ingressEnabled ? targetPort : 0
-      } : { enabled: false }
-      secrets: concat(keyvalueSecrets, keyvaultIdentitySecrets)
-      service: !empty(serviceType) ? { type: serviceType } : null
-      registries: usePrivateRegistry ? [
-        {
-          server: '${containerRegistryName}.${containerRegistryHostSuffix}'
-          identity: userIdentity.id
-        }
-      ] : []
-    }
-    template: {
-      serviceBinds: !empty(serviceBinds) ? serviceBinds : null
-      containers: [
-        {
-          image: !empty(imageName) ? imageName : 'mcr.microsoft.com/azuredocs/containerapps-helloworld:latest'
-          name: containerName
-          env: env
-          resources: {
-            cpu: json(containerCpuCoreCount)
-            memory: containerMemory
-          }
-        }
-      ]
-      scale: {
-        minReplicas: containerMinReplicas
-        maxReplicas: containerMaxReplicas
-      }
-    }
+// Deploy the container app without custom domains
+module containerAppModule '../frontend/containerApp.bicep' = {
+  name: 'deployContainerApp'
+  params: {
+    name: name
+    location: location
+    tags: tags
+    identityName: identityName
+    normalizedIdentityType: normalizedIdentityType
+    userIdentity: userIdentity
+    containerAppsEnvironmentId: containerAppsEnvironment.id
+    allowedOrigins: allowedOrigins
+    containerCpuCoreCount: containerCpuCoreCount
+    containerMaxReplicas: containerMaxReplicas
+    containerMemory: containerMemory
+    containerMinReplicas: containerMinReplicas
+    containerName: containerName
+    containerRegistryName: containerRegistryName
+    containerRegistryHostSuffix: containerRegistryHostSuffix
+    daprAppId: daprAppId
+    daprAppProtocol: daprAppProtocol
+    daprEnabled: daprEnabled
+    env: env
+    external: external
+    imageName: imageName
+    ingressEnabled: ingressEnabled
+    keyvalueSecrets: keyvalueSecrets
+    keyvaultIdentitySecrets: keyvaultIdentitySecrets
+    revisionMode: revisionMode
+    serviceType: serviceType
+    targetPort: targetPort
+    usePrivateRegistry: usePrivateRegistry
   }
 }
+
+
+resource mapCustomDomainScript 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
+  name: 'mapCustomDomainScript'
+  location: location
+  kind: 'AzureCLI'
+  properties: {
+    azCliVersion: '2.37.0'
+    scriptContent: '''
+      az containerapp ingress custom-domain assign --resource-group "${resourceGroup().name}" --name "${name}" --domain "${customDomain}"
+    '''
+    timeout: 'PT30M'
+    cleanupPreference: 'OnSuccess'
+    retentionInterval: 'P1D'
+  }
+  dependsOn: [
+    containerAppModule
+  ]
+}
+
+
+
+// Create the managed certificate
+module managedCertModule '../frontend/managedCert.bicep' = {
+  name: 'deployManagedCert'
+  params: {
+    location: location
+    customDomain: customDomain
+    containerAppsEnvironmentName: containerAppsEnvironmentName
+  }
+  dependsOn: [
+    mapCustomDomainScript
+  ]
+}
+
+
+
+// Update the container app to associate the certificate with the custom domain
+resource updateAppScript 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
+  name: 'updateAppWithCert'
+  location: location
+  kind: 'AzureCLI'
+  properties: {
+    azCliVersion: '2.37.0'
+    scriptContent: '''
+      az containerapp ingress custom-domain update --resource-group "${resourceGroup().name}" --name "${name}" --domain "${customDomain}" --certificate-id "${managedCertModule.outputs.managedCertId}"
+    '''
+    timeout: 'PT30M'
+    cleanupPreference: 'OnSuccess'
+    retentionInterval: 'P1D'
+  }
+  dependsOn: [
+    managedCertModule
+  ]
+}
+
 
 
 resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2023-05-01' existing = {
   name: containerAppsEnvironmentName
 }
 
-resource managedCert 'Microsoft.App/managedEnvironments/managedCertificates@2023-05-01' = {
-  name: '${uniqueString(containerAppsEnvironment.id, customDomain)}-cert'
-  parent: containerAppsEnvironment
-  location: location
-  properties: {
-    subjectName: customDomain
-    domainControlValidation: 'TXT'
-  }
-  dependsOn: [
-    app
-  ]
+// resource managedCert 'Microsoft.App/managedEnvironments/managedCertificates@2023-05-01' = {
+//   name: '${uniqueString(containerAppsEnvironment.id, customDomain)}-cert'
+//   parent: containerAppsEnvironment
+//   location: location
+//   properties: {
+//     subjectName: customDomain
+//     domainControlValidation: 'TXT'
+//   }
+//   dependsOn: [
+//     app
+//   ]
+// }
+
+resource app 'Microsoft.App/containerApps@2023-05-02-preview' existing = {
+  name: name
 }
 
 
-
-
-// resource managedEnvironmentManagedCertificate 'Microsoft.App/managedEnvironments/managedCertificates@2022-11-01-preview' = {
-//   parent: containerAppsEnvironment
-//   name: '${containerAppsEnvironment.name}-certificate'
-//   location: location
-//   tags: tags
-//   properties: {
-//     subjectName: 'artoftennis.ai' 
-//     domainControlValidation: 'CNAME'
-//   }
-// }
 
 output defaultDomain string = containerAppsEnvironment.properties.defaultDomain
 output staticIp string = containerAppsEnvironment.properties.staticIp
