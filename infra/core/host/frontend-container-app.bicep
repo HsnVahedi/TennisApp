@@ -100,6 +100,23 @@ resource userIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-
   name: identityName
 }
 
+
+resource deploymentScriptIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2018-11-30' = {
+  name: 'deploymentScriptIdentity'
+  location: location
+}
+
+
+resource deploymentScriptRoleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
+  name: guid(resourceGroup().id, deploymentScriptIdentity.name, 'container-app-contributor-role-assignment')
+  scope: resourceGroup()
+  properties: {
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'bb13af17-19db-4de7-a5e0-f7f21f6e39c4') // Azure Container Apps Contributor Role ID
+    principalId: deploymentScriptIdentity.properties.principalId
+  }
+}
+
+
 // var keyvalueSecrets = [for secret in items(secrets): {
 //   name: secret.key
 //   value: secret.value
@@ -260,12 +277,17 @@ module containerAppModule '../frontend/containerApp.bicep' = {
 }
 
 
-resource mapCustomDomainScript 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
+resource mapCustomDomainScript 'Microsoft.Resources/deploymentScripts@2022-08-01' = {
   name: 'mapCustomDomainScript'
   location: location
-  kind: 'AzureCLI'
+  identity: {
+    type: 'UserAssigned'
+    userAssignedIdentities: {
+      '${deploymentScriptIdentity.id}': {}
+    }
+  }
   properties: {
-    azCliVersion: '2.63.0'
+    azCliVersion: '2.64.0'
     scriptContent: format('''
       az extension add --upgrade --name containerapp
       az containerapp hostname bind --resource-group "{0}" --name "{1}" --hostname "{2}"
@@ -273,14 +295,18 @@ resource mapCustomDomainScript 'Microsoft.Resources/deploymentScripts@2020-10-01
     timeout: 'PT30M'
     cleanupPreference: 'OnSuccess'
     retentionInterval: 'P1D'
+    authentication: {
+      managedIdentity: {
+        clientId: deploymentScriptIdentity.properties.clientId
+      }
+    }
+    forceUpdateTag: guid(resourceGroup().id, 'mapCustomDomainScript')
   }
   dependsOn: [
     containerAppModule
+    deploymentScriptRoleAssignment
   ]
 }
-
-
-
 
 
 
@@ -301,12 +327,17 @@ module managedCertModule '../frontend/managedCert.bicep' = {
 
 
 // Update the container app to associate the certificate with the custom domain
-resource updateAppScript 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
+resource updateAppScript 'Microsoft.Resources/deploymentScripts@2022-08-01' = {
   name: 'updateAppWithCert'
   location: location
-  kind: 'AzureCLI'
+  identity: {
+    type: 'UserAssigned'
+    userAssignedIdentities: {
+      '${deploymentScriptIdentity.id}': {}
+    }
+  }
   properties: {
-    azCliVersion: '2.63.0'
+    azCliVersion: '2.64.0'
     scriptContent: format('''
       az extension add --upgrade --name containerapp
       az containerapp hostname bind --resource-group "{0}" --name "{1}" --hostname "{2}" --certificate-id "{3}"
@@ -314,11 +345,19 @@ resource updateAppScript 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
     timeout: 'PT30M'
     cleanupPreference: 'OnSuccess'
     retentionInterval: 'P1D'
+    authentication: {
+      managedIdentity: {
+        clientId: deploymentScriptIdentity.properties.clientId
+      }
+    }
+    forceUpdateTag: guid(resourceGroup().id, 'updateAppWithCert')
   }
   dependsOn: [
     managedCertModule
+    deploymentScriptRoleAssignment
   ]
 }
+
 
 
 
