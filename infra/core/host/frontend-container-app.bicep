@@ -286,7 +286,7 @@ resource mapCustomDomainScript 'Microsoft.Resources/deploymentScripts@2023-08-01
   identity: {
     type: 'UserAssigned'
     userAssignedIdentities: {
-      [deploymentScriptIdentity.id]: {}
+      '${deploymentScriptIdentity.id}': {}
     }
   }
   properties: {
@@ -319,7 +319,7 @@ resource updateAppScript 'Microsoft.Resources/deploymentScripts@2023-08-01' = {
   identity: {
     type: 'UserAssigned'
     userAssignedIdentities: {
-      [deploymentScriptIdentity.id]: {}
+      '${deploymentScriptIdentity.id}': {}
     }
   }
   properties: {
@@ -341,6 +341,7 @@ resource updateAppScript 'Microsoft.Resources/deploymentScripts@2023-08-01' = {
   dependsOn: [
     managedCertModule
     deploymentScriptRoleAssignment
+    containerAppModule
   ]
 }
 
