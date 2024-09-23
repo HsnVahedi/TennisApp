@@ -368,134 +368,134 @@ resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2023-05-01'
 // }
 
 
-resource comprehensiveDeploymentScript 'Microsoft.Resources/deploymentScripts@2023-08-01' = {
-  name: 'comprehensiveDeploymentScript'
-  location: location
-  kind: 'AzureCLI'
-  identity: {
-    type: 'UserAssigned'
-    userAssignedIdentities: {
-      '${deploymentScriptIdentity.id}': {}
-    }
-  }
-  properties: {
-    azCliVersion: '2.63.0'
-    scriptContent: '''
-      #!/bin/bash
-      set -e
-      set -o pipefail
+// resource comprehensiveDeploymentScript 'Microsoft.Resources/deploymentScripts@2023-08-01' = {
+//   name: 'comprehensiveDeploymentScript'
+//   location: location
+//   kind: 'AzureCLI'
+//   identity: {
+//     type: 'UserAssigned'
+//     userAssignedIdentities: {
+//       '${deploymentScriptIdentity.id}': {}
+//     }
+//   }
+//   properties: {
+//     azCliVersion: '2.63.0'
+//     scriptContent: '''
+//       #!/bin/bash
+//       set -e
+//       set -o pipefail
 
-      echo "Starting comprehensive deployment script..."
+//       echo "Starting comprehensive deployment script..."
 
-      # Function to execute a command with retries and improved error handling
-      execute_with_retry() {
-        local max_attempts=3
-        local retry_delay=30
-        local command="$1"
-        local description="$2"
+//       # Function to execute a command with retries and improved error handling
+//       execute_with_retry() {
+//         local max_attempts=3
+//         local retry_delay=30
+//         local command="$1"
+//         local description="$2"
         
-        for ((attempt=1; attempt<=max_attempts; attempt++))
-        do
-          echo "Attempt $attempt of $max_attempts: $description"
-          output=$(eval "$command" 2>&1)
-          exit_code=$?
+//         for ((attempt=1; attempt<=max_attempts; attempt++))
+//         do
+//           echo "Attempt $attempt of $max_attempts: $description"
+//           output=$(eval "$command" 2>&1)
+//           exit_code=$?
           
-          if [ $exit_code -eq 0 ]; then
-            echo "Successfully executed: $description"
-            echo "Command output: $output"
-            return 0
-          else
-            echo "Attempt $attempt failed: $description" >&2
-            echo "Command output: $output" >&2
-            if [ $attempt -lt $max_attempts ]; then
-              echo "Retrying in $retry_delay seconds..."
-              sleep $retry_delay
-            fi
-          fi
-        done
+//           if [ $exit_code -eq 0 ]; then
+//             echo "Successfully executed: $description"
+//             echo "Command output: $output"
+//             return 0
+//           else
+//             echo "Attempt $attempt failed: $description" >&2
+//             echo "Command output: $output" >&2
+//             if [ $attempt -lt $max_attempts ]; then
+//               echo "Retrying in $retry_delay seconds..."
+//               sleep $retry_delay
+//             fi
+//           fi
+//         done
 
-        echo "All attempts failed for: $description" >&2
-        echo "Final command output: $output" >&2
-        return $exit_code
-      }
+//         echo "All attempts failed for: $description" >&2
+//         echo "Final command output: $output" >&2
+//         return $exit_code
+//       }
 
-      # Add containerapp extension
-      execute_with_retry "az extension add --upgrade --name containerapp --allow-preview true" "Add containerapp extension"
+//       # Add containerapp extension
+//       execute_with_retry "az extension add --upgrade --name containerapp --allow-preview true" "Add containerapp extension"
 
-      # Bind custom domain to Container App
-      execute_with_retry "az containerapp hostname bind --resource-group \"$RESOURCE_GROUP\" --name \"$APP_NAME\" --hostname \"$CUSTOM_DOMAIN\" --environment \"$ENVIRONMENT\" --validation-method \"CNAME\"" "Bind custom domain"
+//       # Bind custom domain to Container App
+//       execute_with_retry "az containerapp hostname bind --resource-group \"$RESOURCE_GROUP\" --name \"$APP_NAME\" --hostname \"$CUSTOM_DOMAIN\" --environment \"$ENVIRONMENT\" --validation-method \"CNAME\"" "Bind custom domain"
 
-      # Create managed certificate
-      execute_with_retry "az containerapp certificate create --resource-group \"$RESOURCE_GROUP\" --name \"$CERT_NAME\" --hostname \"$CUSTOM_DOMAIN\" --environment \"$ENVIRONMENT\"" "Create managed certificate"
+//       # Create managed certificate
+//       execute_with_retry "az containerapp certificate create --resource-group \"$RESOURCE_GROUP\" --name \"$CERT_NAME\" --hostname \"$CUSTOM_DOMAIN\" --environment \"$ENVIRONMENT\"" "Create managed certificate"
 
-      # Wait for certificate to be ready (with timeout)
-      echo "Waiting for certificate to be ready..."
-      timeout=1800  # 30 minutes
-      elapsed=0
-      while [ $elapsed -lt $timeout ]; do
-        status=$(az containerapp certificate show --resource-group "$RESOURCE_GROUP" --name "$CERT_NAME" --query "properties.provisioningState" -o tsv)
-        echo "Current certificate status: $status"
-        if [ "$status" == "Succeeded" ]; then
-          echo "Certificate is ready."
-          break
-        elif [ "$status" == "Failed" ]; then
-          echo "Certificate creation failed." >&2
-          cert_details=$(az containerapp certificate show --resource-group "$RESOURCE_GROUP" --name "$CERT_NAME" -o json)
-          echo "Certificate details: $cert_details" >&2
-          exit 1
-        fi
-        sleep 60
-        elapsed=$((elapsed + 60))
-        echo "Still waiting... ($elapsed seconds elapsed)"
-      done
+//       # Wait for certificate to be ready (with timeout)
+//       echo "Waiting for certificate to be ready..."
+//       timeout=1800  # 30 minutes
+//       elapsed=0
+//       while [ $elapsed -lt $timeout ]; do
+//         status=$(az containerapp certificate show --resource-group "$RESOURCE_GROUP" --name "$CERT_NAME" --query "properties.provisioningState" -o tsv)
+//         echo "Current certificate status: $status"
+//         if [ "$status" == "Succeeded" ]; then
+//           echo "Certificate is ready."
+//           break
+//         elif [ "$status" == "Failed" ]; then
+//           echo "Certificate creation failed." >&2
+//           cert_details=$(az containerapp certificate show --resource-group "$RESOURCE_GROUP" --name "$CERT_NAME" -o json)
+//           echo "Certificate details: $cert_details" >&2
+//           exit 1
+//         fi
+//         sleep 60
+//         elapsed=$((elapsed + 60))
+//         echo "Still waiting... ($elapsed seconds elapsed)"
+//       done
 
-      if [ $elapsed -ge $timeout ]; then
-        echo "Timeout waiting for certificate to be ready." >&2
-        exit 1
-      fi
+//       if [ $elapsed -ge $timeout ]; then
+//         echo "Timeout waiting for certificate to be ready." >&2
+//         exit 1
+//       fi
 
-      # Get the certificate ID
-      cert_id=$(az containerapp certificate show --resource-group "$RESOURCE_GROUP" --name "$CERT_NAME" --query "id" -o tsv)
-      echo "Certificate ID: $cert_id"
+//       # Get the certificate ID
+//       cert_id=$(az containerapp certificate show --resource-group "$RESOURCE_GROUP" --name "$CERT_NAME" --query "id" -o tsv)
+//       echo "Certificate ID: $cert_id"
 
-      # Bind certificate to custom domain
-      execute_with_retry "az containerapp hostname bind --resource-group \"$RESOURCE_GROUP\" --name \"$APP_NAME\" --hostname \"$CUSTOM_DOMAIN\" --certificate-id \"$cert_id\" --environment \"$ENVIRONMENT\"" "Bind certificate to custom domain"
+//       # Bind certificate to custom domain
+//       execute_with_retry "az containerapp hostname bind --resource-group \"$RESOURCE_GROUP\" --name \"$APP_NAME\" --hostname \"$CUSTOM_DOMAIN\" --certificate-id \"$cert_id\" --environment \"$ENVIRONMENT\"" "Bind certificate to custom domain"
 
-      echo "Comprehensive deployment script completed successfully."
-    '''
-    environmentVariables: [
-      {
-        name: 'RESOURCE_GROUP'
-        value: resourceGroup().name
-      }
-      {
-        name: 'APP_NAME'
-        value: name
-      }
-      {
-        name: 'CUSTOM_DOMAIN'
-        value: customDomain
-      }
-      {
-        name: 'ENVIRONMENT'
-        value: containerAppsEnvironmentName
-      }
-      {
-        name: 'CERT_NAME'
-        value: 'managed-cert-${customDomain}'
-      }
-    ]
-    timeout: 'PT2H'
-    cleanupPreference: 'OnSuccess'
-    retentionInterval: 'P1D'
-  }
-  dependsOn: [
-    containerAppModule
-    deploymentScriptRoleAssignment
-  ]
-}
+//       echo "Comprehensive deployment script completed successfully."
+//     '''
+//     environmentVariables: [
+//       {
+//         name: 'RESOURCE_GROUP'
+//         value: resourceGroup().name
+//       }
+//       {
+//         name: 'APP_NAME'
+//         value: name
+//       }
+//       {
+//         name: 'CUSTOM_DOMAIN'
+//         value: customDomain
+//       }
+//       {
+//         name: 'ENVIRONMENT'
+//         value: containerAppsEnvironmentName
+//       }
+//       {
+//         name: 'CERT_NAME'
+//         value: 'managed-cert-${customDomain}'
+//       }
+//     ]
+//     timeout: 'PT2H'
+//     cleanupPreference: 'OnSuccess'
+//     retentionInterval: 'P1D'
+//   }
+//   dependsOn: [
+//     containerAppModule
+//     deploymentScriptRoleAssignment
+//   ]
+// }
 
-output scriptLogs string = comprehensiveDeploymentScript.properties.outputs.scriptLogs
+// output scriptLogs string = comprehensiveDeploymentScript.properties.outputs.scriptLogs
 
 
 // resource managedCert 'Microsoft.App/managedEnvironments/managedCertificates@2023-05-01' = {

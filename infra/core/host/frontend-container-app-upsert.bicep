@@ -128,4 +128,4 @@ output imageName string = app.outputs.imageName
 output name string = app.outputs.name
 output uri string = app.outputs.uri
 output fqdn string = app.outputs.fqdn
-output scriptLogs string = app.outputs.scriptLogs
+// output scriptLogs string = app.outputs.scriptLogs

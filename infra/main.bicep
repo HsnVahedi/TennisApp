@@ -473,4 +473,4 @@ output CELERY_EXISTS bool = celeryAppExists
 output AZURE_KEY_VAULT_ENDPOINT string = keyVault.outputs.uri
 output AZURE_KEY_VAULT_NAME string = keyVault.outputs.name
 output APPLICATIONINSIGHTS_NAME string = monitoring.outputs.applicationInsightsName
-output scriptLogs string = frontend.outputs.scriptLogs
+// output scriptLogs string = frontend.outputs.scriptLogs
