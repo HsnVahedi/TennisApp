@@ -187,7 +187,7 @@ resource app 'Microsoft.App/containerApps@2023-05-02-preview' = {
         customDomains: [
           {
             name: customDomain
-            certificateId: managedCert.id
+            // certificateId: managedCert.id
           }
         ]
         // customDomains: [
@@ -253,6 +253,9 @@ resource managedCert 'Microsoft.App/managedEnvironments/managedCertificates@2023
     subjectName: customDomain
     domainControlValidation: 'TXT'
   }
+  dependsOn: [
+    app
+  ]
 }
 
 
