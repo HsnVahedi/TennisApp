@@ -279,40 +279,6 @@ module containerAppModule '../frontend/containerApp.bicep' = {
   }
 }
 
-var deploymentScriptIdentityId = deploymentScriptIdentity.id
-
-// resource mapCustomDomainScript 'Microsoft.Resources/deploymentScripts@2023-08-01' = {
-//   name: 'mapCustomDomainScript'
-//   location: location
-//   kind: 'AzureCLI'
-//   identity: {
-//     type: 'UserAssigned'
-//     userAssignedIdentities: {
-//       '${deploymentScriptIdentityId}': {}
-//     }
-//   }
-//   properties: {
-//     azCliVersion: '2.63.0' // Updated to a supported version
-//     scriptContent: format('''
-//       az extension add --upgrade --name containerapp
-//       az containerapp hostname bind --resource-group "{0}" --name "{1}" --hostname "{2}"
-//     ''', resourceGroup().name, name, customDomain)
-//     timeout: 'PT30M'
-//     cleanupPreference: 'OnSuccess'
-//     retentionInterval: 'P1D'
-//     authentication: {
-//       managedIdentity: {
-//         clientId: deploymentScriptIdentity.properties.clientId
-//       }
-//     }
-//     forceUpdateTag: guid(resourceGroup().id, 'mapCustomDomainScript')
-//   }
-//   dependsOn: [
-//     containerAppModule
-//     deploymentScriptRoleAssignment
-//   ]
-// }
-
 resource mapCustomDomainScript 'Microsoft.Resources/deploymentScripts@2023-08-01' = {
   name: 'mapCustomDomainScript'
   location: location
@@ -320,7 +286,7 @@ resource mapCustomDomainScript 'Microsoft.Resources/deploymentScripts@2023-08-01
   identity: {
     type: 'UserAssigned'
     userAssignedIdentities: {
-      '${deploymentScriptIdentity.id}': {}
+      [deploymentScriptIdentity.id]: {}
     }
   }
   properties: {
@@ -346,38 +312,6 @@ resource mapCustomDomainScript 'Microsoft.Resources/deploymentScripts@2023-08-01
 }
 
 
-// resource updateAppScript 'Microsoft.Resources/deploymentScripts@2023-08-01' = {
-//   name: 'updateAppWithCert'
-//   kind: 'AzureCLI'
-//   location: location
-//   identity: {
-//     type: 'UserAssigned'
-//     userAssignedIdentities: {
-//       '${deploymentScriptIdentityId}': {}
-//     }
-//   }
-//   properties: {
-//     azCliVersion: '2.63.0' // Updated to a supported version
-//     scriptContent: format('''
-//       az extension add --upgrade --name containerapp
-//       az containerapp hostname bind --resource-group "{0}" --name "{1}" --hostname "{2}" --certificate-id "{3}"
-//     ''', resourceGroup().name, name, customDomain, managedCertModule.outputs.managedCertId)
-//     timeout: 'PT30M'
-//     cleanupPreference: 'OnSuccess'
-//     retentionInterval: 'P1D'
-//     authentication: {
-//       managedIdentity: {
-//         clientId: deploymentScriptIdentity.properties.clientId
-//       }
-//     }
-//     forceUpdateTag: guid(resourceGroup().id, 'updateAppWithCert')
-//   }
-//   dependsOn: [
-//     managedCertModule
-//     deploymentScriptRoleAssignment
-//   ]
-// }
-
 resource updateAppScript 'Microsoft.Resources/deploymentScripts@2023-08-01' = {
   name: 'updateAppWithCert'
   kind: 'AzureCLI'
@@ -385,7 +319,7 @@ resource updateAppScript 'Microsoft.Resources/deploymentScripts@2023-08-01' = {
   identity: {
     type: 'UserAssigned'
     userAssignedIdentities: {
-      '${deploymentScriptIdentity.id}': {}
+      [deploymentScriptIdentity.id]: {}
     }
   }
   properties: {
