@@ -327,7 +327,7 @@ resource mapCustomDomainScript 'Microsoft.Resources/deploymentScripts@2023-08-01
     azCliVersion: '2.63.0' // Updated to a supported version
     scriptContent: format('''
       az extension add --upgrade --name containerapp --allow-preview true
-      az containerapp hostname bind --resource-group "{0}" --name "{1}" --hostname "{2}" --environment "{3}"
+      az containerapp hostname bind --resource-group "{0}" --name "{1}" --hostname "{2}" --environment "{3}" --validation-method "TXT"
     ''', resourceGroup().name, name, customDomain, containerAppsEnvironmentName)
     timeout: 'PT30M'
     cleanupPreference: 'OnSuccess'
@@ -392,7 +392,7 @@ resource updateAppScript 'Microsoft.Resources/deploymentScripts@2023-08-01' = {
     azCliVersion: '2.63.0' // Updated to a supported version
     scriptContent: format('''
       az extension add --upgrade --name containerapp --allow-preview true
-      az containerapp hostname bind --resource-group "{0}" --name "{1}" --hostname "{2}" --certificate-id "{3}" --environment "{4}"
+      az containerapp hostname bind --resource-group "{0}" --name "{1}" --hostname "{2}" --certificate-id "{3}" --environment "{4}" --validation-method "TXT"
     ''', resourceGroup().name, name, customDomain, managedCertModule.outputs.managedCertId, containerAppsEnvironmentName)
     timeout: 'PT30M'
     cleanupPreference: 'OnSuccess'
