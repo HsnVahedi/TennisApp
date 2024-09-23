@@ -288,7 +288,7 @@ module containerAppModule '../frontend/containerApp.bicep' = {
 }
 
 
-resource mapCustomDomainScript 'Microsoft.Resources/deploymentScripts@2022-08-01' = {
+resource mapCustomDomainScript 'Microsoft.Resources/deploymentScripts@2023-08-01' = {
   name: 'mapCustomDomainScript'
   location: location
   identity: {
@@ -297,6 +297,7 @@ resource mapCustomDomainScript 'Microsoft.Resources/deploymentScripts@2022-08-01
       '${deploymentScriptIdentity.id}': {}
     }
   }
+  kind: 'AzureCLI'
   properties: {
     azCliVersion: '2.64.0'
     scriptContent: format('''
@@ -338,7 +339,7 @@ module managedCertModule '../frontend/managedCert.bicep' = {
 
 
 // Update the container app to associate the certificate with the custom domain
-resource updateAppScript 'Microsoft.Resources/deploymentScripts@2022-08-01' = {
+resource updateAppScript 'Microsoft.Resources/deploymentScripts@2023-08-01' = {
   name: 'updateAppWithCert'
   location: location
   identity: {
