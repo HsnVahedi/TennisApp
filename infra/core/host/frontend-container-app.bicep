@@ -266,9 +266,9 @@ resource mapCustomDomainScript 'Microsoft.Resources/deploymentScripts@2020-10-01
   kind: 'AzureCLI'
   properties: {
     azCliVersion: '2.37.0'
-    scriptContent: '''
-      az containerapp ingress custom-domain assign --resource-group "${resourceGroup().name}" --name "${name}" --domain "${customDomain}"
-    '''
+    scriptContent: format('''
+      az containerapp ingress custom-domain assign --resource-group "{0}" --name "{1}" --domain "{2}"
+    ''', resourceGroup().name, name, customDomain)
     timeout: 'PT30M'
     cleanupPreference: 'OnSuccess'
     retentionInterval: 'P1D'
@@ -302,9 +302,9 @@ resource updateAppScript 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
   kind: 'AzureCLI'
   properties: {
     azCliVersion: '2.37.0'
-    scriptContent: '''
-      az containerapp ingress custom-domain update --resource-group "${resourceGroup().name}" --name "${name}" --domain "${customDomain}" --certificate-id "${managedCertModule.outputs.managedCertId}"
-    '''
+    scriptContent: format('''
+      az containerapp ingress custom-domain update --resource-group "{0}" --name "{1}" --domain "{2}" --certificate-id "{3}"
+    ''', resourceGroup().name, name, customDomain, managedCertModule.outputs.managedCertId)
     timeout: 'PT30M'
     cleanupPreference: 'OnSuccess'
     retentionInterval: 'P1D'
