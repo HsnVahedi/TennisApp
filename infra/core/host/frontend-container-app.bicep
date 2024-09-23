@@ -289,6 +289,7 @@ module containerAppModule '../frontend/containerApp.bicep' = {
   }
 }
 
+var deploymentScriptIdentityId = deploymentScriptIdentity.id
 
 resource mapCustomDomainScript 'Microsoft.Resources/deploymentScripts@2023-08-01' = {
   name: 'mapCustomDomainScript'
@@ -297,7 +298,7 @@ resource mapCustomDomainScript 'Microsoft.Resources/deploymentScripts@2023-08-01
   identity: {
     type: 'UserAssigned'
     userAssignedIdentities: {
-      [deploymentScriptIdentity.id]: {}
+      deploymentScriptIdentityId: {}
     }
   }
   properties: {
@@ -329,7 +330,7 @@ resource updateAppScript 'Microsoft.Resources/deploymentScripts@2023-08-01' = {
   identity: {
     type: 'UserAssigned'
     userAssignedIdentities: {
-      [deploymentScriptIdentity.id]: {}
+      deploymentScriptIdentityId: {}
     }
   }
   properties: {
