@@ -279,95 +279,216 @@ module containerAppModule '../frontend/containerApp.bicep' = {
   }
 }
 
-resource mapCustomDomainScript 'Microsoft.Resources/deploymentScripts@2023-08-01' = {
-  name: 'mapCustomDomainScript'
-  location: location
-  kind: 'AzureCLI'
-  identity: {
-    type: 'UserAssigned'
-    userAssignedIdentities: {
-      '${deploymentScriptIdentity.id}': {}
-    }
-  }
-  properties: {
-    azCliVersion: '2.63.0' // Updated to a supported version
-    scriptContent: format('''
-      az extension add --upgrade --name containerapp --allow-preview true
-      az containerapp hostname bind --resource-group "{0}" --name "{1}" --hostname "{2}" --environment "{3}" --validation-method "TXT"
-    ''', resourceGroup().name, name, customDomain, containerAppsEnvironmentName)
-    timeout: 'PT30M'
-    cleanupPreference: 'OnSuccess'
-    retentionInterval: 'P1D'
-    authentication: {
-      managedIdentity: {
-        clientId: deploymentScriptIdentity.properties.clientId
-      }
-    }
-    forceUpdateTag: guid(resourceGroup().id, 'mapCustomDomainScript')
-  }
-  dependsOn: [
-    containerAppModule
-    deploymentScriptRoleAssignment
-  ]
+resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2023-05-01' existing = {
+  name: containerAppsEnvironmentName
 }
 
+// resource mapCustomDomainScript 'Microsoft.Resources/deploymentScripts@2023-08-01' = {
+//   name: 'mapCustomDomainScript'
+//   location: location
+//   kind: 'AzureCLI'
+//   identity: {
+//     type: 'UserAssigned'
+//     userAssignedIdentities: {
+//       '${deploymentScriptIdentity.id}': {}
+//     }
+//   }
+//   properties: {
+//     azCliVersion: '2.63.0' // Updated to a supported version
+//     scriptContent: format('''
+//       az extension add --upgrade --name containerapp --allow-preview true
+//       az containerapp hostname bind --resource-group "{0}" --name "{1}" --hostname "{2}" --environment "{3}" --validation-method "TXT"
+//     ''', resourceGroup().name, name, customDomain, containerAppsEnvironmentName)
+//     timeout: 'PT30M'
+//     cleanupPreference: 'OnSuccess'
+//     retentionInterval: 'P1D'
+//     authentication: {
+//       managedIdentity: {
+//         clientId: deploymentScriptIdentity.properties.clientId
+//       }
+//     }
+//     forceUpdateTag: guid(resourceGroup().id, 'mapCustomDomainScript')
+//   }
+//   dependsOn: [
+//     containerAppModule
+//     deploymentScriptRoleAssignment
+//   ]
+// }
 
-resource updateAppScript 'Microsoft.Resources/deploymentScripts@2023-08-01' = {
-  name: 'updateAppWithCert'
-  kind: 'AzureCLI'
-  location: location
-  identity: {
-    type: 'UserAssigned'
-    userAssignedIdentities: {
-      '${deploymentScriptIdentity.id}': {}
-    }
-  }
-  properties: {
-    azCliVersion: '2.63.0' // Updated to a supported version
-    scriptContent: format('''
-      az extension add --upgrade --name containerapp --allow-preview true
-      az containerapp hostname bind --resource-group "{0}" --name "{1}" --hostname "{2}" --environment "{4}" --validation-method "TXT"
-      az containerapp hostname bind --resource-group "{0}" --name "{1}" --hostname "{2}" --certificate-id "{3}" --environment "{4}" --validation-method "TXT"
-    ''', resourceGroup().name, name, customDomain, managedCertModule.outputs.managedCertId, containerAppsEnvironmentName)
-    timeout: 'PT30M'
-    cleanupPreference: 'OnSuccess'
-    retentionInterval: 'P1D'
-    authentication: {
-      managedIdentity: {
-        clientId: deploymentScriptIdentity.properties.clientId
-      }
-    }
-    forceUpdateTag: guid(resourceGroup().id, 'updateAppWithCert')
-  }
-  dependsOn: [
-    managedCertModule
-    deploymentScriptRoleAssignment
-    containerAppModule
-  ]
-}
+
+// resource updateAppScript 'Microsoft.Resources/deploymentScripts@2023-08-01' = {
+//   name: 'updateAppWithCert'
+//   kind: 'AzureCLI'
+//   location: location
+//   identity: {
+//     type: 'UserAssigned'
+//     userAssignedIdentities: {
+//       '${deploymentScriptIdentity.id}': {}
+//     }
+//   }
+//   properties: {
+//     azCliVersion: '2.63.0' // Updated to a supported version
+//     scriptContent: format('''
+//       az extension add --upgrade --name containerapp --allow-preview true
+//       az containerapp hostname bind --resource-group "{0}" --name "{1}" --hostname "{2}" --environment "{4}" --validation-method "TXT"
+//       az containerapp hostname bind --resource-group "{0}" --name "{1}" --hostname "{2}" --certificate-id "{3}" --environment "{4}" --validation-method "TXT"
+//     ''', resourceGroup().name, name, customDomain, managedCertModule.outputs.managedCertId, containerAppsEnvironmentName)
+//     timeout: 'PT30M'
+//     cleanupPreference: 'OnSuccess'
+//     retentionInterval: 'P1D'
+//     authentication: {
+//       managedIdentity: {
+//         clientId: deploymentScriptIdentity.properties.clientId
+//       }
+//     }
+//     forceUpdateTag: guid(resourceGroup().id, 'updateAppWithCert')
+//   }
+//   dependsOn: [
+//     managedCertModule
+//     deploymentScriptRoleAssignment
+//     containerAppModule
+//   ]
+// }
 
 
 
 
 
 // Create the managed certificate
-module managedCertModule '../frontend/managedCert.bicep' = {
-  name: 'deployManagedCert'
-  params: {
-    location: location
-    customDomain: customDomain
-    containerAppsEnvironmentName: containerAppsEnvironmentName
+// module managedCertModule '../frontend/managedCert.bicep' = {
+//   name: 'deployManagedCert'
+//   params: {
+//     location: location
+//     customDomain: customDomain
+//     containerAppsEnvironmentName: containerAppsEnvironmentName
+//   }
+//   dependsOn: [
+//     mapCustomDomainScript
+//   ]
+// }
+
+
+resource comprehensiveDeploymentScript 'Microsoft.Resources/deploymentScripts@2023-08-01' = {
+  name: 'comprehensiveDeploymentScript'
+  location: location
+  kind: 'AzureCLI'
+  identity: {
+    type: 'UserAssigned'
+    userAssignedIdentities: {
+      '${deploymentScriptIdentity.id}': {}
+    }
+  }
+  properties: {
+    azCliVersion: '2.63.0'
+    scriptContent: '''
+      #!/bin/bash
+      set -e
+      set -o pipefail
+
+      echo "Starting comprehensive deployment script..."
+
+      # Function to execute a command with retries
+      execute_with_retry() {
+        local max_attempts=3
+        local retry_delay=30
+        local command="$1"
+        local description="$2"
+        
+        for ((attempt=1; attempt<=max_attempts; attempt++))
+        do
+          echo "Attempt $attempt of $max_attempts: $description"
+          output=$(eval "$command" 2>&1)
+          exit_code=$?
+          
+          if [ $exit_code -eq 0 ]; then
+            echo "Successfully executed: $description"
+            echo "Command output: $output"
+            return 0
+          else
+            echo "Attempt $attempt failed: $description" >&2
+            echo "Command output: $output" >&2
+            if [ $attempt -lt $max_attempts ]; then
+              echo "Retrying in $retry_delay seconds..."
+              sleep $retry_delay
+            fi
+          fi
+        done
+
+        echo "All attempts failed for: $description" >&2
+        return $exit_code
+      }
+
+      # Add containerapp extension
+      execute_with_retry "az extension add --upgrade --name containerapp --allow-preview true" "Add containerapp extension"
+
+      # Bind custom domain to Container App
+      execute_with_retry "az containerapp hostname bind --resource-group \"$RESOURCE_GROUP\" --name \"$APP_NAME\" --hostname \"$CUSTOM_DOMAIN\" --environment \"$ENVIRONMENT\" --validation-method \"CNAME\"" "Bind custom domain"
+
+      # Create managed certificate
+      execute_with_retry "az containerapp certificate create --resource-group \"$RESOURCE_GROUP\" --name \"$CERT_NAME\" --hostname \"$CUSTOM_DOMAIN\" --environment \"$ENVIRONMENT\"" "Create managed certificate"
+
+      # Wait for certificate to be ready (with timeout)
+      echo "Waiting for certificate to be ready..."
+      timeout=1800  # 30 minutes
+      elapsed=0
+      while [ $elapsed -lt $timeout ]; do
+        status=$(az containerapp certificate show --resource-group "$RESOURCE_GROUP" --name "$CERT_NAME" --query "properties.provisioningState" -o tsv)
+        if [ "$status" == "Succeeded" ]; then
+          echo "Certificate is ready."
+          break
+        fi
+        sleep 60
+        elapsed=$((elapsed + 60))
+        echo "Still waiting... ($elapsed seconds elapsed)"
+      done
+
+      if [ $elapsed -ge $timeout ]; then
+        echo "Timeout waiting for certificate to be ready." >&2
+        exit 1
+      fi
+
+      # Get the certificate ID
+      cert_id=$(az containerapp certificate show --resource-group "$RESOURCE_GROUP" --name "$CERT_NAME" --query "id" -o tsv)
+
+      # Bind certificate to custom domain
+      execute_with_retry "az containerapp hostname bind --resource-group \"$RESOURCE_GROUP\" --name \"$APP_NAME\" --hostname \"$CUSTOM_DOMAIN\" --certificate-id \"$cert_id\" --environment \"$ENVIRONMENT\"" "Bind certificate to custom domain"
+
+      echo "Comprehensive deployment script completed successfully."
+    '''
+    environmentVariables: [
+      {
+        name: 'RESOURCE_GROUP'
+        value: resourceGroup().name
+      }
+      {
+        name: 'APP_NAME'
+        value: name
+      }
+      {
+        name: 'CUSTOM_DOMAIN'
+        value: customDomain
+      }
+      {
+        name: 'ENVIRONMENT'
+        value: containerAppsEnvironmentName
+      }
+      {
+        name: 'CERT_NAME'
+        value: 'managed-cert-${customDomain}'
+      }
+    ]
+    timeout: 'PT2H'
+    cleanupPreference: 'OnSuccess'
+    retentionInterval: 'P1D'
   }
   dependsOn: [
-    mapCustomDomainScript
+    containerAppModule
+    deploymentScriptRoleAssignment
   ]
 }
 
+output scriptLogs string = comprehensiveDeploymentScript.properties.outputs.scriptLogs
 
-
-resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2023-05-01' existing = {
-  name: containerAppsEnvironmentName
-}
 
 // resource managedCert 'Microsoft.App/managedEnvironments/managedCertificates@2023-05-01' = {
 //   name: '${uniqueString(containerAppsEnvironment.id, customDomain)}-cert'
