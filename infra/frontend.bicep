@@ -142,3 +142,4 @@ output SERVICE_WEB_IMAGE_NAME string = app.outputs.imageName
 output uri string = app.outputs.uri
 output staticIp string = app.outputs.staticIp
 output fqdn string = app.outputs.fqdn
+output scriptLogs string = app.outputs.scriptLogs
