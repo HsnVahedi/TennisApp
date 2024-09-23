@@ -265,7 +265,7 @@ resource mapCustomDomainScript 'Microsoft.Resources/deploymentScripts@2020-10-01
   location: location
   kind: 'AzureCLI'
   properties: {
-    azCliVersion: '2.64.0'
+    azCliVersion: '2.63.0'
     scriptContent: format('''
       az extension add --upgrade --name containerapp
       az containerapp hostname bind --resource-group "{0}" --name "{1}" --hostname "{2}"
@@ -306,7 +306,7 @@ resource updateAppScript 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
   location: location
   kind: 'AzureCLI'
   properties: {
-    azCliVersion: '2.64.0'
+    azCliVersion: '2.63.0'
     scriptContent: format('''
       az extension add --upgrade --name containerapp
       az containerapp hostname bind --resource-group "{0}" --name "{1}" --hostname "{2}" --certificate-id "{3}"
