@@ -251,9 +251,10 @@ resource managedCert 'Microsoft.App/managedEnvironments/managedCertificates@2023
   location: location
   properties: {
     subjectName: customDomain
-    domainControlValidation: 'CNameDnsRecord' // Optional
+    domainControlValidation: 'DnsToken' // Use 'DnsToken' for DNS TXT record validation
   }
 }
+
 
 
 
