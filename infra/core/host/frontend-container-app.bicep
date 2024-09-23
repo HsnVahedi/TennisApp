@@ -107,6 +107,8 @@ resource deploymentScriptIdentity 'Microsoft.ManagedIdentity/userAssignedIdentit
 }
 
 
+
+
 // resource deploymentScriptRoleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
 //   name: guid(resourceGroup().id, deploymentScriptIdentity.name, 'container-app-contributor-role-assignment')
 //   scope: resourceGroup()
@@ -295,11 +297,11 @@ resource mapCustomDomainScript 'Microsoft.Resources/deploymentScripts@2023-08-01
   identity: {
     type: 'UserAssigned'
     userAssignedIdentities: {
-      '${deploymentScriptIdentity.id}': {}
+      [deploymentScriptIdentity.id]: {}
     }
   }
   properties: {
-    azCliVersion: '2.64.0'
+    azCliVersion: '2.63.0' // Updated to a supported version
     scriptContent: format('''
       az extension add --upgrade --name containerapp
       az containerapp hostname bind --resource-group "{0}" --name "{1}" --hostname "{2}"
@@ -320,26 +322,6 @@ resource mapCustomDomainScript 'Microsoft.Resources/deploymentScripts@2023-08-01
   ]
 }
 
-
-
-
-
-// Create the managed certificate
-module managedCertModule '../frontend/managedCert.bicep' = {
-  name: 'deployManagedCert'
-  params: {
-    location: location
-    customDomain: customDomain
-    containerAppsEnvironmentName: containerAppsEnvironmentName
-  }
-  dependsOn: [
-    mapCustomDomainScript
-  ]
-}
-
-
-
-// Update the container app to associate the certificate with the custom domain
 resource updateAppScript 'Microsoft.Resources/deploymentScripts@2023-08-01' = {
   name: 'updateAppWithCert'
   kind: 'AzureCLI'
@@ -347,11 +329,11 @@ resource updateAppScript 'Microsoft.Resources/deploymentScripts@2023-08-01' = {
   identity: {
     type: 'UserAssigned'
     userAssignedIdentities: {
-      '${deploymentScriptIdentity.id}': {}
+      [deploymentScriptIdentity.id]: {}
     }
   }
   properties: {
-    azCliVersion: '2.64.0'
+    azCliVersion: '2.63.0' // Updated to a supported version
     scriptContent: format('''
       az extension add --upgrade --name containerapp
       az containerapp hostname bind --resource-group "{0}" --name "{1}" --hostname "{2}" --certificate-id "{3}"
@@ -374,6 +356,19 @@ resource updateAppScript 'Microsoft.Resources/deploymentScripts@2023-08-01' = {
 
 
 
+
+// Create the managed certificate
+module managedCertModule '../frontend/managedCert.bicep' = {
+  name: 'deployManagedCert'
+  params: {
+    location: location
+    customDomain: customDomain
+    containerAppsEnvironmentName: containerAppsEnvironmentName
+  }
+  dependsOn: [
+    mapCustomDomainScript
+  ]
+}
 
 
 
