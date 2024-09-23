@@ -265,7 +265,7 @@ resource mapCustomDomainScript 'Microsoft.Resources/deploymentScripts@2020-10-01
   location: location
   kind: 'AzureCLI'
   properties: {
-    // azCliVersion: '2.47.0' // Uncommented and set to '2.47.0'
+    azCliVersion: '2.64.0' // Uncommented and set to '2.47.0'
     scriptContent: format('''
       az extension add --upgrade --name containerapp
       az containerapp ingress update --resource-group "{0}" --name "{1}" --custom-domains "{2}"
@@ -305,7 +305,7 @@ resource updateAppScript 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
   location: location
   kind: 'AzureCLI'
   properties: {
-    // azCliVersion: '2.47.0' // Uncommented and set to '2.47.0'
+    azCliVersion: '2.64.0' // Uncommented and set to '2.47.0'
     scriptContent: format('''
       az extension add --upgrade --name containerapp
       az containerapp ingress update --resource-group "{0}" --name "{1}" --custom-domains "{2}"="{3}"
