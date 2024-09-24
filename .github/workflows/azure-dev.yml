@@ -81,6 +81,10 @@ jobs:
             AZURE_LOCATION: ${{ vars.AZURE_LOCATION }}
             AZURE_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
 
+
+        - name: 2 Verify custom domains persistence configuration
+          run: azd config get alpha.aca.persistDomains
+
         - name: Output Deployment URI
           id: output
           run: |
