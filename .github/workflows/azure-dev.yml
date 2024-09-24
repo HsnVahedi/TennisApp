@@ -61,8 +61,8 @@ jobs:
         #   env:
         #     AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
 
-        - name: Prevent removing custom domains
-          run: azd config set alpha.aca.persistDomains on --no-prompt
+        # - name: Prevent removing custom domains
+        #   run: azd config set alpha.aca.persistDomains on --no-prompt
 
         - name: Provision Infrastructure
           run: azd provision --no-prompt
@@ -71,7 +71,7 @@ jobs:
             AZURE_LOCATION: ${{ vars.AZURE_LOCATION }}
             AZURE_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
           
-        - name: Verify custom domains persistence configuration
+        - name: Check custom domains persistence configuration
           run: azd config get alpha.aca.persistDomains
 
         - name: Deploy Application
@@ -81,9 +81,6 @@ jobs:
             AZURE_LOCATION: ${{ vars.AZURE_LOCATION }}
             AZURE_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
 
-
-        - name: 2 Verify custom domains persistence configuration
-          run: azd config get alpha.aca.persistDomains
 
         - name: Output Deployment URI
           id: output
