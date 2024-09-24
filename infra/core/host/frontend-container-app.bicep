@@ -2,8 +2,6 @@ metadata description = 'Creates a container app in an Azure Container App enviro
 param name string
 param location string = resourceGroup().location
 param tags object = {}
-@description('Custom domain name')
-param customDomain string
 
 @description('Allowed origins')
 param allowedOrigins array = []

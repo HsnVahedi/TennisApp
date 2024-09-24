@@ -118,7 +118,6 @@ module app 'frontend-container-app.bicep' = {
     serviceBinds: serviceBinds
     containerRegistryAccessName: containerRegistryAccessName
     keyvaultIdentities: keyvaultIdentities
-    customDomain: 'artoftennis.ai'
   }
 }
 
