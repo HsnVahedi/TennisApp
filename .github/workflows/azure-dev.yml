@@ -71,8 +71,8 @@ jobs:
             AZURE_LOCATION: ${{ vars.AZURE_LOCATION }}
             AZURE_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
           
-        - name: Check custom domains persistence configuration
-          run: azd config get alpha.aca.persistDomains
+        # - name: Check custom domains persistence configuration
+        #   run: azd config get alpha.aca.persistDomains
 
         - name: Deploy Application
           run: azd deploy --no-prompt
