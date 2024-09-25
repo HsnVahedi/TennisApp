@@ -138,7 +138,7 @@ module keyVault 'br/public:avm/res/key-vault/vault:0.6.2' = {
   name: 'keyvault'
   scope: resourceGroup
   params: {
-    name: '${take(replace(prefix, '-', ''), 8)}-vault'
+    name: '${take(replace(prefix, '-', ''), 7)}-vault'
     location: location
     tags: tags
     sku: 'standard'
