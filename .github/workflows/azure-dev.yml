@@ -43,8 +43,18 @@ jobs:
               --tenant-id "$Env:AZURE_TENANT_ID"
           shell: pwsh
 
+
+
         - name: Log in to Azure
-          run: az login --service-principal --username ${{ env.AZURE_CLIENT_ID }} --password ${{ env.AZURE_CLIENT_SECRET }} --tenant ${{ env.AZURE_TENANT_ID }}
+          run: |
+            az login --service-principal --username ${{ env.AZURE_CLIENT_ID }} --password ${{ env.AZURE_CLIENT_SECRET }} --tenant ${{ env.AZURE_TENANT_ID }}
+            echo "Waiting for potential replication delay..."
+            sleep 30
+            az ad sp show --id ${{ env.AZURE_CLIENT_ID }} --query "objectType" -o tsv
+        
+
+        # - name: Log in to Azure
+        #   run: az login --service-principal --username ${{ env.AZURE_CLIENT_ID }} --password ${{ env.AZURE_CLIENT_SECRET }} --tenant ${{ env.AZURE_TENANT_ID }}
 
 
         # - name: Log in with Azure (Client Credentials)
@@ -70,6 +80,14 @@ jobs:
             AZURE_ENV_NAME: ${{ vars.AZURE_ENV_NAME }}
             AZURE_LOCATION: ${{ vars.AZURE_LOCATION }}
             AZURE_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+
+        # - name: Provision Infrastructure
+        #   run: |
+        #     azd provision --no-prompt --principal-type ServicePrincipal
+        #   env:
+        #     AZURE_ENV_NAME: ${{ vars.AZURE_ENV_NAME }}
+        #     AZURE_LOCATION: ${{ vars.AZURE_LOCATION }}
+        #     AZURE_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
           
         # - name: Check custom domains persistence configuration
         #   run: azd config get alpha.aca.persistDomains
