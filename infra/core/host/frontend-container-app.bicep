@@ -99,22 +99,22 @@ resource userIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2023-01-
 }
 
 
-resource deploymentScriptIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2018-11-30' = {
-  name: 'deploymentScriptIdentity'
-  location: location
-}
+// resource deploymentScriptIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2018-11-30' = {
+//   name: 'deploymentScriptIdentity'
+//   location: location
+// }
 
 
 
 
-resource deploymentScriptRoleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
-  name: guid(resourceGroup().id, deploymentScriptIdentity.name, 'container-app-contributor-role-assignment')
-  scope: resourceGroup()
-  properties: {
-    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'b24988ac-6180-42a0-ab88-20f7382dd24c') // Contributor Role ID
-    principalId: deploymentScriptIdentity.properties.principalId
-  }
-}
+// resource deploymentScriptRoleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
+//   name: guid(resourceGroup().id, deploymentScriptIdentity.name, 'container-app-contributor-role-assignment')
+//   scope: resourceGroup()
+//   properties: {
+//     roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', 'b24988ac-6180-42a0-ab88-20f7382dd24c') // Contributor Role ID
+//     principalId: deploymentScriptIdentity.properties.principalId
+//   }
+// }
 
 
 
@@ -350,20 +350,6 @@ resource containerAppsEnvironment 'Microsoft.App/managedEnvironments@2023-05-01'
 
 
 
-
-
-// Create the managed certificate
-// module managedCertModule '../frontend/managedCert.bicep' = {
-//   name: 'deployManagedCert'
-//   params: {
-//     location: location
-//     customDomain: customDomain
-//     containerAppsEnvironmentName: containerAppsEnvironmentName
-//   }
-//   dependsOn: [
-//     mapCustomDomainScript
-//   ]
-// }
 
 
 // resource comprehensiveDeploymentScript 'Microsoft.Resources/deploymentScripts@2023-08-01' = {
