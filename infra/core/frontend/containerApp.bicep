@@ -29,6 +29,10 @@ param containerRegistryHostSuffix string
 
 
 
+resource managedCertificate 'Microsoft.App/managedEnvironments/managedCertificates@2024-03-01' existing = {
+  name: 'aotweb-bwglio35ect2a-frontend-containerapps-env/artoftennis.us-aotweb-b-240925071323'
+  // name: 'artoftennis.us-aotweb-b-240925071323'
+}
 
 
 resource app 'Microsoft.App/containerApps@2023-05-02-preview' = {
@@ -62,6 +66,13 @@ resource app 'Microsoft.App/containerApps@2023-05-02-preview' = {
             'https://ms.portal.azure.com'
           ], allowedOrigins)
         }
+        customDomains: [
+          {
+            name: 'artoftennis.us'
+            bindingType: 'SniEnabled'
+            certificateId: managedCertificate.id 
+          }
+        ]
         // No customDomains here
       } : null
       dapr: daprEnabled ? {
