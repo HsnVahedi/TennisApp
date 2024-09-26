@@ -30,6 +30,7 @@ param containerRegistryHostSuffix string
 
 
 resource managedCertificate 'Microsoft.App/managedEnvironments/managedCertificates@2024-03-01' existing = {
+  // TODO: move this to github secrets
   name: 'aotweb-bwglio35ect2a-frontend-containerapps-env/artoftennis.us-aotweb-b-240925071323'
   // name: 'artoftennis.us-aotweb-b-240925071323'
 }
