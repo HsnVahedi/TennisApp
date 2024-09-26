@@ -29,9 +29,17 @@ param containerRegistryHostSuffix string
 
 
 
-resource managedCertificate 'Microsoft.App/managedEnvironments/managedCertificates@2024-03-01' existing = {
+resource artoftennisManagedCertificate 'Microsoft.App/managedEnvironments/managedCertificates@2024-03-01' existing = {
   // TODO: move this to github secrets
   name: 'aotweb-bwglio35ect2a-frontend-containerapps-env/artoftennis.us-aotweb-b-240925071323'
+  // name: 'aotweb-bwglio35ect2a-frontend-containerapps-env/tennishub.pro-aotweb-b-240926192713'
+  // name: 'artoftennis.us-aotweb-b-240925071323'
+}
+
+resource tennishubManagedCertificate 'Microsoft.App/managedEnvironments/managedCertificates@2024-03-01' existing = {
+  // TODO: move this to github secrets
+  // name: 'aotweb-bwglio35ect2a-frontend-containerapps-env/artoftennis.us-aotweb-b-240925071323'
+  name: 'aotweb-bwglio35ect2a-frontend-containerapps-env/tennishub.pro-aotweb-b-240926192713'
   // name: 'artoftennis.us-aotweb-b-240925071323'
 }
 
@@ -71,7 +79,12 @@ resource app 'Microsoft.App/containerApps@2023-05-02-preview' = {
           {
             name: 'artoftennis.us'
             bindingType: 'SniEnabled'
-            certificateId: managedCertificate.id 
+            certificateId: artoftennisManagedCertificate.id 
+          }
+          {
+            name: 'tennishub.pro'
+            bindingType: 'SniEnabled'
+            certificateId: tennishubManagedCertificate.id 
           }
         ]
         // No customDomains here
