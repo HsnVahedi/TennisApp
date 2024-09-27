@@ -135,9 +135,11 @@ module app 'core/host/frontend-container-app-upsert.bicep' = {
       }
       'recaptcha-site-key': {
         keyVaultUrl: '${keyVault.properties.vaultUri}secrets/recaptcha-site-key'
+        identity: webIdentity.id
       }
       'recaptcha-secret-key': {
         keyVaultUrl: '${keyVault.properties.vaultUri}secrets/recaptcha-secret-key'
+        identity: webIdentity.id
       }
     }
   }
