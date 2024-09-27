@@ -107,6 +107,14 @@ module app 'core/host/frontend-container-app-upsert.bicep' = {
         name: 'NEXTAUTH_SECRET'
         secretRef: 'nextauth-secret'
       }
+      {
+        name: 'NEXT_PUBLIC_RECAPTCHA_SITE_KEY'
+        secretRef: 'recaptcha-site-key'
+      }
+      {
+        name: 'RECAPTCHA_SECRET_KEY'
+        secretRef: 'recaptcha-secret-key'
+      }
 
 
 
@@ -124,6 +132,12 @@ module app 'core/host/frontend-container-app-upsert.bicep' = {
       'nextauth-secret': {
         keyVaultUrl: '${keyVault.properties.vaultUri}secrets/nextauth-secret'
         identity: webIdentity.id
+      }
+      'recaptcha-site-key': {
+        keyVaultUrl: '${keyVault.properties.vaultUri}secrets/recaptcha-site-key'
+      }
+      'recaptcha-secret-key': {
+        keyVaultUrl: '${keyVault.properties.vaultUri}secrets/recaptcha-secret-key'
       }
     }
   }
