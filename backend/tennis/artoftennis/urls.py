@@ -6,6 +6,7 @@ from wagtail.admin import urls as wagtailadmin_urls
 from wagtail import urls as wagtail_urls
 from wagtail.documents import urls as wagtaildocs_urls
 from videos import urls as videos_urls
+from contactus import urls as contactus_urls
 
 from search import views as search_views
 
@@ -31,6 +32,7 @@ urlpatterns = [
     path('protected-data/', ProtectedDataAPIView.as_view(), name='protected_data_api'),
     path('after_social_login/', after_social_login, name='after_social_login'),
     path('videos/', include(videos_urls)),
+    path('contactus/', include(contactus_urls)),
 ]
 
 
