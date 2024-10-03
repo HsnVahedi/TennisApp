@@ -31,20 +31,33 @@ const ContactUs: React.FC = () => {
     formState: { errors, isSubmitting, isSubmitSuccessful },
     reset,
     setValue,
+    watch,
   } = useForm<FormValues>({
     resolver: yupResolver(schema),
   });
 
+  const recaptchaToken = watch('recaptcha');
+
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     try {
-      // Send all form data to the API route
-      const response = await fetch('/api/submitForm', {
+      if (!recaptchaToken) {
+        throw new Error('reCAPTCHA token is required');
+      }
+
+      const response = await fetch('/api/verifyRecaptcha', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+          ...data,
+          recaptchaToken: recaptchaToken,
+        }),
       });
+
+      if (!response.ok) {
+        throw new Error('Form submission failed');
+      }
 
       const result = await response.json();
 
@@ -75,7 +88,6 @@ const ContactUs: React.FC = () => {
         </div>
       )} 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        {/* Subject Selection */}
         <div>
           <label htmlFor="subject" className="block text-purple-900 font-medium mb-2 text-left">
             Subject
@@ -98,7 +110,6 @@ const ContactUs: React.FC = () => {
           )}
         </div>
 
-        {/* Email Input */}
         <div>
           <label htmlFor="email" className="block text-purple-900 font-medium mb-2 text-left">
             Email
@@ -117,7 +128,6 @@ const ContactUs: React.FC = () => {
           )}
         </div>
 
-        {/* Message Textarea */}
         <div>
           <label htmlFor="message" className="block text-purple-900 font-medium mb-2 text-left">
             Message
@@ -146,7 +156,6 @@ const ContactUs: React.FC = () => {
           </div>
         </div>
 
-        {/* Submit Button */}
         <div>
           <button
             type="submit"
