@@ -1,6 +1,6 @@
 from .base import *
 
-DEBUG = True
+# DEBUG = True
 
 APPLICATION_URL = os.environ["CONTAINER_APP_NAME"] + "." + os.environ["CONTAINER_APP_ENV_DNS_SUFFIX"]
 
