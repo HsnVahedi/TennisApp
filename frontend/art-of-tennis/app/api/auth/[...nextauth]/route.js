@@ -31,6 +31,12 @@ const DjangoProvider = {
           id: profile.username,
         };
     },
+    httpOptions: (options) => {
+      return {
+        ...options,
+        timeout: 10000, // Increase timeout to 10 seconds
+      };
+    },
     // authorize: async (credentials, req) => {
     //   alert('authorize function')
     // },
